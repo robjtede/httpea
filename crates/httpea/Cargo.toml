@@ -1,0 +1,25 @@
+[package]
+name = "httpea"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+bytes = "1"
+futures-util = { version = "0.3.17", default-features = false, features = ["std"] }
+h3 = "0.0.1"
+h3-quinn = "0.0.1"
+http = "0.2.9"
+mio = { version = "0.8", features = ["net", "os-poll"] }
+quiche = { version = "0.16", features = ["qlog"] }
+quinn = "0.8"
+ring = "0.16"
+rustls = "0.20"
+rustls-native-certs = "0.6"
+rustls-pemfile = "1"
+s2n-quic = "1.16"
+structopt = "0.3"
+tokio = { version = "1.24.2", features = ["full"] }
+tracing = "0.1.20"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+url = "1"
+webpki-roots = "0.22"

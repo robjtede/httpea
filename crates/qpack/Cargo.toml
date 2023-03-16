@@ -1,0 +1,19 @@
+[package]
+name = "qpack"
+version = "0.0.1"
+publish = false
+authors = ["Rob Ede <robjtede@icloud.com>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+rust-version = "1.65"
+
+[dependencies]
+byteorder = "1.4.3"
+impl-more = "0.1.5"
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+
+[[bench]]
+name = "var-int"
+harness = false
