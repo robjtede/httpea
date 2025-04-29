@@ -1,3 +1,16 @@
 [workspace]
 resolver = "2"
 members = ["crates/*"]
+
+[workspace.package]
+repository = "https://github.com/robjtede/httpea"
+license = "MIT"
+edition = "2024"
+rust-version = "1.85"
+
+[workspace.lints.rust]
+rust-2018-idioms = "deny"
+nonstandard-style = "deny"
+future-incompatible = "deny"
+missing-debug-implementations = "warn"
+missing-docs = "warn"

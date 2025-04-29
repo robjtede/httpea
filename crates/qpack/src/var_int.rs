@@ -9,7 +9,7 @@ impl_more::forward_display!(VarInt);
 impl VarInt {
     const MIN: VarInt = VarInt(0);
 
-    const MAX: VarInt = VarInt(2 << 62 - 1);
+    const MAX: VarInt = VarInt((2 << 62) - 1);
 
     pub const fn new(n: u64) -> Self {
         assert!(n <= Self::MAX.0);
@@ -90,7 +90,7 @@ impl VarInt {
         loop {
             let b = buf[pos];
 
-            i = i + (b & 127) as u64 * 2_u64.pow(m);
+            i += (b & 127) as u64 * 2_u64.pow(m);
             m += 7;
 
             if b & 0x80 == 0x80 {
@@ -118,11 +118,7 @@ fn div_ceil(lhs: impl Into<u64>, rhs: impl Into<u64>) -> u64 {
     let d = lhs / rhs;
     let r = lhs % rhs;
 
-    if r > 0 && rhs > 0 {
-        d + 1
-    } else {
-        d
-    }
+    if r > 0 && rhs > 0 { d + 1 } else { d }
 }
 
 #[cfg(test)]

@@ -3,9 +3,10 @@ name = "qpack"
 version = "0.0.1"
 publish = false
 authors = ["Rob Ede <robjtede@icloud.com>"]
-edition = "2018"
-license = "MIT OR Apache-2.0"
-rust-version = "1.65"
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 byteorder = "1.4.3"

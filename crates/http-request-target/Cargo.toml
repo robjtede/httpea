@@ -1,0 +1,17 @@
+[package]
+name = "http-request-target"
+version = "0.0.1"
+description = "HTTP request-target (RFC 9112) parser"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "request", "target", "uri"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+memchr = { version = "2", default-features = false }
+
+[lints]
+workspace = true

@@ -1,0 +1,14 @@
+version: "0.2"
+words:
+  - addrs
+  - byteorder
+  - Deque
+  - HEXDIG
+  - HEXDIGIT
+  - httpea
+  - memchr
+  - pchar
+  - peekable
+  - QPACK
+  - QUIC
+  - rustls
