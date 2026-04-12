@@ -69,7 +69,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
         with: { toolchain: nightly }
 
-      - uses: taiki-e/cache-cargo-install-action@c1c0be4dfa152beb021a9b8af00d6e4aac4a4e16 # v1.4.0
+      - uses: taiki-e/cache-cargo-install-action@f9eed3e4680f27610dc6d8c67be1b88593f7dade # v3.0.6
         with: { tool: cargo-public-api }
 
       - name: generate API diff
