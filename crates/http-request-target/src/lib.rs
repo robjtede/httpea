@@ -58,9 +58,7 @@ impl RequestTarget {
             }
 
             _ => {
-                parse_origin_form(slice, &mut buf).inspect_err(|_err| {
-                    eprintln!("so far: {buf}");
-                })?;
+                parse_origin_form(slice, &mut buf)?;
 
                 Ok(Self::Origin(buf))
             }
@@ -81,12 +79,9 @@ impl RequestTarget {
 /// query         = *( pchar / "/" / "?" )
 /// ```
 fn parse_origin_form(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarget> {
-    eprintln!("parse_origin_form");
-
     match memchr::memchr(b'?', slice) {
         // has query
         Some(query_start) => {
-            eprintln!("parse_origin_form with query");
             parse_path(&slice[..query_start], buf)?;
             buf.push('?');
             parse_query(&slice[query_start + 1..], buf)?;
@@ -94,7 +89,6 @@ fn parse_origin_form(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestT
 
         // just a path
         None => {
-            eprintln!("parse_origin_form just path");
             parse_path(slice, buf)?;
         }
     };
@@ -103,8 +97,6 @@ fn parse_origin_form(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestT
 }
 
 fn parse_path(mut slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarget> {
-    eprintln!("parse_path");
-
     if slice.is_empty() {
         return Err(ParseRequestTarget);
     }
@@ -125,8 +117,6 @@ fn parse_path(mut slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarg
 }
 
 fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTarget> {
-    eprintln!("parse_segment buf={buf}");
-
     if slice.is_empty() {
         return Ok(0);
     }
@@ -150,20 +140,14 @@ fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTa
                 // HEXDIGIT
                 match iter.next() {
                     Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&b) => {
-                        eprintln!("invalid HEXDIGIT at {i} {}", b as char);
-                        return Err(ParseRequestTarget);
-                    }
+                    Some(&_) => return Err(ParseRequestTarget),
                     None => return Err(ParseRequestTarget),
                 }
 
                 // HEXDIGIT
                 match iter.next() {
                     Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&b) => {
-                        eprintln!("invalid HEXDIGIT at {i} {}", b as char);
-                        return Err(ParseRequestTarget);
-                    }
+                    Some(&_) => return Err(ParseRequestTarget),
                     None => return Err(ParseRequestTarget),
                 }
 
@@ -186,8 +170,6 @@ fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTa
 }
 
 fn parse_query(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarget> {
-    eprintln!("parse_query");
-
     let mut iter = slice.iter().peekable();
 
     loop {
@@ -205,20 +187,14 @@ fn parse_query(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarget>
                 // HEXDIGIT
                 match iter.next() {
                     Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&b) => {
-                        eprintln!("invalid HEXDIGIT {}", b as char);
-                        return Err(ParseRequestTarget);
-                    }
+                    Some(&_) => return Err(ParseRequestTarget),
                     None => return Err(ParseRequestTarget),
                 }
 
                 // HEXDIGIT
                 match iter.next() {
                     Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&b) => {
-                        eprintln!("invalid HEXDIGIT {}", b as char);
-                        return Err(ParseRequestTarget);
-                    }
+                    Some(&_) => return Err(ParseRequestTarget),
                     None => return Err(ParseRequestTarget),
                 }
             }

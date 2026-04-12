@@ -13,5 +13,12 @@ rust-version.workspace = true
 [dependencies]
 memchr = { version = "2", default-features = false }
 
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "parse-request-target"
+harness = false
+
 [lints]
 workspace = true
