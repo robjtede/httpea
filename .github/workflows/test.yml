@@ -27,6 +27,11 @@ jobs:
         with:
           tool: cargo-hack
 
+      - name: Install just
+        uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2.75.7
+        with:
+          tool: just
+
       - name: tests
         run: just test
 
