@@ -56,24 +56,3 @@ jobs:
       - name: Check for broken intra-doc links
         env: { RUSTDOCFLAGS: '-D warnings' }
         run: cargo doc --no-deps --all-features --workspace
-
-  public-api-diff:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-        with:
-          ref: ${{ github.base_ref }}
-
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-
-      - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
-        with: { toolchain: nightly }
-
-      - uses: taiki-e/cache-cargo-install-action@c1c0be4dfa152beb021a9b8af00d6e4aac4a4e16 # v1.4.0
-        with: { tool: cargo-public-api }
-
-      - name: generate API diff
-        run: |
-          for f in $(find crates -name Cargo.toml); do
-            cargo public-api --manifest-path "$f" diff ${{ github.event.pull_request.base.sha }}..${{ github.sha }}
-          done
