@@ -23,10 +23,12 @@ jobs:
         with: { toolchain: nightly }
 
       - name: Install cargo-hack
-        uses: taiki-e/install-action@cargo-hack
+        uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2.75.7
+        with:
+          tool: cargo-hack
 
       - name: tests
-        run: cargo test --workspace --all-features
+        run: just test
 
   doc-test:
     runs-on: ubuntu-latest
