@@ -18,9 +18,9 @@ jobs:
   benchmarks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
         with: { toolchain: nightly }
 
       - name: Install cargo-codspeed
@@ -30,7 +30,7 @@ jobs:
         run: cargo codspeed build -p http-request-target -p qpack
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@db35df748deb45fdef0960669f57d627c1956c30 # v4.13.1
         with:
           mode: simulation
-          run: cargo codspeed run -p http-request-target -p qpack
+          run: cargo codspeed run -p http-request-target
