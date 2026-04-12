@@ -12,9 +12,9 @@ rust-version.workspace = true
 byteorder = "1.4.3"
 impl-more = "0.1.5"
 
-[dev-dependencies]
-criterion = { version = "0.4", features = ["html_reports"] }
-
 [[bench]]
 name = "var-int"
 harness = false
+
+[dev-dependencies]
+criterion = { version = "4", package = "codspeed-criterion-compat", features = ["html_reports"] }
