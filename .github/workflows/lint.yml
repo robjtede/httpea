@@ -26,6 +26,7 @@ jobs:
 
   clippy:
     permissions:
+      contents: read
       checks: write # to add clippy checks to PR diffs
 
     runs-on: ubuntu-latest

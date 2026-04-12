@@ -16,15 +16,21 @@ concurrency:
 
 jobs:
   benchmarks:
+    name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
-        with: { toolchain: nightly }
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
+        with:
+          toolchain: nightly
 
       - name: Install cargo-codspeed
-        run: cargo install cargo-codspeed --locked
+        uses: taiki-e/cache-cargo-install-action@f9eed3e4680f27610dc6d8c67be1b88593f7dade # v3.0.6
+        with:
+          tool: cargo-codspeed
 
       - name: Build benchmarks
         run: cargo codspeed build -p http-request-target -p qpack
