@@ -3,6 +3,8 @@ name: Bench
 on:
   push:
     branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,10 +26,11 @@ jobs:
       - name: Install cargo-codspeed
         run: cargo install cargo-codspeed --locked
 
+      - name: Build benchmarks
+        run: cargo codspeed build -p http-request-target -p qpack
+
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
           mode: simulation
-          run: |
-            cargo codspeed build -p http-request-target --bench parse-request-target
-            cargo codspeed run -p http-request-target --bench parse-request-target
+          run: cargo codspeed run -p http-request-target -p qpack
