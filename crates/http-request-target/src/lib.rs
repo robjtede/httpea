@@ -125,6 +125,7 @@ fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTa
 
     let mut i = 0;
 
+    #[expect(clippy::while_let_loop)]
     loop {
         let Some(b) = iter.next_if(|&&b| b != b'/') else {
             // stop consuming if next char is start-of-next-segment or EOL
@@ -172,6 +173,7 @@ fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTa
 fn parse_query(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTarget> {
     let mut iter = slice.iter().peekable();
 
+    #[expect(clippy::while_let_loop)]
     loop {
         let Some(b) = iter.next_if(|&&b| b != b'#') else {
             // stop consuming if next char is start-of-fragment or EOL
