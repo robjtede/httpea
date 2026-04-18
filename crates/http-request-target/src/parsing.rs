@@ -18,7 +18,7 @@ pub(crate) enum RequestTargetIndices {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct RequestTargetOriginIndices {
     pub(crate) path: Range<usize>,
-    pub(crate) query: Option<Range<usize>>,
+    pub(crate) search: Option<Range<usize>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,7 +29,7 @@ pub(crate) struct RequestTargetAbsoluteIndices {
     pub(crate) host: Range<usize>,
     pub(crate) port: Option<Range<usize>>,
     pub(crate) path: Range<usize>,
-    pub(crate) query: Option<Range<usize>>,
+    pub(crate) search: Option<Range<usize>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -78,8 +78,8 @@ where
 pub(crate) fn parse_origin_form_indices(
     input: &mut LocatingSlice<&[u8]>,
 ) -> ModalResult<RequestTargetOriginIndices> {
-    (parse_path.span(), opt(preceded(b'?', parse_query.span())))
-        .map(|(path, query)| RequestTargetOriginIndices { path, query })
+    (parse_path.span(), opt((b'?', parse_query).span()))
+        .map(|(path, search)| RequestTargetOriginIndices { path, search })
         .parse_next(input)
 }
 
@@ -277,16 +277,16 @@ pub(crate) fn parse_absolute_form_indices(
         (b'/', b'/'),
         parse_authority_indices,
         parse_path_abempty.span(),
-        opt(preceded(b'?', parse_query.span())),
+        opt((b'?', parse_query).span()),
     )
-        .map(|(scheme, _, _, authority, path, query)| RequestTargetAbsoluteIndices {
+        .map(|(scheme, _, _, authority, path, search)| RequestTargetAbsoluteIndices {
             scheme,
             authority: authority.authority,
             userinfo: authority.userinfo,
             host: authority.host,
             port: authority.port,
             path,
-            query,
+            search,
         })
         .parse_next(input)
 }

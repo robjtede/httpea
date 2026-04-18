@@ -96,6 +96,8 @@ fn origin_components() {
     assert_eq!(target.path(), b"/where");
     assert_eq!(target.query_indices(), Some(7..12));
     assert_eq!(target.query(), Some(&b"q=now"[..]));
+    assert_eq!(target.search_indices(), Some(6..12));
+    assert_eq!(target.search(), Some(&b"?q=now"[..]));
 }
 
 #[test]
@@ -137,6 +139,8 @@ fn absolute_components() {
     assert_eq!(target.path(), b"/repo");
     assert_eq!(target.query_indices(), Some(43..46));
     assert_eq!(target.query(), Some(&b"q=1"[..]));
+    assert_eq!(target.search_indices(), Some(42..46));
+    assert_eq!(target.search(), Some(&b"?q=1"[..]));
 }
 
 #[test]

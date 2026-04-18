@@ -42,7 +42,7 @@ pub enum RequestTarget<'a> {
 pub struct RequestTargetOrigin<'a> {
     inner: &'a [u8],
     path: Range<usize>,
-    query: Option<Range<usize>>,
+    search: Option<Range<usize>>,
 }
 
 /// Absolute-form request-target.
@@ -55,7 +55,7 @@ pub struct RequestTargetAbsolute<'a> {
     host: Range<usize>,
     port: Option<Range<usize>>,
     path: Range<usize>,
-    query: Option<Range<usize>>,
+    search: Option<Range<usize>>,
 }
 
 /// Authority-form request-target.
@@ -76,7 +76,7 @@ impl<'a> RequestTarget<'a> {
                 Ok(RequestTarget::Origin(RequestTargetOrigin {
                     inner: input,
                     path: indices.path,
-                    query: indices.query,
+                    search: indices.search,
                 }))
             }
             Ok(parsing::RequestTargetIndices::Absolute(indices)) => {
@@ -88,7 +88,7 @@ impl<'a> RequestTarget<'a> {
                     host: indices.host,
                     port: indices.port,
                     path: indices.path,
-                    query: indices.query,
+                    search: indices.search,
                 }))
             }
             Ok(parsing::RequestTargetIndices::Authority(indices)) => {
@@ -126,15 +126,35 @@ impl<'a> RequestTargetOrigin<'a> {
     }
 
     /// Returns the byte indices of the `query` component, excluding the leading `?`.
+    ///
+    /// Use [`Self::search_indices`] for the same component including the `?`.
     #[inline]
     pub fn query_indices(&self) -> Option<Range<usize>> {
-        self.query.clone()
+        self.search.as_ref().map(query_range)
     }
 
     /// Returns the `query` component, excluding the leading `?`.
+    ///
+    /// Use [`Self::search`] for the same slice including the `?`.
     #[inline]
     pub fn query(&self) -> Option<&'a [u8]> {
-        optional_slice_range(self.inner, self.query.as_ref())
+        optional_slice_range(self.inner, self.search.as_ref().map(query_range).as_ref())
+    }
+
+    /// Returns the byte indices of the `search` component, including the leading `?`.
+    ///
+    /// This is the same logical component as [`Self::query_indices`], but with the `?` included.
+    #[inline]
+    pub fn search_indices(&self) -> Option<Range<usize>> {
+        self.search.clone()
+    }
+
+    /// Returns the `search` component, including the leading `?`.
+    ///
+    /// This is the same logical component as [`Self::query`], but with the `?` included.
+    #[inline]
+    pub fn search(&self) -> Option<&'a [u8]> {
+        optional_slice_range(self.inner, self.search.as_ref())
     }
 }
 
@@ -218,15 +238,35 @@ impl<'a> RequestTargetAbsolute<'a> {
     }
 
     /// Returns the byte indices of the `query` component, excluding the leading `?`.
+    ///
+    /// Use [`Self::search_indices`] for the same component including the `?`.
     #[inline]
     pub fn query_indices(&self) -> Option<Range<usize>> {
-        self.query.clone()
+        self.search.as_ref().map(query_range)
     }
 
     /// Returns the `query` component, excluding the leading `?`.
+    ///
+    /// Use [`Self::search`] for the same slice including the `?`.
     #[inline]
     pub fn query(&self) -> Option<&'a [u8]> {
-        optional_slice_range(self.inner, self.query.as_ref())
+        optional_slice_range(self.inner, self.search.as_ref().map(query_range).as_ref())
+    }
+
+    /// Returns the byte indices of the `search` component, including the leading `?`.
+    ///
+    /// This is the same logical component as [`Self::query_indices`], but with the `?` included.
+    #[inline]
+    pub fn search_indices(&self) -> Option<Range<usize>> {
+        self.search.clone()
+    }
+
+    /// Returns the `search` component, including the leading `?`.
+    ///
+    /// This is the same logical component as [`Self::query`], but with the `?` included.
+    #[inline]
+    pub fn search(&self) -> Option<&'a [u8]> {
+        optional_slice_range(self.inner, self.search.as_ref())
     }
 }
 
@@ -270,4 +310,9 @@ fn slice_range<'a>(input: &'a [u8], range: &Range<usize>) -> &'a [u8] {
 #[inline]
 fn optional_slice_range<'a>(input: &'a [u8], range: Option<&Range<usize>>) -> Option<&'a [u8]> {
     range.map(|range| slice_range(input, range))
+}
+
+#[inline]
+fn query_range(search: &Range<usize>) -> Range<usize> {
+    (search.start + 1)..search.end
 }
