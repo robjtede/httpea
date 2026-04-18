@@ -250,9 +250,13 @@ where
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
-    alt((parse_ip_literal, parse_reg_name))
-        .void()
-        .parse_next(input)
+    alt((
+        parse_ip_literal,
+        // IPv4 addresses are valid in `reg-name` context
+        parse_reg_name,
+    ))
+    .void()
+    .parse_next(input)
 }
 
 /// Parses an `IP-literal`.
@@ -296,14 +300,34 @@ mod tests {
 
     use super::*;
 
-    // waiting for https://github.com/rust-lang/rust/issues/82775
-    macro_rules! assert_matches {
-        ($expression:expr, $pattern:pat $(if $guard:expr)? $(,)?) => {
+    macro_rules! assert_backtrack {
+        ($parser:expr, $input:expr $(,)?) => {
             assert!(
-                matches!($expression, $pattern $(if $guard)?),
-                "assertion failed: expression does not match pattern `{}`: {:?}",
-                stringify!($pattern $(if $guard)?),
-                $expression,
+                matches!(
+                    $parser.parse_peek(BStr::new($input)),
+                    Err(ErrMode::Backtrack(_))
+                ),
+                "assertion failed: parser did not backtrack for input {:?}: {:?}",
+                $input,
+                $parser.parse_peek(BStr::new($input)),
+            );
+        };
+    }
+
+    macro_rules! assert_ok_remaining {
+        ($parser:expr, $input:expr, $remaining:expr $(,)?) => {
+            assert_eq!(
+                $parser.parse_peek(BStr::new($input)),
+                Ok((BStr::new($remaining), ())),
+            );
+        };
+    }
+
+    macro_rules! assert_partial_incomplete {
+        ($parser:expr, $input:expr, $needed:expr $(,)?) => {
+            assert_eq!(
+                $parser.parse_peek(Partial::new(BStr::new($input))),
+                Err(ErrMode::Incomplete($needed)),
             );
         };
     }
@@ -353,191 +377,76 @@ mod tests {
 
     #[test]
     fn parses_reg_name() {
-        assert_matches!(
-            parse_reg_name.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_reg_name.parse_peek(BStr::new(b"@localhost")),
-            Err(ErrMode::Backtrack(_))
-        );
+        assert_backtrack!(parse_reg_name, b"");
+        assert_backtrack!(parse_reg_name, b"@localhost");
 
-        assert_eq!(
-            parse_reg_name.parse_peek(BStr::new(b"localhost")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_reg_name.parse_peek(BStr::new(b"example.com:80")),
-            Ok((BStr::new(b":80"), ())),
-        );
-        assert_eq!(
-            parse_reg_name.parse_peek(BStr::new(b"xn--hllo-bpa.example")),
-            Ok((BStr::new(b""), ())),
-        );
+        assert_ok_remaining!(parse_reg_name, b"localhost", b"");
+        assert_ok_remaining!(parse_reg_name, b"example.com:80", b":80");
+        assert_ok_remaining!(parse_reg_name, b"xn--hllo-bpa.example", b"");
     }
 
     #[test]
     fn parses_ip_literal() {
-        assert_matches!(
-            parse_ip_literal.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_ip_literal.parse_peek(BStr::new(b"[localhost]")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_ip_literal.parse_peek(BStr::new(b"[::1")),
-            Err(ErrMode::Backtrack(_))
-        );
+        assert_backtrack!(parse_ip_literal, b"");
+        assert_backtrack!(parse_ip_literal, b"[localhost]");
+        assert_backtrack!(parse_ip_literal, b"[::1");
 
-        assert_eq!(
-            parse_ip_literal.parse_peek(BStr::new(b"[::1]")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_ip_literal.parse_peek(BStr::new(b"[2001:db8::1]:443")),
-            Ok((BStr::new(b":443"), ())),
-        );
-        assert_eq!(
-            parse_ip_literal.parse_peek(BStr::new(b"[v1.future-host]")),
-            Ok((BStr::new(b""), ())),
-        );
+        assert_ok_remaining!(parse_ip_literal, b"[::1]", b"");
+        assert_ok_remaining!(parse_ip_literal, b"[2001:db8::1]:443", b":443");
+        assert_ok_remaining!(parse_ip_literal, b"[v1.future-host]", b"");
     }
 
     #[test]
     fn parses_uri_host() {
-        assert_matches!(
-            parse_uri_host.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_uri_host.parse_peek(BStr::new(b"@localhost:80")),
-            Err(ErrMode::Backtrack(_))
-        );
+        assert_backtrack!(parse_uri_host, b"");
+        assert_backtrack!(parse_uri_host, b"@localhost:80");
 
-        assert_eq!(
-            parse_uri_host.parse_peek(BStr::new(b"localhost:80")),
-            Ok((BStr::new(b":80"), ())),
-        );
-        assert_eq!(
-            parse_uri_host.parse_peek(BStr::new(b"127.0.0.1:80")),
-            Ok((BStr::new(b":80"), ())),
-        );
-        assert_eq!(
-            parse_uri_host.parse_peek(BStr::new(b"[::1]:80")),
-            Ok((BStr::new(b":80"), ())),
-        );
+        assert_ok_remaining!(parse_uri_host, b"localhost:80", b":80");
+        assert_ok_remaining!(parse_uri_host, b"127.0.0.1:80", b":80");
+        assert_ok_remaining!(parse_uri_host, b"[::1]:80", b":80");
     }
 
     #[test]
     fn parses_path() {
-        assert_matches!(
-            parse_path.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_eq!(
-            parse_path.parse_peek(Partial::new(BStr::new(b""))),
-            Err(ErrMode::Incomplete(Needed::Unknown)),
-        );
+        assert_backtrack!(parse_path, b"");
+        assert_partial_incomplete!(parse_path, b"", Needed::Unknown);
+        assert_backtrack!(parse_path, b"=");
 
-        assert_matches!(
-            parse_path.parse_peek(BStr::new(b"=")),
-            Err(ErrMode::Backtrack(_))
-        );
-
-        assert_eq!(
-            parse_path.parse_peek(BStr::new(b"/foo")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_path.parse_peek(BStr::new(b"/foo/bar")),
-            Ok((BStr::new(b""), ())),
-        );
+        assert_ok_remaining!(parse_path, b"/foo", b"");
+        assert_ok_remaining!(parse_path, b"/foo/bar", b"");
 
         // parser assumes it won't receive a query but doesn't fail
-        assert_eq!(
-            parse_path.parse_peek(BStr::new(b"/foo/bar?baz")),
-            Ok((BStr::new(b"?baz"), ())),
-        );
+        assert_ok_remaining!(parse_path, b"/foo/bar?baz", b"?baz");
     }
 
     #[test]
     fn parses_query() {
-        // `query = *( pchar / "/" / "?" )`, so only success cases exist here.
-        assert_eq!(
-            parse_query.parse_peek(BStr::new(b"")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_query.parse_peek(BStr::new(b"=")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_query.parse_peek(BStr::new(b"foo=bar")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_query.parse_peek(BStr::new(b"foo=bar&baz")),
-            Ok((BStr::new(b""), ())),
-        );
+        assert_ok_remaining!(parse_query, b"", b"");
+        assert_ok_remaining!(parse_query, b"=", b"");
+        assert_ok_remaining!(parse_query, b"foo=bar", b"");
+        assert_ok_remaining!(parse_query, b"foo=bar&baz", b"");
     }
 
     #[test]
     fn parses_authority_form() {
-        assert_matches!(
-            parse_authority_form.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_eq!(
-            parse_authority_form.parse_peek(Partial::new(BStr::new(b""))),
-            Err(ErrMode::Incomplete(Needed::Unknown)),
-        );
-        assert_matches!(
-            parse_authority_form.parse_peek(BStr::new(b"localhost")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_authority_form.parse_peek(BStr::new(b"user@localhost:3000")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_matches!(
-            parse_authority_form.parse_peek(BStr::new(b"[::1]")),
-            Err(ErrMode::Backtrack(_))
-        );
+        assert_backtrack!(parse_authority_form, b"");
+        assert_partial_incomplete!(parse_authority_form, b"", Needed::Unknown);
 
-        assert_eq!(
-            parse_authority_form.parse_peek(BStr::new(b"localhost:3000")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_authority_form.parse_peek(BStr::new(b"127.0.0.1:80")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_authority_form.parse_peek(BStr::new(b"[::1]:443")),
-            Ok((BStr::new(b""), ())),
-        );
+        assert_backtrack!(parse_authority_form, b"localhost");
+        assert_backtrack!(parse_authority_form, b"user@localhost:3000");
+        assert_backtrack!(parse_authority_form, b"[::1]");
+
+        assert_ok_remaining!(parse_authority_form, b"localhost:3000", b"");
+        assert_ok_remaining!(parse_authority_form, b"127.0.0.1:80", b"");
+        assert_ok_remaining!(parse_authority_form, b"[::1]:443", b"");
     }
 
     #[test]
     fn parses_asterisk() {
-        assert_matches!(
-            parse_asterisk.parse_peek(BStr::new(b"")),
-            Err(ErrMode::Backtrack(_))
-        );
-        assert_eq!(
-            parse_asterisk.parse_peek(Partial::new(BStr::new(b""))),
-            Err(ErrMode::Incomplete(Needed::Unknown)),
-        );
+        assert_backtrack!(parse_asterisk, b"");
+        assert_partial_incomplete!(parse_asterisk, b"", Needed::Unknown);
 
-        assert_eq!(
-            parse_asterisk.parse_peek(BStr::new(b"*")),
-            Ok((BStr::new(b""), ())),
-        );
-        assert_eq!(
-            parse_asterisk.parse_peek(BStr::new(b"**")),
-            Ok((BStr::new(b"*"), ())),
-        );
+        assert_ok_remaining!(parse_asterisk, b"*", b"");
+        assert_ok_remaining!(parse_asterisk, b"**", b"*");
     }
 }
