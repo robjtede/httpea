@@ -1,6 +1,6 @@
 [package]
 name = "http-request-target"
-version = "0.0.1"
+version = "0.1.0"
 description = "HTTP request-target (RFC 9112) parser"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
