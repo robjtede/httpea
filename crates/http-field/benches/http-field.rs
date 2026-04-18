@@ -17,7 +17,9 @@ fn field_name_as_slice() {
 
 #[divan::bench(sample_size = 10_000)]
 fn field_value_from_slice() {
-    black_box(FieldValue::from_slice(black_box(b"text/plain; charset=utf-8")));
+    black_box(FieldValue::from_slice(black_box(
+        b"text/plain; charset=utf-8",
+    )));
 }
 
 #[divan::bench(sample_size = 10_000)]
