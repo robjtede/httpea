@@ -2,7 +2,7 @@
 
 // #![no_std]
 use winnow::{
-    combinator::{alt, delimited, empty, fail, opt, peek, repeat},
+    combinator::{alt, delimited, fail, opt, peek, preceded, repeat},
     error::ContextError,
     prelude::*,
     stream::{AsChar, Compare, Stream, StreamIsPartial},
@@ -234,6 +234,18 @@ where
 /// ```plain
 /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
 /// ```
+///
+/// # Policy
+///
+/// RFC 9112 defines `absolute-form = absolute-URI`, but this crate narrows absolute-form parsing
+/// to the authority-based URI shape commonly used by HTTP-family schemes:
+///
+/// ```plain
+/// scheme "://" authority path-abempty [ "?" query ]
+/// ```
+///
+/// This rejects generic RFC 3986 absolute URIs like `htt:p//host` while still allowing arbitrary
+/// schemes such as `git+http://...`.
 fn parse_absolute_form<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -243,7 +255,9 @@ where
     (
         parse_scheme,
         b':',
-        parse_hier_part,
+        (b'/', b'/'),
+        parse_authority,
+        parse_path_abempty,
         opt((b'?', parse_query)),
     )
         .void()
@@ -335,27 +349,9 @@ where
     I: Stream + StreamIsPartial,
     I::Token: Clone + AsChar,
 {
-    (one_of(is_scheme_start), take_while(.., is_scheme_char))
+    preceded(one_of(is_scheme_start), take_while(.., is_scheme_char))
         .void()
         .parse_next(input)
-}
-
-/// Parses `hier-part`.
-///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3>
-fn parse_hier_part<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    alt((
-        ((b'/', b'/'), parse_authority, parse_path_abempty).void(),
-        parse_path_absolute,
-        parse_path_rootless,
-        empty.void(),
-    ))
-    .parse_next(input)
 }
 
 /// Parses `authority`.
@@ -389,45 +385,6 @@ where
 {
     repeat(.., (b'/', take_while(.., is_pchar)))
         .map(|()| ())
-        .void()
-        .parse_next(input)
-}
-
-/// Parses `path-absolute`.
-///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
-fn parse_path_absolute<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-{
-    (
-        b'/',
-        opt((
-            take_while(1.., is_pchar),
-            repeat(.., (b'/', take_while(.., is_pchar)))
-                .map(|()| ())
-                .void(),
-        )),
-    )
-        .void()
-        .parse_next(input)
-}
-
-/// Parses `path-rootless`.
-///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
-fn parse_path_rootless<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-{
-    (
-        take_while(1.., is_pchar),
-        repeat(.., (b'/', take_while(.., is_pchar)))
-            .map(|()| ())
-            .void(),
-    )
         .void()
         .parse_next(input)
 }
@@ -578,38 +535,6 @@ mod tests {
     }
 
     #[test]
-    fn parses_path_absolute() {
-        assert_backtrack!(parse_path_absolute, b"");
-        assert_backtrack!(parse_path_absolute, b"foo/bar");
-        assert_partial_incomplete!(parse_path_absolute, b"", Needed::Unknown);
-
-        assert_ok_remaining!(parse_path_absolute, b"/", b"");
-        assert_ok_remaining!(parse_path_absolute, b"/foo/bar", b"");
-        assert_ok_remaining!(parse_path_absolute, b"/foo?bar", b"?bar");
-    }
-
-    #[test]
-    fn parses_path_rootless() {
-        assert_backtrack!(parse_path_rootless, b"");
-        assert_backtrack!(parse_path_rootless, b"/foo");
-        assert_partial_incomplete!(parse_path_rootless, b"", Needed::new(1));
-
-        assert_ok_remaining!(parse_path_rootless, b"foo", b"");
-        assert_ok_remaining!(parse_path_rootless, b"foo/bar", b"");
-        assert_ok_remaining!(parse_path_rootless, b"foo?bar", b"?bar");
-    }
-
-    #[test]
-    fn parses_hier_part() {
-        assert_partial_incomplete!(parse_hier_part, b"//", Needed::new(1));
-
-        assert_ok_remaining!(parse_hier_part, b"", b"");
-        assert_ok_remaining!(parse_hier_part, b"//127.0.0.1:80/path", b"");
-        assert_ok_remaining!(parse_hier_part, b"/foo/bar", b"");
-        assert_ok_remaining!(parse_hier_part, b"foo/bar", b"");
-    }
-
-    #[test]
     fn parses_path() {
         assert_backtrack!(parse_path, b"");
         assert_partial_incomplete!(parse_path, b"", Needed::Unknown);
@@ -648,11 +573,13 @@ mod tests {
     fn parses_absolute_form() {
         assert_backtrack!(parse_absolute_form, b"");
         assert_backtrack!(parse_absolute_form, b"/foo");
+        assert_backtrack!(parse_absolute_form, b"htt:p//host");
         assert_partial_incomplete!(parse_absolute_form, b"", Needed::new(1));
 
         assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1:61761/chunks", b"");
         assert_ok_remaining!(parse_absolute_form, b"https://127.0.0.1:61761", b"");
         assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1?foo=bar", b"");
+        assert_ok_remaining!(parse_absolute_form, b"git+http://example.com/repo", b"");
     }
 
     #[test]

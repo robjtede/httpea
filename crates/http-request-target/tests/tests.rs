@@ -1,6 +1,7 @@
 #![allow(missing_docs)]
 
 use http_request_target::RequestTarget;
+use winnow::BStr;
 
 macro_rules! pass {
     ($target:literal) => {
@@ -13,7 +14,28 @@ macro_rules! pass {
 
 macro_rules! fail {
     ($target:literal) => {
-        RequestTarget::try_from_slice($target.as_bytes()).unwrap_err();
+        match RequestTarget::try_from_slice($target.as_bytes()) {
+            Ok(RequestTarget::Origin(bytes)) => panic!(
+                "unexpectedly parsed {:?} as Origin({:?})",
+                BStr::new($target.as_bytes()),
+                BStr::new(bytes),
+            ),
+            Ok(RequestTarget::Absolute(bytes)) => panic!(
+                "unexpectedly parsed {:?} as Absolute({:?})",
+                BStr::new($target.as_bytes()),
+                BStr::new(bytes),
+            ),
+            Ok(RequestTarget::Authority(bytes)) => panic!(
+                "unexpectedly parsed {:?} as Authority({:?})",
+                BStr::new($target.as_bytes()),
+                BStr::new(bytes),
+            ),
+            Ok(RequestTarget::Asterisk) => panic!(
+                "unexpectedly parsed {:?} as Asterisk",
+                BStr::new($target.as_bytes()),
+            ),
+            Err(_) => {}
+        };
     };
 }
 
@@ -32,6 +54,7 @@ fn origin_form() {
 fn absolute_form() {
     pass!("http://www.example.org:61761/chunks");
     pass!("https://www.example.org:61761");
+    pass!("git+http://www.example.org/repo");
     pass!("http://127.0.0.1:61761/chunks");
     pass!("http://www.example.org:80");
     pass!("https://www.example.org:443");
@@ -62,12 +85,11 @@ fn authority_form() {
 }
 
 #[test]
-#[ignore]
 fn fail() {
     fail!("http://");
     fail!("htt:p//host");
-    fail!("hyper.rs/");
-    fail!("hyper.rs?key=val");
+    fail!("actix.dev/");
+    fail!("actix.dev?key=val");
     fail!("?key=val");
     fail!("localhost/");
     fail!("localhost?key=val");
