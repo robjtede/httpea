@@ -1,6 +1,7 @@
 use core::ops::Range;
 
 use winnow::{
+    ascii::digit1,
     combinator::{alt, delimited, fail, opt, peek, preceded, repeat},
     prelude::*,
     stream::{AsChar, Compare, LocatingSlice, Location, Stream, StreamIsPartial},
@@ -392,18 +393,16 @@ where
 pub(crate) fn parse_port<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial,
-    I::Token: Clone + AsChar,
+    I::Token: AsChar,
 {
-    take_while(1.., |char: I::Token| matches!(char.as_char(), '0'..='9'))
-        .void()
-        .parse_next(input)
+    digit1.void().parse_next(input)
 }
 
 /// Returns `true` if the given character is a valid first character in `scheme`.
 ///
 /// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
 pub(crate) fn is_scheme_start(char: impl AsChar) -> bool {
-    matches!(char.as_char(), 'A'..='Z' | 'a'..='z')
+    char.as_char().is_ascii_alphabetic()
 }
 
 /// Returns `true` if the given character is valid in `scheme`.
