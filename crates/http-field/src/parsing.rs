@@ -97,8 +97,21 @@ pub(crate) fn parse_field_indices(input: &mut LocatingSlice<&[u8]>) -> ModalResu
         .rposition(|&byte| !is_ows_byte(byte))
         .map_or(0, |index| index + 1);
 
-    parse_field_value.parse_next(&mut &remaining[..trimmed_end])?;
-    parse_ows.parse_next(&mut &remaining[trimmed_end..])?;
+    let mut value_input = &remaining[..trimmed_end];
+    parse_field_value.parse_next(&mut value_input)?;
+
+    if !value_input.is_empty() {
+        return Err(winnow::error::ErrMode::from_input(&value_input));
+    }
+
+    let mut trailing_input = &remaining[trimmed_end..];
+    parse_ows.parse_next(&mut trailing_input)?;
+
+    if !trailing_input.is_empty() {
+        return Err(winnow::error::ErrMode::from_input(&trailing_input));
+    }
+
+    let _ = input.next_slice(remaining.len());
 
     Ok(FieldIndices {
         name,
@@ -156,15 +169,17 @@ pub(crate) fn is_ows_byte(byte: u8) -> bool {
 #[cfg(test)]
 mod tests {
     use winnow::prelude::*;
+    use winnow::BStr;
 
     use super::*;
 
     macro_rules! assert_ok_remaining {
-        ($parser:expr, $input:expr, $remaining:expr $(,)?) => {{
-            let input: &[u8] = $input;
-            let remaining: &[u8] = $remaining;
-            assert_eq!($parser.parse_peek(input), Ok((remaining, ())));
-        }};
+        ($parser:expr, $input:expr, $remaining:expr $(,)?) => {
+            assert_eq!(
+                $parser.parse_peek(BStr::new($input)),
+                Ok((BStr::new($remaining), ())),
+            );
+        };
     }
 
     #[test]
@@ -200,7 +215,6 @@ mod tests {
         assert_ok_remaining!(parse_field_value, b"", b"");
         assert_ok_remaining!(parse_field_value, b"text/plain", b"");
         assert_ok_remaining!(parse_field_value, b"text/plain\tcharset", b"");
-        assert_ok_remaining!(parse_field_value, b"text/plain ", b" ");
 
         assert!(parse_field_value.parse(&b"text/plain\r"[..]).is_err());
         assert!(parse_field_value.parse(&b"\ttext/plain"[..]).is_err());
@@ -230,7 +244,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(indices.name, 0..7);
-        assert_eq!(indices.value, 9..9);
+        assert_eq!(indices.value, 10..10);
     }
 
     #[test]

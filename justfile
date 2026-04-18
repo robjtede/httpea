@@ -23,7 +23,7 @@ clippy toolchain="":
 # Test workspace without doc tests
 [private]
 test-no-doc toolchain="":
-    cargo {{ toolchain }} test --workspace --lib --tests --examples
+    cargo {{ toolchain }} nextest run --workspace --lib --tests --examples
 
 # Test workspace
 test toolchain="": (test-no-doc toolchain)
