@@ -1,5 +1,10 @@
+# rust
 /target/
 
+# direnv
+/.direnv/
+
+# macOS
 .DS_Store
 
 # Direnv / Nix
