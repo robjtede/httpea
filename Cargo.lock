@@ -860,7 +860,6 @@ name = "http-request-target"
 version = "0.0.1"
 dependencies = [
  "codspeed-divan-compat",
- "memchr",
  "winnow",
 ]
 

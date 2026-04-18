@@ -11,6 +11,12 @@ macro_rules! pass {
     };
 }
 
+macro_rules! fail {
+    ($target:literal) => {
+        RequestTarget::try_from_slice($target.as_bytes()).unwrap_err();
+    };
+}
+
 #[test]
 fn origin_form() {
     pass!("/");
@@ -32,36 +38,10 @@ fn asterisk_form() {
 
 #[test]
 fn authority_form() {
-    // pass!("http://127.0.0.1:61761/chunks");
-    // pass!("https://127.0.0.1:61761");
-    // pass!("localhost");
-    // pass!("S");
-    // pass!("localhost:3000");
-    // pass!("http://127.0.0.1:80");
-    // pass!("https://127.0.0.1:443");
-    // pass!("http://127.0.0.1/#?");
-    // pass!("http://127.0.0.1/path?");
-    // pass!("http://127.0.0.1?foo=bar");
-    // pass!("http://127.0.0.1#foo/bar");
-    // pass!("http://127.0.0.1#foo?bar");
-    // pass!("thequickbrownfoxjumpedoverthelazydogtofindthelargedangerousdragon.localhost");
-    // pass!("thequickbrownfoxjumpedoverthelazydogtofindthelargedangerousdragon.localhost:1234");
-    // pass!("http://a:b@127.0.0.1:1234/");
-    // pass!("http://a:b@127.0.0.1/");
-    // pass!("http://a@127.0.0.1/");
-    // pass!("user@localhost:3000");
-    // pass!("user:pass@localhost:3000");
-    // pass!("http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/");
-    // pass!("http://[::1]/");
-    // pass!("http://[::]/");
-    // pass!("http://[2001:db8::2:1]/");
-    // pass!("http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:8008/");
-}
-
-macro_rules! fail {
-    ($target:literal) => {
-        RequestTarget::try_from_slice($target.as_bytes()).unwrap_err();
-    };
+    pass!("localhost:3000");
+    pass!("127.0.0.1:80");
+    pass!("[::1]:443");
+    pass!("thequickbrownfoxjumpedoverthelazydogtofindthelargedangerousdragon.localhost:1234");
 }
 
 #[test]
@@ -80,6 +60,9 @@ fn fail() {
     fail!("localhost:8080:3030");
     fail!("@");
     fail!("http://username:password@/wut");
+    fail!("localhost");
+    fail!("[::1]");
+    fail!("user@localhost:3000");
     fail!("/?foo\rbar");
     fail!("/?foo\nbar");
     fail!("/?<");

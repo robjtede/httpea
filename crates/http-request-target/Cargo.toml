@@ -10,9 +10,13 @@ license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[features]
+default = ["simd"]
+std = ["winnow/std"]
+simd = ["winnow/simd"]
+
 [dependencies]
-memchr = { version = "2", default-features = false }
-winnow = { version = "1", features = ["simd"] }
+winnow = { version = "1", default-features = false, features = ["binary"] }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
