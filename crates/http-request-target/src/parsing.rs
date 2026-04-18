@@ -279,15 +279,17 @@ pub(crate) fn parse_absolute_form_indices(
         parse_path_abempty.span(),
         opt((b'?', parse_query).span()),
     )
-        .map(|(scheme, _, _, authority, path, search)| RequestTargetAbsoluteIndices {
-            scheme,
-            authority: authority.authority,
-            userinfo: authority.userinfo,
-            host: authority.host,
-            port: authority.port,
-            path,
-            search,
-        })
+        .map(
+            |(scheme, _, _, authority, path, search)| RequestTargetAbsoluteIndices {
+                scheme,
+                authority: authority.authority,
+                userinfo: authority.userinfo,
+                host: authority.host,
+                port: authority.port,
+                path,
+                search,
+            },
+        )
         .parse_next(input)
 }
 
@@ -451,7 +453,9 @@ where
         .parse_next(input)
 }
 
-pub(crate) fn parse_authority_indices(input: &mut LocatingSlice<&[u8]>) -> ModalResult<AuthorityIndices> {
+pub(crate) fn parse_authority_indices(
+    input: &mut LocatingSlice<&[u8]>,
+) -> ModalResult<AuthorityIndices> {
     let authority_start = input.current_token_start();
 
     let (userinfo, host, port) = (

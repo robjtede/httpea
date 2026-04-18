@@ -124,7 +124,10 @@ fn absolute_components() {
             other => panic!("unexpected variant: {other:?}"),
         };
 
-    assert_eq!(target.as_bytes(), b"git+http://user:pass@example.com:1234/repo?q=1");
+    assert_eq!(
+        target.as_bytes(),
+        b"git+http://user:pass@example.com:1234/repo?q=1"
+    );
     assert_eq!(target.scheme_indices(), 0..8);
     assert_eq!(target.scheme(), b"git+http");
     assert_eq!(target.authority_indices(), 11..37);
