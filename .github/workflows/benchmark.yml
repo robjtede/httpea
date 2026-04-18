@@ -33,7 +33,7 @@ jobs:
           tool: cargo-codspeed
 
       - name: Build benchmarks
-        run: cargo codspeed build -p http-request-target -p qpack
+        run: cargo codspeed build -p http-request-target
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@db35df748deb45fdef0960669f57d627c1956c30 # v4.13.1
