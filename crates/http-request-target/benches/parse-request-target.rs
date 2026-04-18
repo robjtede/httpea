@@ -2,7 +2,11 @@
 
 use std::hint::black_box;
 
+use divan::AllocProfiler;
 use http_request_target::RequestTarget;
+
+#[global_allocator]
+static ALLOC: AllocProfiler = AllocProfiler::system();
 
 #[divan::bench]
 fn origin_root() {

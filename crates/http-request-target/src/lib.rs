@@ -7,7 +7,6 @@ extern crate alloc;
 
 use alloc::string::String;
 use winnow::{
-    BStr,
     combinator::{alt, fail, opt, peek, repeat, todo},
     error::ContextError,
     prelude::*,
@@ -21,9 +20,9 @@ mod error;
 
 /// See <https://datatracker.ietf.org/doc/html/rfc9112#name-request-target>.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum RequestTarget {
+pub enum RequestTarget<'a> {
     /// Origin form.
-    Origin(String),
+    Origin(&'a [u8]),
 
     /// ```plain
     /// absolute-form = absolute-URI
@@ -46,19 +45,19 @@ pub enum RequestTarget {
     Asterisk,
 }
 
-impl RequestTarget {
+impl<'a> RequestTarget<'a> {
     /// Parse request target from slice.
     pub fn try_from_slice(
-        input: &[u8],
-    ) -> Result<Self, winnow::error::ParseError<&'_ BStr, ContextError>> {
+        input: &'a [u8],
+    ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
         // #[cfg(any(debug_assertions, test))]
-        let input = winnow::BStr::new(input);
+        // let input = winnow::BStr::new(input);
 
         alt((
-            parse_asterisk,
+            parse_asterisk.value(RequestTarget::Asterisk),
             parse_origin_form
                 .take()
-                .map(|s| Self::Origin(str::from_utf8(s).unwrap().to_owned())),
+                .map(|input| RequestTarget::Origin(input)),
             fail,
         ))
         .parse(input)
@@ -182,13 +181,11 @@ where
 /// ```plain
 /// OPTIONS * HTTP/1.1
 /// ```
-fn parse_asterisk<I>(input: &mut I) -> ModalResult<RequestTarget>
+fn parse_asterisk<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
 {
-    literal(b'*')
-        .map(|_| RequestTarget::Asterisk)
-        .parse_next(input)
+    literal(b'*').void().parse_next(input)
 }
 
 #[cfg(test)]
@@ -265,11 +262,11 @@ mod tests {
 
         assert_eq!(
             parse_asterisk.parse_peek(BStr::new(b"*")),
-            Ok((BStr::new(b""), RequestTarget::Asterisk)),
+            Ok((BStr::new(b""), ())),
         );
         assert_eq!(
             parse_asterisk.parse_peek(BStr::new(b"**")),
-            Ok((BStr::new(b"*"), RequestTarget::Asterisk)),
+            Ok((BStr::new(b"*"), ())),
         );
     }
 }
