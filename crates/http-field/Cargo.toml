@@ -1,6 +1,6 @@
 [package]
 name = "http-field"
-version = "0.0.2"
+version = "0.0.3"
 description = "HTTP fields (headers & trailers)"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]

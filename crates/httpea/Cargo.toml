@@ -1,6 +1,9 @@
 [package]
 name = "httpea"
 version = "0.0.1"
+description = "HTTP experiments and parsers"
+repository.workspace = true
+license.workspace = true
 edition = "2018"
 
 [features]

@@ -104,7 +104,9 @@ impl Method {
 }
 
 fn is_tchar(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte)
+    const TCHAR_PUNCT: &[u8] = b"!#$%&'*+-.^_`|~";
+
+    byte.is_ascii_alphanumeric() || TCHAR_PUNCT.binary_search(&byte).is_ok()
 }
 
 /// Error returned when parsing an HTTP method fails.
