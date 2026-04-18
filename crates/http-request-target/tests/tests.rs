@@ -4,29 +4,34 @@ use http_request_target::RequestTarget;
 
 macro_rules! pass {
     ($target:literal) => {
-        eprintln!($target);
-        RequestTarget::try_from_slice($target.as_bytes()).unwrap();
+        match RequestTarget::try_from_slice($target.as_bytes()) {
+            Ok(_) => {}
+            Err(err) => panic!("{:?} {:?}", err.input(), err),
+        };
     };
 }
 
 #[test]
-fn pass() {
-    // origin form
-    // pass!("/");
-    // pass!("/just/path");
-    // pass!("/path?with=query");
+fn origin_form() {
+    pass!("/");
+    pass!("/just/path");
+    pass!("/path?with=query");
     // pass!("/some/path/here?and=then&hello#and-bye");
-    // pass!("/echo/abcdefgh_i-j%20/abcdefg_i-j%20478");
+    pass!("/echo/abcdefgh_i-j%20/abcdefg_i-j%20478");
     // pass!("/foo=bar|baz\\^~%");
     // pass!("/?foo={bar|baz}\\^`");
+}
 
-    // absolute form
+#[test]
+fn absolute_form() {}
 
-    // authority-form
-
-    // asterisk form
+#[test]
+fn asterisk_form() {
     pass!("*");
+}
 
+#[test]
+fn authority_form() {
     // pass!("http://127.0.0.1:61761/chunks");
     // pass!("https://127.0.0.1:61761");
     // pass!("localhost");

@@ -6,18 +6,18 @@
 extern crate alloc;
 
 use alloc::string::String;
-use core::str;
 use winnow::{
-    combinator::{alt, fail, repeat},
+    BStr,
+    combinator::{alt, fail, opt, peek, repeat, todo},
     error::ContextError,
     prelude::*,
     stream::{AsChar, Compare, Stream, StreamIsPartial},
-    token::{literal, one_of},
+    token::{literal, one_of, take_while},
 };
 
 mod error;
 
-use crate::error::ParseRequestTargetError;
+// use crate::error::ParseRequestTargetError;
 
 /// See <https://datatracker.ietf.org/doc/html/rfc9112#name-request-target>.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -50,49 +50,30 @@ impl RequestTarget {
     /// Parse request target from slice.
     pub fn try_from_slice(
         input: &[u8],
-    ) -> Result<Self, winnow::error::ParseError<&[u8], ContextError>> {
+    ) -> Result<Self, winnow::error::ParseError<&'_ BStr, ContextError>> {
+        // #[cfg(any(debug_assertions, test))]
+        let input = winnow::BStr::new(input);
+
         alt((
             parse_asterisk,
-            parse_asterisk,
-            parse_asterisk,
-            parse_asterisk,
+            parse_origin_form
+                .take()
+                .map(|s| Self::Origin(str::from_utf8(s).unwrap().to_owned())),
             fail,
         ))
         .parse(input)
     }
-
-    // /// Parse request target from slice.
-    // pub fn try_from_slice(slice: &[u8]) -> Result<Self, ParseRequestTarget> {
-    //     if slice.is_empty() {
-    //         return Err(ParseRequestTarget);
-    //     }
-
-    //     if slice == b"*" {
-    //         return Ok(Self::Asterisk);
-    //     }
-
-    //     let mut buf = String::new();
-
-    //     match () {
-    //         _ if memchr::memchr(b'/', slice).is_none() => {
-    //             let authority_form = parse_authority_form(slice, &mut buf)?;
-    //             Ok(Self::Authority(authority_form))
-    //         }
-
-    //         _ => {
-    //             parse_origin_form(slice, &mut buf)?;
-
-    //             Ok(Self::Origin(buf))
-    //         }
-    //     }
-    // }
 }
 
 /// # Request Line Examples
 ///
 /// ```plain
 /// GET /where?q=now HTTP/1.1
+/// ```
 ///
+/// # BNF
+///
+/// ```plain
 /// origin-form   = absolute-path [ "?" query ]
 /// absolute-path = 1*( "/" segment )
 /// segment       = *pchar
@@ -102,104 +83,39 @@ impl RequestTarget {
 /// sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 /// query         = *( pchar / "/" / "?" )
 /// ```
-fn parse_origin_form(slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTargetError> {
-    match memchr::memchr(b'?', slice) {
-        // has query
-        Some(query_start) => {
-            parse_path(&mut &slice[..query_start]).unwrap();
-            buf.push('?');
-            (|| todo!())();
-        }
-
-        // just a path
-        None => {
-            // parse_path(slice, buf)?;
-            todo!()
-        }
-    };
-
-    Ok(())
+fn parse_origin_form<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+{
+    (parse_path, opt((b'?', parse_query)))
+        .void()
+        .parse_next(input)
 }
 
-fn parse_path<I: Stream + StreamIsPartial + Compare<u8>>(input: &mut I) -> ModalResult<I::Slice> {
-    alt((literal(b'/'), literal(b'*'), literal(b'*'), literal(b'*'))).parse_next(input)
+/// Parses a path.
+///
+/// Assumes entire input is a path, starting with a `/`, and does not include a query or fragment.
+///
+/// See:
+/// - <https://datatracker.ietf.org/doc/html/rfc9112#name-syntax-notation>
+/// - <https://datatracker.ietf.org/doc/html/rfc9110#name-uri-references>
+/// - <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+fn parse_path<'a, I>(input: &'a mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+{
+    peek(b'/').parse_next(input)?;
+
+    // absolute-path
+    repeat(1.., (b'/', take_while(.., is_pchar)))
+        .map(|()| ())
+        .void()
+        .parse_next(input)
 }
 
-fn parse_path2(mut slice: &[u8], buf: &mut String) -> Result<(), ParseRequestTargetError> {
-    if slice.is_empty() {
-        return Err(ParseRequestTargetError);
-    }
-
-    while !slice.is_empty() {
-        if !slice.starts_with(b"/") {
-            return Err(ParseRequestTargetError);
-        }
-
-        buf.push('/');
-        let seg_len = parse_segment(&slice[1..], buf)?;
-
-        // advance by (segment delimiter + contents)
-        slice = &slice[1 + seg_len..];
-    }
-
-    Ok(())
-}
-
-fn parse_segment(slice: &[u8], buf: &mut String) -> Result<usize, ParseRequestTargetError> {
-    if slice.is_empty() {
-        return Ok(0);
-    }
-
-    let mut iter = slice.iter().peekable();
-
-    let mut i = 0;
-
-    #[expect(clippy::while_let_loop)]
-    loop {
-        let Some(b) = iter.next_if(|&&b| b != b'/') else {
-            // stop consuming if next char is start-of-next-segment or EOL
-            break;
-        };
-
-        let consumed = match b {
-            // unreserved
-            b'0'..=b'9' | b'A'..=b'Z' | b'a'..=b'z' | b'-' | b'.' | b'_' | b'~' => 1,
-
-            // pct-encoded
-            b'%' => {
-                // HEXDIGIT
-                match iter.next() {
-                    Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&_) => return Err(ParseRequestTargetError),
-                    None => return Err(ParseRequestTargetError),
-                }
-
-                // HEXDIGIT
-                match iter.next() {
-                    Some(b'0'..=b'9' | b'A'..=b'F') => {}
-                    Some(&_) => return Err(ParseRequestTargetError),
-                    None => return Err(ParseRequestTargetError),
-                }
-
-                3
-            }
-
-            // sub-delims
-            b'!' | b'$' | b'&' | b'\'' | b'(' | b')' | b'*' | b'+' | b',' | b';' | b'=' => 1,
-
-            _ => return Err(ParseRequestTargetError),
-        };
-
-        i += consumed;
-    }
-
-    let segment = str::from_utf8(&slice[..i]).map_err(|_err| ParseRequestTargetError)?;
-    buf.push_str(segment);
-
-    Ok(i)
-}
-
-/// Parses query string.
+/// Parses a query string.
 ///
 /// Assumes entire input is only a query string without preceding `?` and without a rogue, trailing
 /// fragement (i.e. `#`).
@@ -215,18 +131,7 @@ where
     repeat(
         ..,
         one_of((
-            // pchar/unreserved
-            (b'0'..=b'9', b'A'..=b'Z', b'a'..=b'z'),
-            // pchar/unreserved
-            [b'-', b'.', b'_', b'~'],
-            // pchar/pct-encoded
-            [b'%'], // HEXDIG are included in unreserved (we are not validating hex escapes here)
-            // sub-delims
-            [
-                b'!', b'$', b'&', b'\'', b'(', b')', b'*', b'+', b',', b';', b'=',
-            ],
-            // pchar literals
-            [b':', b'@'],
+            is_pchar,
             // query literals
             [b'/', b'?'],
         )),
@@ -236,16 +141,40 @@ where
     .parse_next(input)
 }
 
+/// Returns `true` if the given character is a valid "pchar" (path character).
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+fn is_pchar(char: impl AsChar) -> bool {
+    match char.as_char() {
+        // unreserved
+        '0'..='9' | 'A'..='Z' | 'a'..='z' => true,
+
+        // unreserved
+        '-' | '.' | '_' | '~' => true,
+
+        // pct-encoded
+        '%' => true, // HEXDIG are included in unreserved; we do not validate hex escape seqences
+
+        // sub-delims
+        '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '=' => true,
+
+        // pchar literals
+        ':' | '@' => true,
+
+        _ => false,
+    }
+}
+
 /// # Request Line Examples
 ///
 /// ```plain
 ///
 /// ```
-fn parse_authority_form(
-    _slice: &[u8],
-    _buf: &mut String,
-) -> Result<String, ParseRequestTargetError> {
-    todo!()
+fn parse_authority_form<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream,
+{
+    todo(input)
 }
 
 /// # Request Line Examples
@@ -253,9 +182,10 @@ fn parse_authority_form(
 /// ```plain
 /// OPTIONS * HTTP/1.1
 /// ```
-fn parse_asterisk<I: Stream + StreamIsPartial + Compare<u8>>(
-    input: &mut I,
-) -> ModalResult<RequestTarget> {
+fn parse_asterisk<I>(input: &mut I) -> ModalResult<RequestTarget>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+{
     literal(b'*')
         .map(|_| RequestTarget::Asterisk)
         .parse_next(input)
@@ -264,50 +194,82 @@ fn parse_asterisk<I: Stream + StreamIsPartial + Compare<u8>>(
 #[cfg(test)]
 mod tests {
     use winnow::{
-        Partial,
+        BStr, Partial,
         error::{ErrMode, Needed},
     };
 
     use super::*;
 
     #[test]
+    fn parses_path() {
+        match parse_path.parse_peek(BStr::new(b"")) {
+            Err(ErrMode::Backtrack(_)) => {}
+            result => panic!("Unexpected result: {result:?}"),
+        }
+        assert_eq!(
+            parse_path.parse_peek(Partial::new(BStr::new(b""))),
+            Err(ErrMode::Incomplete(Needed::Unknown)),
+        );
+
+        match parse_path.parse_peek(BStr::new(b"=")) {
+            Err(ErrMode::Backtrack(_)) => {}
+            result => panic!("Unexpected result: {result:?}"),
+        }
+
+        assert_eq!(
+            parse_path.parse_peek(BStr::new(b"/foo")),
+            Ok((BStr::new(b""), ())),
+        );
+        assert_eq!(
+            parse_path.parse_peek(BStr::new(b"/foo/bar")),
+            Ok((BStr::new(b""), ())),
+        );
+
+        // parser assumes it won't receive a query but doesn't fail
+        assert_eq!(
+            parse_path.parse_peek(BStr::new(b"/foo/bar?baz")),
+            Ok((BStr::new(b"?baz"), ())),
+        );
+    }
+
+    #[test]
     fn parses_query() {
         assert_eq!(
-            parse_query.parse_peek(b"".as_slice()),
-            Ok((b"".as_slice(), ())),
+            parse_query.parse_peek(BStr::new(b"")),
+            Ok((BStr::new(b""), ())),
         );
         assert_eq!(
-            parse_query.parse_peek(b"=".as_slice()),
-            Ok((b"".as_slice(), ())),
+            parse_query.parse_peek(BStr::new(b"=")),
+            Ok((BStr::new(b""), ())),
         );
         assert_eq!(
-            parse_query.parse_peek(b"foo=bar".as_slice()),
-            Ok((b"".as_slice(), ())),
+            parse_query.parse_peek(BStr::new(b"foo=bar")),
+            Ok((BStr::new(b""), ())),
         );
         assert_eq!(
-            parse_query.parse_peek(b"foo=bar&baz=".as_slice()),
-            Ok((b"".as_slice(), ())),
+            parse_query.parse_peek(BStr::new(b"foo=bar&baz")),
+            Ok((BStr::new(b""), ())),
         );
     }
 
     #[test]
     fn parses_asterisk() {
-        match parse_asterisk.parse_peek(b"".as_slice()) {
+        match parse_asterisk.parse_peek(BStr::new(b"")) {
             Err(ErrMode::Backtrack(_)) => {}
             result => panic!("Unexpected result: {result:?}"),
         }
         assert_eq!(
-            parse_asterisk.parse_peek(Partial::new(b"".as_slice())),
+            parse_asterisk.parse_peek(Partial::new(BStr::new(b""))),
             Err(ErrMode::Incomplete(Needed::Unknown)),
         );
 
         assert_eq!(
-            parse_asterisk.parse_peek(b"*".as_slice()),
-            Ok((b"".as_slice(), RequestTarget::Asterisk)),
+            parse_asterisk.parse_peek(BStr::new(b"*")),
+            Ok((BStr::new(b""), RequestTarget::Asterisk)),
         );
         assert_eq!(
-            parse_asterisk.parse_peek(b"**".as_slice()),
-            Ok((b"*".as_slice(), RequestTarget::Asterisk)),
+            parse_asterisk.parse_peek(BStr::new(b"**")),
+            Ok((BStr::new(b"*"), RequestTarget::Asterisk)),
         );
     }
 }
