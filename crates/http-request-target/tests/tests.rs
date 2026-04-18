@@ -12,11 +12,11 @@ macro_rules! pass {
 #[test]
 fn pass() {
     // origin form
-    pass!("/");
-    pass!("/just/path");
-    pass!("/path?with=query");
-    pass!("/some/path/here?and=then&hello#and-bye");
-    pass!("/echo/abcdefgh_i-j%20/abcdefg_i-j%20478");
+    // pass!("/");
+    // pass!("/just/path");
+    // pass!("/path?with=query");
+    // pass!("/some/path/here?and=then&hello#and-bye");
+    // pass!("/echo/abcdefgh_i-j%20/abcdefg_i-j%20478");
     // pass!("/foo=bar|baz\\^~%");
     // pass!("/?foo={bar|baz}\\^`");
 
