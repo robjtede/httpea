@@ -4,6 +4,7 @@ use http_request_target::RequestTarget;
 
 macro_rules! pass {
     ($target:literal) => {
+        eprintln!($target);
         RequestTarget::try_from_slice($target.as_bytes()).unwrap();
     };
 }

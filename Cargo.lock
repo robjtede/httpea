@@ -861,6 +861,7 @@ version = "0.0.1"
 dependencies = [
  "codspeed-divan-compat",
  "memchr",
+ "winnow",
 ]
 
 [[package]]

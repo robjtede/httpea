@@ -12,6 +12,7 @@ rust-version.workspace = true
 
 [dependencies]
 memchr = { version = "2", default-features = false }
+winnow = { version = "1", features = ["simd"] }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
