@@ -18,17 +18,17 @@ macro_rules! fail {
             Ok(RequestTarget::Origin(target)) => panic!(
                 "unexpectedly parsed {:?} as Origin({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(target.inner),
+                BStr::new(target.as_bytes()),
             ),
             Ok(RequestTarget::Absolute(target)) => panic!(
                 "unexpectedly parsed {:?} as Absolute({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(target.inner),
+                BStr::new(target.as_bytes()),
             ),
             Ok(RequestTarget::Authority(target)) => panic!(
                 "unexpectedly parsed {:?} as Authority({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(target.inner),
+                BStr::new(target.as_bytes()),
             ),
             Ok(RequestTarget::Asterisk) => panic!(
                 "unexpectedly parsed {:?} as Asterisk",
@@ -82,6 +82,61 @@ fn authority_form() {
     pass!("127.0.0.1:80");
     pass!("[::1]:443");
     pass!("thequickbrownfoxjumpedoverthelazydogtofindthelargedangerousdragon.localhost:1234");
+}
+
+#[test]
+fn origin_components() {
+    let target = match RequestTarget::try_from_slice(b"/where?q=now").unwrap() {
+        RequestTarget::Origin(target) => target,
+        other => panic!("unexpected variant: {other:?}"),
+    };
+
+    assert_eq!(target.as_bytes(), b"/where?q=now");
+    assert_eq!(target.path_indices(), 0..6);
+    assert_eq!(target.path(), b"/where");
+    assert_eq!(target.query_indices(), Some(7..12));
+    assert_eq!(target.query(), Some(&b"q=now"[..]));
+}
+
+#[test]
+fn authority_components() {
+    let target = match RequestTarget::try_from_slice(b"localhost:3000").unwrap() {
+        RequestTarget::Authority(target) => target,
+        other => panic!("unexpected variant: {other:?}"),
+    };
+
+    assert_eq!(target.as_bytes(), b"localhost:3000");
+    assert_eq!(target.host_indices(), 0..9);
+    assert_eq!(target.host(), b"localhost");
+    assert_eq!(target.port_indices(), 10..14);
+    assert_eq!(target.port(), b"3000");
+}
+
+#[test]
+fn absolute_components() {
+    let target =
+        match RequestTarget::try_from_slice(b"git+http://user:pass@example.com:1234/repo?q=1")
+            .unwrap()
+        {
+            RequestTarget::Absolute(target) => target,
+            other => panic!("unexpected variant: {other:?}"),
+        };
+
+    assert_eq!(target.as_bytes(), b"git+http://user:pass@example.com:1234/repo?q=1");
+    assert_eq!(target.scheme_indices(), 0..8);
+    assert_eq!(target.scheme(), b"git+http");
+    assert_eq!(target.authority_indices(), 11..37);
+    assert_eq!(target.authority(), b"user:pass@example.com:1234");
+    assert_eq!(target.userinfo_indices(), Some(11..20));
+    assert_eq!(target.userinfo(), Some(&b"user:pass"[..]));
+    assert_eq!(target.host_indices(), 21..32);
+    assert_eq!(target.host(), b"example.com");
+    assert_eq!(target.port_indices(), Some(33..37));
+    assert_eq!(target.port(), Some(&b"1234"[..]));
+    assert_eq!(target.path_indices(), 37..42);
+    assert_eq!(target.path(), b"/repo");
+    assert_eq!(target.query_indices(), Some(43..46));
+    assert_eq!(target.query(), Some(&b"q=1"[..]));
 }
 
 #[test]
