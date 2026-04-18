@@ -2,7 +2,7 @@
 
 // #![no_std]
 use winnow::{
-    combinator::{alt, delimited, fail, opt, peek, repeat, todo},
+    combinator::{alt, delimited, empty, fail, opt, peek, repeat},
     error::ContextError,
     prelude::*,
     stream::{AsChar, Compare, Stream, StreamIsPartial},
@@ -178,6 +178,19 @@ fn is_reg_name_char(char: impl AsChar) -> bool {
         || matches!(char, '%') // HEXDIG are included in `unreserved`; we do not validate hex escape sequences
 }
 
+/// Returns `true` if the given character is valid in `userinfo`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.1>
+fn is_userinfo_char(char: impl AsChar) -> bool {
+    let char = char.as_char();
+
+    is_unreserved(char)
+        || is_sub_delim(char)
+        // pct-encoded
+        || matches!(char, '%') // HEXDIG are included in `unreserved`; we do not validate hex escape sequences
+        || matches!(char, ':')
+}
+
 /// Returns `true` if the given character is valid within an `IP-literal` body.
 ///
 /// This covers the character groups referenced by the `IPv6address` and `IPvFuture`
@@ -219,13 +232,22 @@ where
 /// # Request Line Examples
 ///
 /// ```plain
-///
+/// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
 /// ```
 fn parse_absolute_form<I>(input: &mut I) -> ModalResult<()>
 where
-    I: Stream,
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
 {
-    todo(input)
+    (
+        parse_scheme,
+        b':',
+        parse_hier_part,
+        opt((b'?', parse_query)),
+    )
+        .void()
+        .parse_next(input)
 }
 
 /// # Request Line Examples
@@ -289,6 +311,125 @@ where
     I::Token: Clone + AsChar,
 {
     take_while(1.., is_reg_name_char).void().parse_next(input)
+}
+
+/// Returns `true` if the given character is a valid first character in `scheme`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+fn is_scheme_start(char: impl AsChar) -> bool {
+    matches!(char.as_char(), 'A'..='Z' | 'a'..='z')
+}
+
+/// Returns `true` if the given character is valid in `scheme`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+fn is_scheme_char(char: impl AsChar) -> bool {
+    matches!(char.as_char(), '0'..='9' | 'A'..='Z' | 'a'..='z' | '+' | '-' | '.')
+}
+
+/// Parses `scheme`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+fn parse_scheme<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial,
+    I::Token: Clone + AsChar,
+{
+    (one_of(is_scheme_start), take_while(.., is_scheme_char))
+        .void()
+        .parse_next(input)
+}
+
+/// Parses `hier-part`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3>
+fn parse_hier_part<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
+{
+    alt((
+        ((b'/', b'/'), parse_authority, parse_path_abempty).void(),
+        parse_path_absolute,
+        parse_path_rootless,
+        empty.void(),
+    ))
+    .parse_next(input)
+}
+
+/// Parses `authority`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2>
+fn parse_authority<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
+{
+    (
+        opt((take_while(1.., is_userinfo_char), b'@')),
+        parse_uri_host,
+        opt((
+            b':',
+            take_while(1.., |char: I::Token| matches!(char.as_char(), '0'..='9')),
+        )),
+    )
+        .void()
+        .parse_next(input)
+}
+
+/// Parses `path-abempty`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+fn parse_path_abempty<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+{
+    repeat(.., (b'/', take_while(.., is_pchar)))
+        .map(|()| ())
+        .void()
+        .parse_next(input)
+}
+
+/// Parses `path-absolute`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+fn parse_path_absolute<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+{
+    (
+        b'/',
+        opt((
+            take_while(1.., is_pchar),
+            repeat(.., (b'/', take_while(.., is_pchar)))
+                .map(|()| ())
+                .void(),
+        )),
+    )
+        .void()
+        .parse_next(input)
+}
+
+/// Parses `path-rootless`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+fn parse_path_rootless<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+{
+    (
+        take_while(1.., is_pchar),
+        repeat(.., (b'/', take_while(.., is_pchar)))
+            .map(|()| ())
+            .void(),
+    )
+        .void()
+        .parse_next(input)
 }
 
 #[cfg(test)]
@@ -407,6 +548,68 @@ mod tests {
     }
 
     #[test]
+    fn parses_scheme() {
+        assert_backtrack!(parse_scheme, b"");
+        assert_backtrack!(parse_scheme, b"1http");
+        assert_partial_incomplete!(parse_scheme, b"", Needed::new(1));
+
+        assert_ok_remaining!(parse_scheme, b"http", b"");
+        assert_ok_remaining!(parse_scheme, b"https:", b":");
+        assert_ok_remaining!(parse_scheme, b"http+unix:", b":");
+    }
+
+    #[test]
+    fn parses_authority() {
+        assert_backtrack!(parse_authority, b"");
+        assert_backtrack!(parse_authority, b"@localhost");
+        assert_partial_incomplete!(parse_authority, b"", Needed::new(1));
+
+        assert_ok_remaining!(parse_authority, b"127.0.0.1:80", b"");
+        assert_ok_remaining!(parse_authority, b"user:pass@localhost:3000", b"");
+        assert_ok_remaining!(parse_authority, b"[::1]/path", b"/path");
+    }
+
+    #[test]
+    fn parses_path_abempty() {
+        assert_ok_remaining!(parse_path_abempty, b"", b"");
+        assert_ok_remaining!(parse_path_abempty, b"/", b"");
+        assert_ok_remaining!(parse_path_abempty, b"/foo/bar", b"");
+        assert_ok_remaining!(parse_path_abempty, b"?foo=bar", b"?foo=bar");
+    }
+
+    #[test]
+    fn parses_path_absolute() {
+        assert_backtrack!(parse_path_absolute, b"");
+        assert_backtrack!(parse_path_absolute, b"foo/bar");
+        assert_partial_incomplete!(parse_path_absolute, b"", Needed::Unknown);
+
+        assert_ok_remaining!(parse_path_absolute, b"/", b"");
+        assert_ok_remaining!(parse_path_absolute, b"/foo/bar", b"");
+        assert_ok_remaining!(parse_path_absolute, b"/foo?bar", b"?bar");
+    }
+
+    #[test]
+    fn parses_path_rootless() {
+        assert_backtrack!(parse_path_rootless, b"");
+        assert_backtrack!(parse_path_rootless, b"/foo");
+        assert_partial_incomplete!(parse_path_rootless, b"", Needed::new(1));
+
+        assert_ok_remaining!(parse_path_rootless, b"foo", b"");
+        assert_ok_remaining!(parse_path_rootless, b"foo/bar", b"");
+        assert_ok_remaining!(parse_path_rootless, b"foo?bar", b"?bar");
+    }
+
+    #[test]
+    fn parses_hier_part() {
+        assert_partial_incomplete!(parse_hier_part, b"//", Needed::new(1));
+
+        assert_ok_remaining!(parse_hier_part, b"", b"");
+        assert_ok_remaining!(parse_hier_part, b"//127.0.0.1:80/path", b"");
+        assert_ok_remaining!(parse_hier_part, b"/foo/bar", b"");
+        assert_ok_remaining!(parse_hier_part, b"foo/bar", b"");
+    }
+
+    #[test]
     fn parses_path() {
         assert_backtrack!(parse_path, b"");
         assert_partial_incomplete!(parse_path, b"", Needed::Unknown);
@@ -439,6 +642,17 @@ mod tests {
         assert_ok_remaining!(parse_authority_form, b"localhost:3000", b"");
         assert_ok_remaining!(parse_authority_form, b"127.0.0.1:80", b"");
         assert_ok_remaining!(parse_authority_form, b"[::1]:443", b"");
+    }
+
+    #[test]
+    fn parses_absolute_form() {
+        assert_backtrack!(parse_absolute_form, b"");
+        assert_backtrack!(parse_absolute_form, b"/foo");
+        assert_partial_incomplete!(parse_absolute_form, b"", Needed::new(1));
+
+        assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1:61761/chunks", b"");
+        assert_ok_remaining!(parse_absolute_form, b"https://127.0.0.1:61761", b"");
+        assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1?foo=bar", b"");
     }
 
     #[test]

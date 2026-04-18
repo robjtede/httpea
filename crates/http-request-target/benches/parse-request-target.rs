@@ -43,6 +43,33 @@ fn authority_ipv6() {
     black_box(RequestTarget::try_from_slice(black_box(b"[::1]:3000")).unwrap());
 }
 
+#[divan::bench(sample_count = 1_000, sample_size = 10_000)]
+fn absolute_root() {
+    black_box(RequestTarget::try_from_slice(black_box(b"https://127.0.0.1:61761")).unwrap());
+}
+
+#[divan::bench(sample_count = 500, sample_size = 10_000)]
+fn absolute_path() {
+    black_box(RequestTarget::try_from_slice(black_box(b"http://127.0.0.1:61761/chunks")).unwrap());
+}
+
+#[divan::bench(sample_count = 500, sample_size = 10_000)]
+fn absolute_query() {
+    black_box(RequestTarget::try_from_slice(black_box(b"http://127.0.0.1?foo=bar")).unwrap());
+}
+
+#[divan::bench(sample_count = 500, sample_size = 10_000)]
+fn absolute_userinfo() {
+    black_box(
+        RequestTarget::try_from_slice(black_box(b"http://user:pass@127.0.0.1:1234/")).unwrap(),
+    );
+}
+
+#[divan::bench(sample_count = 500, sample_size = 10_000)]
+fn absolute_ipv6() {
+    black_box(RequestTarget::try_from_slice(black_box(b"http://[2001:db8::2:1]/")).unwrap());
+}
+
 fn main() {
     divan::main();
 }
