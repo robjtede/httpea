@@ -2,30 +2,43 @@
 
 use std::hint::black_box;
 
-use http_field::{FieldName, FieldValue};
+use http_field::{Field, FieldName, FieldValue};
 
-#[divan::bench(sample_size = 10_000)]
+#[divan::bench(sample_size = 10_000_000)]
 fn field_name_from_slice() {
     black_box(FieldName::from_slice(black_box(b"content-type")));
 }
 
-#[divan::bench(sample_size = 10_000)]
+#[divan::bench(sample_size = 10_000_000)]
 fn field_name_as_slice() {
-    let field = FieldName::from_slice(b"content-type");
+    let field = black_box(FieldName::from_slice(b"content-type"));
     black_box(field.as_slice());
 }
 
-#[divan::bench(sample_size = 10_000)]
+#[divan::bench(sample_size = 10_000_000)]
 fn field_value_from_slice() {
     black_box(FieldValue::from_slice(black_box(
         b"text/plain; charset=utf-8",
     )));
 }
 
-#[divan::bench(sample_size = 10_000)]
+#[divan::bench(sample_size = 10_000_000)]
 fn field_value_as_slice() {
-    let field = FieldValue::from_slice(b"text/plain; charset=utf-8");
+    let field = black_box(FieldValue::from_slice(b"text/plain; charset=utf-8"));
     black_box(field.as_slice());
+}
+
+#[divan::bench(sample_size = 1_000_000)]
+fn parse_field_line() {
+    black_box(Field::try_from_slice(black_box(
+        b"content-type: text/plain; charset=utf-8",
+    )))
+    .unwrap();
+}
+
+#[divan::bench(sample_size = 1_000_000)]
+fn parse_empty_field_value() {
+    black_box(Field::try_from_slice(black_box(b"x-empty:\t "))).unwrap();
 }
 
 fn main() {

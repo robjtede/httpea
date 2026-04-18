@@ -1,0 +1,259 @@
+use core::ops::Range;
+
+use winnow::{
+    prelude::*,
+    stream::{LocatingSlice, Location, Stream, StreamIsPartial},
+    token::{literal, take_while},
+};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct FieldIndices {
+    pub(crate) name: Range<usize>,
+    pub(crate) value: Range<usize>,
+}
+
+/// Parses an HTTP field name.
+///
+/// ```plain
+/// field-name = token
+/// token      = 1*tchar
+/// ```
+///
+/// See:
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1)
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2)
+pub(crate) fn parse_field_name<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream<Token = u8> + StreamIsPartial,
+{
+    take_while(1.., is_tchar).void().parse_next(input)
+}
+
+/// Parses a trimmed HTTP field value.
+///
+/// ```plain
+/// field-value   = *field-content
+/// field-content = field-vchar
+///                 [ 1*( SP / HTAB / field-vchar ) field-vchar ]
+/// field-vchar   = VCHAR / obs-text
+/// obs-text      = %x80-FF
+/// ```
+///
+/// This parser expects any surrounding OWS to have already been excluded.
+///
+/// See:
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
+pub(crate) fn parse_field_value<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream<Token = u8> + StreamIsPartial,
+    I::Slice: AsRef<[u8]>,
+{
+    take_while(.., is_field_value_byte)
+        .verify(|slice: &I::Slice| {
+            let bytes = slice.as_ref();
+
+            bytes.is_empty()
+                || (bytes.first().copied().is_some_and(is_field_vchar)
+                    && bytes.last().copied().is_some_and(is_field_vchar))
+        })
+        .void()
+        .parse_next(input)
+}
+
+/// Parses optional whitespace.
+///
+/// ```plain
+/// OWS = *( SP / HTAB )
+/// ```
+///
+/// See:
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.3)
+pub(crate) fn parse_ows<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream<Token = u8> + StreamIsPartial,
+{
+    take_while(.., is_ows_byte).void().parse_next(input)
+}
+
+/// Parses an entire HTTP field line, excluding the trailing CRLF.
+///
+/// ```plain
+/// field-line = field-name ":" OWS field-value OWS
+/// ```
+///
+/// See:
+/// - [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112#section-5)
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1)
+/// - [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
+pub(crate) fn parse_field_indices(input: &mut LocatingSlice<&[u8]>) -> ModalResult<FieldIndices> {
+    let name = parse_field_name.span().parse_next(input)?;
+    literal(b':').parse_next(input)?;
+    parse_ows.parse_next(input)?;
+
+    let value_start = input.current_token_start();
+    let remaining = input.as_ref();
+    let trimmed_end = remaining
+        .iter()
+        .rposition(|&byte| !is_ows_byte(byte))
+        .map_or(0, |index| index + 1);
+
+    parse_field_value.parse_next(&mut &remaining[..trimmed_end])?;
+    parse_ows.parse_next(&mut &remaining[trimmed_end..])?;
+
+    Ok(FieldIndices {
+        name,
+        value: value_start..(value_start + trimmed_end),
+    })
+}
+
+/// Returns `true` if the given byte is valid in `tchar`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2>
+pub(crate) fn is_tchar(byte: u8) -> bool {
+    matches!(
+        byte,
+        b'!' | b'#'
+            | b'$'
+            | b'%'
+            | b'&'
+            | b'\''
+            | b'*'
+            | b'+'
+            | b'-'
+            | b'.'
+            | b'^'
+            | b'_'
+            | b'`'
+            | b'|'
+            | b'~'
+            | b'0'..=b'9'
+            | b'A'..=b'Z'
+            | b'a'..=b'z'
+    )
+}
+
+/// Returns `true` if the given byte is valid as `field-vchar`.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc9110#section-5.5>
+pub(crate) fn is_field_vchar(byte: u8) -> bool {
+    matches!(byte, 0x21..=0x7E | 0x80..=0xFF)
+}
+
+/// Returns `true` if the given byte can appear inside a trimmed field value.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc9110#section-5.5>
+pub(crate) fn is_field_value_byte(byte: u8) -> bool {
+    is_field_vchar(byte) || is_ows_byte(byte)
+}
+
+/// Returns `true` if the given byte is optional whitespace.
+///
+/// See: <https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.3>
+pub(crate) fn is_ows_byte(byte: u8) -> bool {
+    matches!(byte, b' ' | b'\t')
+}
+
+#[cfg(test)]
+mod tests {
+    use winnow::prelude::*;
+
+    use super::*;
+
+    macro_rules! assert_ok_remaining {
+        ($parser:expr, $input:expr, $remaining:expr $(,)?) => {{
+            let input: &[u8] = $input;
+            let remaining: &[u8] = $remaining;
+            assert_eq!($parser.parse_peek(input), Ok((remaining, ())));
+        }};
+    }
+
+    #[test]
+    fn validates_char_groups() {
+        assert!(is_tchar(b'A'));
+        assert!(is_tchar(b'~'));
+        assert!(!is_tchar(b':'));
+        assert!(!is_tchar(b' '));
+
+        assert!(is_field_vchar(b'!'));
+        assert!(is_field_vchar(0x80));
+        assert!(!is_field_vchar(b' '));
+        assert!(!is_field_vchar(b'\t'));
+
+        assert!(is_field_value_byte(b' '));
+        assert!(is_field_value_byte(b'\t'));
+        assert!(is_field_value_byte(b'x'));
+        assert!(!is_field_value_byte(b'\r'));
+        assert!(!is_field_value_byte(0x00));
+    }
+
+    #[test]
+    fn parses_field_name() {
+        assert_ok_remaining!(parse_field_name, b"content-type", b"");
+        assert_ok_remaining!(parse_field_name, b"etag: abc", b": abc");
+
+        assert!(parse_field_name.parse(&b""[..]).is_err());
+        assert!(parse_field_name.parse(&b"bad name"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_field_value() {
+        assert_ok_remaining!(parse_field_value, b"", b"");
+        assert_ok_remaining!(parse_field_value, b"text/plain", b"");
+        assert_ok_remaining!(parse_field_value, b"text/plain\tcharset", b"");
+        assert_ok_remaining!(parse_field_value, b"text/plain ", b" ");
+
+        assert!(parse_field_value.parse(&b"text/plain\r"[..]).is_err());
+        assert!(parse_field_value.parse(&b"\ttext/plain"[..]).is_err());
+        assert!(parse_field_value.parse(&b"text/plain "[..]).is_err());
+    }
+
+    #[test]
+    fn parses_ows() {
+        assert_ok_remaining!(parse_ows, b"", b"");
+        assert_ok_remaining!(parse_ows, b" \tvalue", b"value");
+    }
+
+    #[test]
+    fn parses_field_line() {
+        let indices = parse_field_indices
+            .parse(LocatingSlice::new(b"content-type: text/plain"))
+            .unwrap();
+
+        assert_eq!(indices.name, 0..12);
+        assert_eq!(indices.value, 14..24);
+    }
+
+    #[test]
+    fn parses_empty_field_value() {
+        let indices = parse_field_indices
+            .parse(LocatingSlice::new(b"x-empty: \t"))
+            .unwrap();
+
+        assert_eq!(indices.name, 0..7);
+        assert_eq!(indices.value, 9..9);
+    }
+
+    #[test]
+    fn rejects_invalid_field_lines() {
+        assert!(
+            parse_field_indices
+                .parse(LocatingSlice::new(b"bad name: value"))
+                .is_err()
+        );
+        assert!(
+            parse_field_indices
+                .parse(LocatingSlice::new(b"name : value"))
+                .is_err()
+        );
+        assert!(
+            parse_field_indices
+                .parse(LocatingSlice::new(b"name:value\r"))
+                .is_err()
+        );
+        assert!(
+            parse_field_indices
+                .parse(LocatingSlice::new(b"name:\0"))
+                .is_err()
+        );
+    }
+}

@@ -33,5 +33,5 @@ test toolchain="": (test-no-doc toolchain)
 test-msrv: (test msrv_rustup)
 
 # Document workspace
-doc toolchain="":
-    RUSTDOCFLAGS="-D warnings" cargo {{ toolchain }} doc --workspace --no-deps
+doc *args:
+    RUSTDOCFLAGS="--cfg docsrs -D warnings" cargo +nightly doc --workspace --no-deps {{ args }}

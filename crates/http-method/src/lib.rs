@@ -1,5 +1,7 @@
 //! HTTP method.
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 use std::boxed::Box;
 
 /// `CONNECT` method.
@@ -42,6 +44,11 @@ pub const PUT: Method = Method {
     repr: Repr::WellKnown(WellKnown::Put),
 };
 
+/// `QUERY` method.
+pub const QUERY: Method = Method {
+    repr: Repr::WellKnown(WellKnown::Query),
+};
+
 /// `TRACE` method.
 pub const TRACE: Method = Method {
     repr: Repr::WellKnown(WellKnown::Trace),
@@ -65,16 +72,23 @@ impl Method {
         }
 
         Ok(match input {
-            b"CONNECT" => CONNECT,
-            b"DELETE" => DELETE,
-            b"GET" => GET,
-            b"HEAD" => HEAD,
-            b"OPTIONS" => OPTIONS,
-            b"PATCH" => PATCH,
-            b"POST" => POST,
-            b"PUT" => PUT,
-            b"TRACE" => TRACE,
-            _ => Self {
+            b"CONNECT" => Some(WellKnown::Connect),
+            b"DELETE" => Some(WellKnown::Delete),
+            b"GET" => Some(WellKnown::Get),
+            b"HEAD" => Some(WellKnown::Head),
+            b"OPTIONS" => Some(WellKnown::Options),
+            b"PATCH" => Some(WellKnown::Patch),
+            b"POST" => Some(WellKnown::Post),
+            b"PUT" => Some(WellKnown::Put),
+            b"QUERY" => Some(WellKnown::Query),
+            b"TRACE" => Some(WellKnown::Trace),
+            _ => None,
+        })
+        .map(|well_known| match well_known {
+            Some(well_known) => Self {
+                repr: Repr::WellKnown(well_known),
+            },
+            None => Self {
                 repr: Repr::Extension(Box::from(input)),
             },
         })
@@ -87,6 +101,10 @@ impl Method {
             Repr::Extension(bytes) => bytes,
         }
     }
+}
+
+fn is_tchar(byte: u8) -> bool {
+    byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte)
 }
 
 /// Error returned when parsing an HTTP method fails.
@@ -106,7 +124,7 @@ enum Repr {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum WellKnown {
+pub(crate) enum WellKnown {
     Connect,
     Delete,
     Get,
@@ -115,6 +133,7 @@ enum WellKnown {
     Patch,
     Post,
     Put,
+    Query,
     Trace,
 }
 
@@ -129,13 +148,10 @@ impl WellKnown {
             Self::Patch => b"PATCH",
             Self::Post => b"POST",
             Self::Put => b"PUT",
+            Self::Query => b"QUERY",
             Self::Trace => b"TRACE",
         }
     }
-}
-
-fn is_tchar(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte)
 }
 
 #[cfg(test)]
@@ -148,6 +164,7 @@ mod tests {
         assert_eq!(Method::try_from_slice(b"POST"), Ok(POST));
         assert_eq!(Method::try_from_slice(b"DELETE"), Ok(DELETE));
         assert_eq!(Method::try_from_slice(b"PATCH"), Ok(PATCH));
+        assert_eq!(Method::try_from_slice(b"QUERY"), Ok(QUERY));
     }
 
     #[test]

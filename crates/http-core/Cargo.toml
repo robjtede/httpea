@@ -1,0 +1,21 @@
+[package]
+name = "http-core"
+version = "0.0.1"
+description = "Primitive HTTP types"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["network-programming", "parsing"]
+keywords = ["http", "core", "types"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+http-field = { path = "../http-field", version = "0.0.2" }
+http-method = { path = "../http-method", version = "0.0.2" }
+http-request-target = { path = "../http-request-target", version = "0.1.0" }
+http-status-code = { path = "../http-status-code", version = "0.0.2" }
+http-version = { path = "../http-version", version = "0.0.2" }
+
+[lints]
+workspace = true

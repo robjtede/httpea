@@ -2,6 +2,8 @@
 //!
 //! See [`StatusCode`].
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 /// Status code.
 #[derive(Debug, Clone, PartialEq)]
 pub struct StatusCode {

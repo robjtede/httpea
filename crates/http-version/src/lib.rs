@@ -2,6 +2,8 @@
 //!
 //! See [`Version`].
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 /// HTTP versions.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Version {

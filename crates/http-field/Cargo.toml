@@ -11,6 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+winnow = { version = "1", default-features = false, features = ["binary"] }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }

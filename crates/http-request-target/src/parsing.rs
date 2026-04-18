@@ -191,7 +191,7 @@ pub(crate) fn is_userinfo_char(char: impl AsChar) -> bool {
 /// Returns `true` if the given character is valid within an `IP-literal` body.
 ///
 /// This covers the character groups referenced by the `IPv6address` and `IPvFuture`
-/// productions from RFC 3986.
+/// productions from [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986).
 pub(crate) fn is_ip_literal_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -242,15 +242,17 @@ pub(crate) fn parse_authority_form_indices(
 ///
 /// # Policy
 ///
-/// RFC 9112 defines `absolute-form = absolute-URI`, but this crate narrows absolute-form parsing
-/// to the authority-based URI shape commonly used by HTTP-family schemes:
+/// [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112) defines
+/// `absolute-form = absolute-URI`, but this crate narrows absolute-form parsing to the
+/// authority-based URI shape commonly used by HTTP-family schemes:
 ///
 /// ```plain
 /// scheme "://" authority path-abempty [ "?" query ]
 /// ```
 ///
-/// This rejects generic RFC 3986 absolute URIs like `htt:p//host` while still allowing arbitrary
-/// schemes such as `git+http://...`.
+/// This rejects generic [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986)
+/// absolute URIs like `htt:p//host` while still allowing arbitrary schemes such as
+/// `git+http://...`.
 pub(crate) fn parse_absolute_form<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -338,8 +340,8 @@ pub(crate) fn parse_request_target_indices(
 
 /// Parses a `uri-host`.
 ///
-/// RFC 9112 defines `authority-form = uri-host ":" port` and references the URI grammar for the
-/// host production.
+/// [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112) defines
+/// `authority-form = uri-host ":" port` and references the URI grammar for the host production.
 pub(crate) fn parse_uri_host<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -377,8 +379,8 @@ where
 
 /// Parses a `reg-name`.
 ///
-/// RFC 3986 permits an empty `reg-name`, but `authority-form` requires a concrete `uri-host`, so
-/// we require at least one character here.
+/// [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) permits an empty `reg-name`, but
+/// `authority-form` requires a concrete `uri-host`, so we require at least one character here.
 pub(crate) fn parse_reg_name<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial,

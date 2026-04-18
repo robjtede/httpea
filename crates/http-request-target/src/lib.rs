@@ -1,4 +1,7 @@
-//! HTTP/1.1 request-target (RFC 9112) parser.
+//! HTTP/1.1 request-target parser from
+//! [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112).
+
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 // #![no_std]
 use core::ops::Range;
@@ -10,34 +13,102 @@ mod parsing;
 
 // use crate::error::ParseRequestTargetError;
 
+/// Parsed HTTP/1.1 request target.
+///
+/// This is a zero-copy view over the `request-target` bytes from a request line. Each variant
+/// corresponds to one of the four forms defined by
+/// [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112).
+///
+/// # Request Line Examples
+///
+/// ```plain
+/// GET /where?q=now HTTP/1.1
+/// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+/// CONNECT www.example.com:80 HTTP/1.1
+/// OPTIONS * HTTP/1.1
+/// ```
+///
+/// # BNF
+///
+/// ```plain
+/// request-target = origin-form
+///                / absolute-form
+///                / authority-form
+///                / asterisk-form
+/// ```
+///
 /// See <https://datatracker.ietf.org/doc/html/rfc9112#name-request-target>.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequestTarget<'a> {
-    /// Origin form.
+    /// Origin-form request-target.
+    ///
+    /// This is the most common form for origin server requests and consists of
+    /// an absolute path with an optional query string.
+    ///
+    /// # Request Line Examples
+    ///
+    /// ```plain
+    /// GET /where?q=now HTTP/1.1
+    /// ```
+    ///
+    /// # BNF
+    ///
+    /// ```plain
+    /// origin-form = absolute-path [ "?" query ]
+    /// ```
     Origin(RequestTargetOrigin<'a>),
 
+    /// Absolute-form request-target.
+    ///
+    /// This form is typically sent to proxies and carries a full absolute URI.
+    ///
+    /// # Request Line Examples
+    ///
+    /// ```plain
+    /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+    /// ```
+    ///
+    /// # BNF
+    ///
     /// ```plain
     /// absolute-form = absolute-URI
-    /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
     /// ```
     Absolute(RequestTargetAbsolute<'a>),
 
+    /// Authority-form request-target.
+    ///
+    /// This form is used with `CONNECT` and carries just `host:port`.
+    ///
+    /// # Request Line Examples
+    ///
+    /// ```plain
+    /// CONNECT www.example.com:80 HTTP/1.1
+    /// ```
+    ///
+    /// # BNF
+    ///
     /// ```plain
     /// authority-form = uri-host ":" port
-    /// CONNECT www.example.com:80 HTTP/1.1
     /// ```
     Authority(RequestTargetAuthority<'a>),
 
     /// Asterisk form.
     ///
+    /// # Request Line Examples
+    ///
+    /// ```plain
+    /// OPTIONS * HTTP/1.1
+    /// ```
+    ///
+    /// # BNF
+    ///
     /// ```plain
     /// asterisk-form = "*"
-    /// OPTIONS * HTTP/1.1
     /// ```
     Asterisk,
 }
 
-/// Origin-form request-target.
+/// Origin form request target.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RequestTargetOrigin<'a> {
     inner: &'a [u8],
@@ -45,7 +116,7 @@ pub struct RequestTargetOrigin<'a> {
     search: Option<Range<usize>>,
 }
 
-/// Absolute-form request-target.
+/// Absolute form request target.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RequestTargetAbsolute<'a> {
     inner: &'a [u8],
@@ -58,7 +129,7 @@ pub struct RequestTargetAbsolute<'a> {
     search: Option<Range<usize>>,
 }
 
-/// Authority-form request-target.
+/// Authority form request target.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RequestTargetAuthority<'a> {
     inner: &'a [u8],
@@ -67,7 +138,13 @@ pub struct RequestTargetAuthority<'a> {
 }
 
 impl<'a> RequestTarget<'a> {
-    /// Parse request target from slice.
+    /// Parses a request target from raw request line bytes.
+    ///
+    /// The input must be just the request-target component, not the full request line and not a
+    /// trailing CRLF-terminated header line.
+    ///
+    /// The returned value borrows from `input` and stores byte ranges into the original slice for
+    /// each parsed component.
     pub fn try_from_slice(
         input: &'a [u8],
     ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {

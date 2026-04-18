@@ -697,10 +697,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-core"
+version = "0.0.1"
+dependencies = [
+ "http-field",
+ "http-method",
+ "http-request-target",
+ "http-status-code",
+ "http-version",
+]
+
+[[package]]
 name = "http-field"
 version = "0.0.2"
 dependencies = [
  "codspeed-divan-compat",
+ "winnow",
 ]
 
 [[package]]
@@ -736,13 +748,16 @@ dependencies = [
 
 [[package]]
 name = "httpea"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "bytes",
  "futures-util",
  "h3",
  "h3-quinn",
  "http",
+ "http-method",
+ "http-request-target",
+ "http-version",
  "mio 0.8.11",
  "quiche",
  "quinn",
@@ -757,6 +772,7 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "webpki-roots",
+ "winnow",
 ]
 
 [[package]]
