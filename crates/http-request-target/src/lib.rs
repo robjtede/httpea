@@ -296,6 +296,18 @@ mod tests {
 
     use super::*;
 
+    // waiting for https://github.com/rust-lang/rust/issues/82775
+    macro_rules! assert_matches {
+        ($expression:expr, $pattern:pat $(if $guard:expr)? $(,)?) => {
+            assert!(
+                matches!($expression, $pattern $(if $guard)?),
+                "assertion failed: expression does not match pattern `{}`: {:?}",
+                stringify!($pattern $(if $guard)?),
+                $expression,
+            );
+        };
+    }
+
     #[test]
     fn validates_char_groups() {
         assert!(!is_unreserved('/'));
@@ -341,14 +353,14 @@ mod tests {
 
     #[test]
     fn parses_reg_name() {
-        match parse_reg_name.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_reg_name.parse_peek(BStr::new(b"@localhost")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_reg_name.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_reg_name.parse_peek(BStr::new(b"@localhost")),
+            Err(ErrMode::Backtrack(_))
+        );
 
         assert_eq!(
             parse_reg_name.parse_peek(BStr::new(b"localhost")),
@@ -366,18 +378,18 @@ mod tests {
 
     #[test]
     fn parses_ip_literal() {
-        match parse_ip_literal.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_ip_literal.parse_peek(BStr::new(b"[localhost]")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_ip_literal.parse_peek(BStr::new(b"[::1")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_ip_literal.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_ip_literal.parse_peek(BStr::new(b"[localhost]")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_ip_literal.parse_peek(BStr::new(b"[::1")),
+            Err(ErrMode::Backtrack(_))
+        );
 
         assert_eq!(
             parse_ip_literal.parse_peek(BStr::new(b"[::1]")),
@@ -395,14 +407,14 @@ mod tests {
 
     #[test]
     fn parses_uri_host() {
-        match parse_uri_host.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_uri_host.parse_peek(BStr::new(b"@localhost:80")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_uri_host.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_uri_host.parse_peek(BStr::new(b"@localhost:80")),
+            Err(ErrMode::Backtrack(_))
+        );
 
         assert_eq!(
             parse_uri_host.parse_peek(BStr::new(b"localhost:80")),
@@ -420,19 +432,19 @@ mod tests {
 
     #[test]
     fn parses_path() {
-        match parse_path.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_path.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
         assert_eq!(
             parse_path.parse_peek(Partial::new(BStr::new(b""))),
             Err(ErrMode::Incomplete(Needed::Unknown)),
         );
 
-        match parse_path.parse_peek(BStr::new(b"=")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_path.parse_peek(BStr::new(b"=")),
+            Err(ErrMode::Backtrack(_))
+        );
 
         assert_eq!(
             parse_path.parse_peek(BStr::new(b"/foo")),
@@ -473,26 +485,26 @@ mod tests {
 
     #[test]
     fn parses_authority_form() {
-        match parse_authority_form.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_authority_form.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
         assert_eq!(
             parse_authority_form.parse_peek(Partial::new(BStr::new(b""))),
             Err(ErrMode::Incomplete(Needed::Unknown)),
         );
-        match parse_authority_form.parse_peek(BStr::new(b"localhost")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_authority_form.parse_peek(BStr::new(b"user@localhost:3000")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
-        match parse_authority_form.parse_peek(BStr::new(b"[::1]")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_authority_form.parse_peek(BStr::new(b"localhost")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_authority_form.parse_peek(BStr::new(b"user@localhost:3000")),
+            Err(ErrMode::Backtrack(_))
+        );
+        assert_matches!(
+            parse_authority_form.parse_peek(BStr::new(b"[::1]")),
+            Err(ErrMode::Backtrack(_))
+        );
 
         assert_eq!(
             parse_authority_form.parse_peek(BStr::new(b"localhost:3000")),
@@ -510,10 +522,10 @@ mod tests {
 
     #[test]
     fn parses_asterisk() {
-        match parse_asterisk.parse_peek(BStr::new(b"")) {
-            Err(ErrMode::Backtrack(_)) => {}
-            result => panic!("Unexpected result: {result:?}"),
-        }
+        assert_matches!(
+            parse_asterisk.parse_peek(BStr::new(b"")),
+            Err(ErrMode::Backtrack(_))
+        );
         assert_eq!(
             parse_asterisk.parse_peek(Partial::new(BStr::new(b""))),
             Err(ErrMode::Incomplete(Needed::Unknown)),
