@@ -1,0 +1,23 @@
+[package]
+name = "http-version"
+version = "0.0.2"
+description = "HTTP versions"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "version", "versions"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "http-version"
+harness = false
+
+[lints]
+workspace = true

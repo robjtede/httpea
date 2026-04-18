@@ -1,0 +1,24 @@
+[package]
+name = "http-status-code"
+version = "0.0.2"
+description = "HTTP status code"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "status", "code"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+itoa = "1"
+
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "http-status-code"
+harness = false
+
+[lints]
+workspace = true

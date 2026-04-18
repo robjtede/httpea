@@ -6,7 +6,7 @@ members = ["crates/*"]
 repository = "https://github.com/robjtede/httpea"
 license = "MIT"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.95"
 
 [workspace.lints.rust]
 rust-2018-idioms = "deny"

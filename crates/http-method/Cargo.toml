@@ -1,0 +1,23 @@
+[package]
+name = "http-method"
+version = "0.0.2"
+description = "HTTP method"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "method", "methods"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "http-method"
+harness = false
+
+[lints]
+workspace = true

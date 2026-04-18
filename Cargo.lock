@@ -697,12 +697,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-field"
+version = "0.0.2"
+dependencies = [
+ "codspeed-divan-compat",
+]
+
+[[package]]
+name = "http-method"
+version = "0.0.2"
+dependencies = [
+ "codspeed-divan-compat",
+]
+
+[[package]]
 name = "http-request-target"
 version = "0.1.0"
 dependencies = [
  "codspeed-divan-compat",
  "http",
  "winnow",
+]
+
+[[package]]
+name = "http-status-code"
+version = "0.0.2"
+dependencies = [
+ "codspeed-divan-compat",
+ "itoa",
+]
+
+[[package]]
+name = "http-version"
+version = "0.0.2"
+dependencies = [
+ "codspeed-divan-compat",
 ]
 
 [[package]]

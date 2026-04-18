@@ -1,0 +1,23 @@
+[package]
+name = "http-field"
+version = "0.0.2"
+description = "HTTP fields (headers & trailers)"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "field", "fields", "header", "trailer"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "http-field"
+harness = false
+
+[lints]
+workspace = true
