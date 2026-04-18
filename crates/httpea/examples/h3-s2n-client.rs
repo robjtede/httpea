@@ -4,7 +4,6 @@ extern crate tracing;
 use std::net::ToSocketAddrs;
 
 use quiche::h3::NameValue;
-
 use ring::rand::*;
 
 const MAX_DATAGRAM_SIZE: usize = 1350;

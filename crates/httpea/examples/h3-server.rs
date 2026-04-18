@@ -2,14 +2,13 @@ use std::{io, net::SocketAddr, path::PathBuf, sync::Arc};
 
 use bytes::{Bytes, BytesMut};
 use futures_util::StreamExt;
+use h3::{error::ErrorLevel, quic::BidiStream, server::RequestStream};
+use h3_quinn::quinn;
 use http::{Request, StatusCode};
 use rustls::{Certificate, PrivateKey};
 use structopt::StructOpt;
 use tokio::{fs::File, io::AsyncReadExt};
 use tracing::{error, info, trace_span};
-
-use h3::{error::ErrorLevel, quic::BidiStream, server::RequestStream};
-use h3_quinn::quinn;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "server")]
