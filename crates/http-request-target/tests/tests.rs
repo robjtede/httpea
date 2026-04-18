@@ -15,20 +15,20 @@ macro_rules! pass {
 macro_rules! fail {
     ($target:literal) => {
         match RequestTarget::try_from_slice($target.as_bytes()) {
-            Ok(RequestTarget::Origin(bytes)) => panic!(
+            Ok(RequestTarget::Origin(target)) => panic!(
                 "unexpectedly parsed {:?} as Origin({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(bytes),
+                BStr::new(target.inner),
             ),
-            Ok(RequestTarget::Absolute(bytes)) => panic!(
+            Ok(RequestTarget::Absolute(target)) => panic!(
                 "unexpectedly parsed {:?} as Absolute({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(bytes),
+                BStr::new(target.inner),
             ),
-            Ok(RequestTarget::Authority(bytes)) => panic!(
+            Ok(RequestTarget::Authority(target)) => panic!(
                 "unexpectedly parsed {:?} as Authority({:?})",
                 BStr::new($target.as_bytes()),
-                BStr::new(bytes),
+                BStr::new(target.inner),
             ),
             Ok(RequestTarget::Asterisk) => panic!(
                 "unexpectedly parsed {:?} as Asterisk",

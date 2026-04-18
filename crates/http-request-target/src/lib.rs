@@ -17,19 +17,19 @@ mod error;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequestTarget<'a> {
     /// Origin form.
-    Origin(&'a [u8]),
+    Origin(RequestTargetOrigin<'a>),
 
     /// ```plain
     /// absolute-form = absolute-URI
     /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
     /// ```
-    Absolute(&'a [u8]),
+    Absolute(RequestTargetAbsolute<'a>),
 
     /// ```plain
     /// authority-form = uri-host ":" port
     /// CONNECT www.example.com:80 HTTP/1.1
     /// ```
-    Authority(&'a [u8]),
+    Authority(RequestTargetAuthority<'a>),
 
     /// Asterisk form.
     ///
@@ -38,6 +38,27 @@ pub enum RequestTarget<'a> {
     /// OPTIONS * HTTP/1.1
     /// ```
     Asterisk,
+}
+
+/// Origin-form request-target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RequestTargetOrigin<'a> {
+    /// Original parsed bytes.
+    pub inner: &'a [u8],
+}
+
+/// Absolute-form request-target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RequestTargetAbsolute<'a> {
+    /// Original parsed bytes.
+    pub inner: &'a [u8],
+}
+
+/// Authority-form request-target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RequestTargetAuthority<'a> {
+    /// Original parsed bytes.
+    pub inner: &'a [u8],
 }
 
 impl<'a> RequestTarget<'a> {
@@ -50,9 +71,15 @@ impl<'a> RequestTarget<'a> {
 
         alt((
             parse_asterisk.value(RequestTarget::Asterisk),
-            parse_origin_form.take().map(RequestTarget::Origin),
-            parse_authority_form.take().map(RequestTarget::Authority),
-            parse_absolute_form.take().map(RequestTarget::Absolute),
+            parse_origin_form
+                .take()
+                .map(|inner| RequestTarget::Origin(RequestTargetOrigin { inner })),
+            parse_authority_form
+                .take()
+                .map(|inner| RequestTarget::Authority(RequestTargetAuthority { inner })),
+            parse_absolute_form
+                .take()
+                .map(|inner| RequestTarget::Absolute(RequestTargetAbsolute { inner })),
             fail,
         ))
         .parse(input)

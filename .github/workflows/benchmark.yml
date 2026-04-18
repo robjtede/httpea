@@ -37,6 +37,8 @@ jobs:
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@db35df748deb45fdef0960669f57d627c1956c30 # v4.13.1
+        env:
+          DIVAN_MIN_TIME: "1"
         with:
           mode: simulation
           run: cargo codspeed run -p http-request-target
