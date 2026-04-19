@@ -2,7 +2,11 @@
 
 use std::hint::black_box;
 
+use divan::AllocProfiler;
 use http_field::{Field, FieldName, FieldValue};
+
+#[global_allocator]
+static ALLOC: AllocProfiler = AllocProfiler::system();
 
 #[divan::bench(sample_size = 10_000_000)]
 fn field_name_from_slice() {

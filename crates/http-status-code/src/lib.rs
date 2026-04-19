@@ -5,7 +5,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 /// Status code.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StatusCode {
     /// invariant: numeric code is always within `100..=999`
     code: u16,

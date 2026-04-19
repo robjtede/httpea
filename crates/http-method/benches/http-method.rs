@@ -2,7 +2,11 @@
 
 use std::hint::black_box;
 
+use divan::AllocProfiler;
 use http_method::{GET, Method, POST, QUERY};
+
+#[global_allocator]
+static ALLOC: AllocProfiler = AllocProfiler::system();
 
 #[divan::bench(sample_size = 1_000_000)]
 fn parse_get() {
