@@ -11,7 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [features]
-default = ["simd"]
+default = ["std", "simd"]
 std = ["winnow/std"]
 simd = ["winnow/simd"]
 

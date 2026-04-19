@@ -33,7 +33,7 @@ jobs:
           tool: cargo-codspeed
 
       - name: Build benchmarks
-        run: cargo codspeed build -p http-request-target
+        run: cargo codspeed build
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@db35df748deb45fdef0960669f57d627c1956c30 # v4.13.1
@@ -41,4 +41,4 @@ jobs:
           DIVAN_MIN_TIME: "1"
         with:
           mode: simulation
-          run: cargo codspeed run -p http-request-target
+          run: cargo codspeed run
