@@ -91,7 +91,7 @@ pub(crate) fn parse_origin_form_indices(
 /// See:
 /// - <https://datatracker.ietf.org/doc/html/rfc9112#name-syntax-notation>
 /// - <https://datatracker.ietf.org/doc/html/rfc9110#name-uri-references>
-/// - <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
 pub(crate) fn parse_path<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -112,8 +112,8 @@ where
 /// fragement (i.e. `#`).
 ///
 /// See:
-/// - <https://datatracker.ietf.org/doc/html/rfc3986#section-3.4>
-/// - <https://datatracker.ietf.org/doc/html/rfc3986#appendix-A>
+/// - [RFC 3986 §3.4](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 pub(crate) fn parse_query<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial,
@@ -134,14 +134,14 @@ where
 
 /// Returns `true` if the given character is in the `unreserved` group.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#appendix-A>
+/// See: [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 pub(crate) fn is_unreserved(char: char) -> bool {
     matches!(char, '0'..='9' | 'A'..='Z' | 'a'..='z' | '-' | '.' | '_' | '~')
 }
 
 /// Returns `true` if the given character is in the `sub-delims` group.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#appendix-A>
+/// See: [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 pub(crate) fn is_sub_delim(char: char) -> bool {
     matches!(
         char,
@@ -151,7 +151,7 @@ pub(crate) fn is_sub_delim(char: char) -> bool {
 
 /// Returns `true` if the given character is a valid `pchar`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+/// See: [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
 pub(crate) fn is_pchar(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -165,7 +165,7 @@ pub(crate) fn is_pchar(char: impl AsChar) -> bool {
 
 /// Returns `true` if the given character is valid in `reg-name`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2>
+/// See: [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
 pub(crate) fn is_reg_name_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -177,7 +177,7 @@ pub(crate) fn is_reg_name_char(char: impl AsChar) -> bool {
 
 /// Returns `true` if the given character is valid in `userinfo`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.1>
+/// See: [RFC 3986 §3.2.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.1)
 pub(crate) fn is_userinfo_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -391,7 +391,7 @@ where
 
 /// Parses a `port`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.3>
+/// See: [RFC 3986 §3.2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.3)
 pub(crate) fn parse_port<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial,
@@ -402,21 +402,21 @@ where
 
 /// Returns `true` if the given character is a valid first character in `scheme`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
 pub(crate) fn is_scheme_start(char: impl AsChar) -> bool {
     char.as_char().is_ascii_alphabetic()
 }
 
 /// Returns `true` if the given character is valid in `scheme`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
 pub(crate) fn is_scheme_char(char: impl AsChar) -> bool {
     matches!(char.as_char(), '0'..='9' | 'A'..='Z' | 'a'..='z' | '+' | '-' | '.')
 }
 
 /// Parses `scheme`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.1>
+/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
 pub(crate) fn parse_scheme<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial,
@@ -429,7 +429,7 @@ where
 
 /// Parses `authority`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.2>
+/// See: [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
 pub(crate) fn parse_authority<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -476,7 +476,7 @@ pub(crate) fn parse_authority_indices(
 
 /// Parses `path-abempty`.
 ///
-/// See: <https://datatracker.ietf.org/doc/html/rfc3986#section-3.3>
+/// See: [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
 pub(crate) fn parse_path_abempty<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,

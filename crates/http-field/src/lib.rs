@@ -1,10 +1,10 @@
 //! HTTP fields (headers & trailers).
 //!
 //! Parsing follows the generic field syntax from
-//! [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112#section-5) and the field-name /
-//! field-value rules from [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1),
-//! [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5), and
-//! [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2).
+//! [RFC 9112 §5](https://datatracker.ietf.org/doc/html/rfc9112#section-5) and the field-name /
+//! field-value rules from [RFC 9110 §5.1](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1),
+//! [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5), and
+//! [RFC 9110 §5.6.2](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2).
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -13,7 +13,7 @@ use core::ops::Range;
 use winnow::{
     error::{ContextError, ErrMode},
     prelude::*,
-    stream::LocatingSlice,
+    stream::{LocatingSlice, Partial},
 };
 
 mod parsing;
@@ -46,9 +46,12 @@ pub struct FieldValue<'a> {
 
 impl<'a> Field<'a> {
     /// Parses an entire HTTP field line from bytes, excluding the trailing CRLF.
+    ///
+    /// This uses partial-input semantics, so truncated field lines return
+    /// `ErrMode::Incomplete` until enough bytes have been buffered to disambiguate them.
     pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ErrMode<ContextError>> {
-        let mut located = LocatingSlice::new(input);
-        let indices = parsing::parse_field_indices.parse_next(&mut located)?;
+        let mut partial = Partial::new(LocatingSlice::new(input));
+        let indices = parsing::parse_field_indices.parse_next(&mut partial)?;
 
         Ok(Self {
             inner: input,
@@ -145,6 +148,8 @@ fn slice_range<'a>(bytes: &'a [u8], range: &Range<usize>) -> &'a [u8] {
 
 #[cfg(test)]
 mod tests {
+    use winnow::error::ErrMode;
+
     use super::*;
 
     #[test]
@@ -167,11 +172,11 @@ mod tests {
     }
 
     #[test]
-    fn allows_empty_field_value() {
-        let field = Field::try_from_slice(b"x-empty:\t ").unwrap();
-
-        assert_eq!(field.value().as_slice(), b"");
-        assert_eq!(field.value_indices(), 10..10);
+    fn reports_incomplete_for_ambiguous_empty_field_value() {
+        assert!(matches!(
+            Field::try_from_slice(b"x-empty:\t "),
+            Err(ErrMode::Incomplete(_))
+        ));
     }
 
     #[test]
@@ -181,5 +186,13 @@ mod tests {
 
         assert!(FieldValue::try_from_slice(b"text/plain; charset=utf-8").is_ok());
         assert!(FieldValue::try_from_slice(b"text/plain\r").is_err());
+    }
+
+    #[test]
+    fn reports_incomplete_for_truncated_field_lines() {
+        assert!(matches!(
+            Field::try_from_slice(b"content-type"),
+            Err(ErrMode::Incomplete(_))
+        ));
     }
 }

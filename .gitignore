@@ -9,3 +9,7 @@
 
 # Direnv / Nix
 /.direnv
+
+# code coverage
+/codecov.json
+/lcov.info

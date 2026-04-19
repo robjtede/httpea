@@ -6,6 +6,8 @@ repository.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+# TODO: remove when examples are moved
+autoexamples = false
 
 [features]
 default = ["std", "simd"]
@@ -21,29 +23,29 @@ http-1_1 = [
 ]
 
 [dependencies]
-bytes = "1"
-futures-util = { version = "0.3.17", default-features = false, features = [
-  "std",
-] }
-h3 = "0.0.1"
-h3-quinn = "0.0.1"
-http = "0.2.9"
+# Example-only dependencies kept commented for the disabled HTTP/3 reference files under
+# `crates/httpea/examples/`.
+# bytes = "1"
+# futures-util = { version = "0.3.17", default-features = false, features = ["std"] }
+# h3 = "0.0.1"
+# h3-quinn = "0.0.1"
+# http = "0.2.9"
 http-field = { path = "../http-field", version = "0.0.3", optional = true }
 http-method = { path = "../http-method", version = "0.0.2", optional = true }
 http-request-target = { path = "../http-request-target", version = "0.1.0", optional = true }
 http-status-code = { path = "../http-status-code", version = "0.0.2", optional = true }
 http-version = { path = "../http-version", version = "0.0.2", optional = true }
-mio = { version = "0.8", features = ["net", "os-poll"] }
-quiche = { version = "0.16", features = ["qlog"] }
-quinn = "0.8"
-ring = "0.16"
-rustls = "0.20"
-rustls-pemfile = "1"
-structopt = "0.3"
-tokio = { version = "1.24.2", features = ["full"] }
-tracing = "0.1.20"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-url = "1"
+# mio = { version = "0.8", features = ["net", "os-poll"] }
+# quiche = { version = "0.16", features = ["qlog"] }
+# quinn = "0.8"
+# ring = "0.16"
+# rustls = "0.20"
+# rustls-pemfile = "1"
+# structopt = "0.3"
+# tokio = { version = "1.24.2", features = ["full"] }
+# tracing = "0.1.20"
+# tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# url = "1"
 winnow = { version = "1", optional = true, default-features = false }
 
 [dev-dependencies]

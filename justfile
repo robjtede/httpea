@@ -17,7 +17,7 @@ fmt:
 check:
     just --unstable --fmt --check
     cargo +nightly fmt --all --check
-    cargo {{ toolchain }} clippy --workspace --all-targets
+    cargo {{ toolchain }} clippy --workspace --all-targets --all-features
     fd --hidden -e=yml --exec-batch prettier --check
     fd --hidden -e=toml --exec-batch taplo format
     fd --hidden -e=toml --exec-batch taplo lint
