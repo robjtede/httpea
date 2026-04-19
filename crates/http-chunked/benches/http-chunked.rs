@@ -28,17 +28,17 @@ fn chunk_ext_empty() {
     black_box(parse_chunk_ext.parse(black_box(&b""[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk_ext_param_token() {
     black_box(parse_chunk_ext_param.parse(black_box(&b";foo=bar"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk_ext_param_quoted() {
     black_box(parse_chunk_ext_param.parse(black_box(&b";sig=\"abc123xyz\""[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk_ext_multi() {
     black_box(parse_chunk_ext.parse(black_box(&b";foo=bar; baz = \"qux\"; trace=abc123"[..])))
         .unwrap();
@@ -49,17 +49,17 @@ fn chunk_ext_val_token() {
     black_box(parse_chunk_ext_val.parse(black_box(&b"abc123"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk_ext_val_quoted() {
     black_box(parse_chunk_ext_val.parse(black_box(&b"\"qux\\\\value\""[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn token() {
     black_box(parse_token.parse(black_box(&b"chunk-signature"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn quoted_string() {
     black_box(parse_quoted_string.parse(black_box(&b"\"sig\\\\value\""[..]))).unwrap();
 }
@@ -74,7 +74,7 @@ fn bws() {
     black_box(parse_bws.parse(black_box(&b" \t"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk_header() {
     black_box(parse_chunk_header.parse(black_box(&b"000a;foo=bar\r\n"[..]))).unwrap();
 }
@@ -84,12 +84,12 @@ fn chunk_data() {
     black_box(parse_chunk_data(10).parse(black_box(&b"0123456789"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn chunk() {
     black_box(parse_chunk.parse(black_box(&b"000a;foo=bar\r\n0123456789\r\n"[..]))).unwrap();
 }
 
-#[divan::bench(sample_size = 1_000_000)]
+#[divan::bench(sample_size = 100_000)]
 fn last_chunk() {
     black_box(parse_last_chunk.parse(black_box(&b"0;sig=ok\r\n"[..]))).unwrap();
 }
