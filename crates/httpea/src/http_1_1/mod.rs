@@ -5,18 +5,14 @@ use core::ops::Range;
 use http_method::Method;
 use http_request_target::RequestTarget;
 use http_version::Version;
-use winnow::{
-    error::{ContextError, ErrMode},
-    prelude::*,
-    stream::LocatingSlice,
-};
+use winnow::{prelude::*, stream::LocatingSlice};
 
 mod parsing;
 
 /// Parsed HTTP/1.1 request line.
 ///
 /// This is a zero-copy view over the request-line bytes, with parsed access to
-/// the `method`, `request-target`, and `HTTP-version` components.
+/// the method, request target, and version components.
 ///
 /// # Request Line Examples
 ///
@@ -46,7 +42,7 @@ pub struct RequestLine<'a> {
 
 impl<'a> RequestLine<'a> {
     /// Parses a request line from raw HTTP/1.1 bytes.
-    pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ErrMode<ContextError>> {
+    pub fn try_from_slice(input: &'a [u8]) -> ModalResult<Self> {
         let mut located = LocatingSlice::new(input);
         let indices = parsing::parse_request_line_indices.parse_next(&mut located)?;
         let method = Method::try_from_slice(slice_range(input, &indices.method))

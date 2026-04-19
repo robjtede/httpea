@@ -41,4 +41,4 @@ test-msrv:
 
 # Document workspace
 doc *args:
-    RUSTDOCFLAGS="--cfg docsrs -D warnings" cargo +nightly doc --workspace --no-deps {{ args }}
+    RUSTDOCFLAGS="--cfg docsrs -D warnings" cargo +nightly doc --workspace --all-features --no-deps {{ args }}
