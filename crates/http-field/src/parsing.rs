@@ -168,8 +168,7 @@ pub(crate) fn is_ows_byte(byte: u8) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use winnow::prelude::*;
-    use winnow::BStr;
+    use winnow::{BStr, prelude::*};
 
     use super::*;
 

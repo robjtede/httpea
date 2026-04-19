@@ -10,15 +10,17 @@ rust-version.workspace = true
 [features]
 default = []
 http-1_1 = [
-    "dep:http-method",
-    "dep:http-request-target",
-    "dep:http-version",
-    "dep:winnow",
+  "dep:http-method",
+  "dep:http-request-target",
+  "dep:http-version",
+  "dep:winnow",
 ]
 
 [dependencies]
 bytes = "1"
-futures-util = { version = "0.3.17", default-features = false, features = ["std"] }
+futures-util = { version = "0.3.17", default-features = false, features = [
+  "std",
+] }
 h3 = "0.0.1"
 h3-quinn = "0.0.1"
 http = "0.2.9"

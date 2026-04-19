@@ -55,5 +55,6 @@ jobs:
           components: rust-docs
 
       - name: Check for broken intra-doc links
-        env: { RUSTDOCFLAGS: '-D warnings' }
+        env:
+          RUSTDOCFLAGS: "-D warnings"
         run: cargo doc --no-deps --all-features --workspace

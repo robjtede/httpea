@@ -15,7 +15,9 @@
           packages = [
             config.formatter
             pkgs.cargo-nextest
+            pkgs.cargo-shear
             pkgs.just
+            pkgs.prettier
             pkgs.taplo
           ] ++ lib.optionals pkgs.stdenv.isDarwin [
             pkgs.pkgsBuildHost.libiconv

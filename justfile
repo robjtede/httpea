@@ -1,6 +1,7 @@
 _list:
     @just --list
 
+toolchain := ""
 msrv := `awk '/^\[workspace.package\]/{flag=1; next} /^\[/{flag=0} flag && /^rust-version = / {gsub(/"/, "", $3); print $3; exit}' Cargo.toml`
 msrv_rustup := "+" + msrv
 
@@ -8,29 +9,35 @@ msrv_rustup := "+" + msrv
 fmt:
     just --unstable --fmt
     cargo +nightly fmt
+    fd --hidden -e=yml --exec-batch prettier --write
+    fd --hidden -e=toml --exec-batch taplo format
+    cargo shear
 
 # Check project
-check toolchain="":
+check:
     just --unstable --fmt --check
-    cargo {{ toolchain }} fmt --all --check
+    cargo +nightly fmt --all --check
     cargo {{ toolchain }} clippy --workspace --all-targets
-    cargo {{ toolchain }} check --workspace --all-targets
+    fd --hidden -e=yml --exec-batch prettier --check
+    fd --hidden -e=toml --exec-batch taplo format
+    fd --hidden -e=toml --exec-batch taplo lint
 
 # Lint workspace with Clippy
-clippy toolchain="":
+clippy:
     cargo {{ toolchain }} clippy --workspace --all-targets --all-features
 
 # Test workspace without doc tests
 [private]
-test-no-doc toolchain="":
+test-no-doc:
     cargo {{ toolchain }} nextest run --workspace --lib --tests --examples
 
 # Test workspace
-test toolchain="": (test-no-doc toolchain)
+test: test-no-doc
     cargo {{ toolchain }} test --doc --workspace
 
 # Test workspace using MSRV
-test-msrv: (test msrv_rustup)
+test-msrv:
+    @just toolchain={{ msrv_rustup }} test
 
 # Document workspace
 doc *args:
