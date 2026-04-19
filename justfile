@@ -39,6 +39,14 @@ test: test-no-doc
 test-msrv:
     @just toolchain={{ msrv_rustup }} test
 
+# Test workspace and generate Codecov coverage file
+test-coverage-codecov:
+    cargo {{ toolchain }} llvm-cov --workspace --all-features --codecov --output-path codecov.json
+
+# Test workspace and generate LCOV coverage file
+test-coverage-lcov:
+    cargo {{ toolchain }} llvm-cov --workspace --all-features --lcov --output-path lcov.info
+
 # Document workspace
 doc *args:
     RUSTDOCFLAGS="--cfg docsrs -D warnings" cargo +nightly doc --workspace --all-features --no-deps {{ args }}
