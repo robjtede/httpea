@@ -1,0 +1,24 @@
+[package]
+name = "http-chunked"
+version = "0.0.1"
+description = "HTTP/1.1 chunked transfer coding parser"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["http", "chunked", "transfer-encoding"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+winnow = { version = "1", default-features = false, features = ["binary"] }
+
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "http-chunked"
+harness = false
+
+[lints]
+workspace = true

@@ -11,6 +11,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+http-chunked = { path = "../http-chunked", version = "0.0.1" }
 http-field = { path = "../http-field", version = "0.0.3" }
 http-method = { path = "../http-method", version = "0.0.2" }
 http-request-target = { path = "../http-request-target", version = "0.1.0" }

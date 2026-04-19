@@ -495,9 +495,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-chunked"
+version = "0.0.1"
+dependencies = [
+ "codspeed-divan-compat",
+ "winnow",
+]
+
+[[package]]
 name = "http-core"
 version = "0.0.1"
 dependencies = [
+ "http-chunked",
  "http-field",
  "http-method",
  "http-request-target",
