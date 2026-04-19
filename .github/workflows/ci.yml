@@ -1,22 +1,20 @@
-name: Benchmark
+name: CI
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   push:
     branches: [main]
-  pull_request:
-  workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  benchmarks:
-    name: Run benchmarks
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,17 +25,10 @@ jobs:
         with:
           toolchain: nightly
 
-      - name: Install cargo-codspeed
+      - name: Install cargo-hack,cargo-nextest,just
         uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2.75.7
         with:
-          tool: cargo-codspeed
+          tool: cargo-hack,cargo-nextest,just
 
-      - name: Build benchmarks
-        run: cargo codspeed build --measurement-mode simulation
-
-      - name: Run benchmarks
-        uses: CodSpeedHQ/action@db35df748deb45fdef0960669f57d627c1956c30 # v4.13.1
-        env:
-          DIVAN_MIN_TIME: "1"
-        with:
-          run: cargo codspeed run --measurement-mode simulation
+      - name: Run tests
+        run: just test

@@ -8,7 +8,9 @@ edition.workspace = true
 rust-version.workspace = true
 
 [features]
-default = []
+default = ["std", "simd"]
+std = ["winnow?/std", "http-request-target?/std"]
+simd = ["winnow?/simd", "http-request-target?/simd"]
 http-1_1 = [
   "dep:http-field",
   "dep:http-method",
