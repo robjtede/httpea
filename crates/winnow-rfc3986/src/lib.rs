@@ -12,6 +12,27 @@ use winnow::{
 };
 
 /// Parses an absolute path.
+///
+/// # BNF
+///
+/// ```text
+/// absolute-path = 1*( "/" segment )
+/// segment       = *pchar
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_path;
+///
+/// let (rest, ()) = parse_path.parse_peek(&b"/a/b?c"[..]).unwrap();
+/// assert_eq!(rest, b"?c");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_path<I>(input: &mut I) -> ModalResult<()>
 where
@@ -27,6 +48,26 @@ where
 }
 
 /// Parses a query string, without the leading `?`.
+///
+/// # BNF
+///
+/// ```text
+/// query = *( pchar / "/" / "?" )
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_query;
+///
+/// let (rest, ()) = parse_query.parse_peek(&b"foo=bar/baz?x#frag"[..]).unwrap();
+/// assert_eq!(rest, b"#frag");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.4](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_query<I>(input: &mut I) -> ModalResult<()>
 where
@@ -86,6 +127,27 @@ pub fn is_ip_literal_body(bytes: &[u8]) -> bool {
 }
 
 /// Parses a `uri-host`.
+///
+/// # BNF
+///
+/// ```text
+/// host = IP-literal / IPv4address / reg-name
+/// uri-host = <HTTP request-target use of URI host grammar>
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_uri_host;
+///
+/// let (rest, ()) = parse_uri_host.parse_peek(&b"[::1]:443"[..]).unwrap();
+/// assert_eq!(rest, b":443");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_uri_host<I>(input: &mut I) -> ModalResult<()>
 where
@@ -99,6 +161,26 @@ where
 }
 
 /// Parses an `IP-literal`.
+///
+/// # BNF
+///
+/// ```text
+/// IP-literal = "[" ( IPv6address / IPvFuture ) "]"
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_ip_literal;
+///
+/// let (rest, ()) = parse_ip_literal.parse_peek(&b"[2001:db8::1]/"[..]).unwrap();
+/// assert_eq!(rest, b"/");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_ip_literal<I>(input: &mut I) -> ModalResult<()>
 where
@@ -117,6 +199,26 @@ where
 }
 
 /// Parses a `reg-name`.
+///
+/// # BNF
+///
+/// ```text
+/// reg-name = *( unreserved / pct-encoded / sub-delims )
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_reg_name;
+///
+/// let (rest, ()) = parse_reg_name.parse_peek(&b"example.com:443"[..]).unwrap();
+/// assert_eq!(rest, b":443");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_reg_name<I>(input: &mut I) -> ModalResult<()>
 where
@@ -127,6 +229,26 @@ where
 }
 
 /// Parses a `port`.
+///
+/// # BNF
+///
+/// ```text
+/// port = *DIGIT
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_port;
+///
+/// let (rest, ()) = parse_port.parse_peek(&b"8443/path"[..]).unwrap();
+/// assert_eq!(rest, b"/path");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.3)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_port<I>(input: &mut I) -> ModalResult<()>
 where
@@ -147,6 +269,26 @@ pub fn is_scheme_char(char: impl AsChar) -> bool {
 }
 
 /// Parses `scheme`.
+///
+/// # BNF
+///
+/// ```text
+/// scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_scheme;
+///
+/// let (rest, ()) = parse_scheme.parse_peek(&b"https://example.com"[..]).unwrap();
+/// assert_eq!(rest, b"://example.com");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_scheme<I>(input: &mut I) -> ModalResult<()>
 where
@@ -159,6 +301,28 @@ where
 }
 
 /// Parses `authority`.
+///
+/// # BNF
+///
+/// ```text
+/// authority = [ userinfo "@" ] host [ ":" port ]
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_authority;
+///
+/// let (rest, ()) = parse_authority
+///     .parse_peek(&b"user:pass@example.com:443/path"[..])
+///     .unwrap();
+/// assert_eq!(rest, b"/path");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_authority<I>(input: &mut I) -> ModalResult<()>
 where
@@ -170,6 +334,29 @@ where
 }
 
 /// Parses `authority` into `userinfo`, `host`, and optional `port`.
+///
+/// # BNF
+///
+/// ```text
+/// authority = [ userinfo "@" ] host [ ":" port ]
+/// userinfo  = *( unreserved / pct-encoded / sub-delims / ":" )
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_authority_parts;
+///
+/// let (rest, ()) = parse_authority_parts
+///     .parse_peek(&b"user:pass@example.com:443/path"[..])
+///     .unwrap();
+/// assert_eq!(rest, b"/path");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_authority_parts<I>(input: &mut I) -> ModalResult<()>
 where
@@ -187,6 +374,27 @@ where
 }
 
 /// Parses `path-abempty`.
+///
+/// # BNF
+///
+/// ```text
+/// path-abempty = *( "/" segment )
+/// segment      = *pchar
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc3986::parse_path_abempty;
+///
+/// let (rest, ()) = parse_path_abempty.parse_peek(&b"/a/b?x=1"[..]).unwrap();
+/// assert_eq!(rest, b"?x=1");
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub fn parse_path_abempty<I>(input: &mut I) -> ModalResult<()>
 where

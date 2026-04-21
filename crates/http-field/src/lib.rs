@@ -13,7 +13,6 @@ use core::ops::Range;
 use winnow::{
     error::{ContextError, ErrMode},
     prelude::*,
-    stream::{LocatingSlice, Partial},
 };
 pub use winnow_rfc9110::{parse_field_name, parse_field_value, parse_ows};
 
@@ -21,7 +20,9 @@ mod parsing;
 
 /// Entire HTTP field line, excluding any trailing CRLF.
 ///
-/// ```plain
+/// # BNF
+///
+/// ```text
 /// field-line = field-name ":" OWS field-value OWS
 /// ```
 ///
@@ -36,6 +37,7 @@ pub struct Field<'a> {
 /// Field name.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FieldName<'a> {
+    // TODO: use string slice soon
     slice: &'a [u8],
 }
 
@@ -47,12 +49,9 @@ pub struct FieldValue<'a> {
 
 impl<'a> Field<'a> {
     /// Parses an entire HTTP field line from bytes, excluding the trailing CRLF.
-    ///
-    /// This uses partial-input semantics, so truncated field lines return
-    /// `ErrMode::Incomplete` until enough bytes have been buffered to disambiguate them.
+    #[inline]
     pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ErrMode<ContextError>> {
-        let mut partial = Partial::new(LocatingSlice::new(input));
-        let indices = parsing::parse_field_indices.parse_next(&mut partial)?;
+        let indices = parsing::parse_field(input)?;
 
         Ok(Self {
             inner: input,
@@ -149,7 +148,9 @@ fn slice_range<'a>(bytes: &'a [u8], range: &Range<usize>) -> &'a [u8] {
 
 #[cfg(test)]
 mod tests {
-    use winnow::error::ErrMode;
+    use std::str;
+
+    use quickcheck_macros::quickcheck;
 
     use super::*;
 
@@ -173,11 +174,19 @@ mod tests {
     }
 
     #[test]
-    fn reports_incomplete_for_ambiguous_empty_field_value() {
-        assert!(matches!(
-            Field::try_from_slice(b"x-empty:\t "),
-            Err(ErrMode::Incomplete(_))
-        ));
+    fn parses_empty_field_value() {
+        let field = Field::try_from_slice(b"x-empty:").unwrap();
+
+        assert_eq!(field.name().as_slice(), b"x-empty");
+        assert_eq!(field.value().as_slice(), b"");
+    }
+
+    #[test]
+    fn parses_empty_field_value_with_trailing_whitespace() {
+        let field = Field::try_from_slice(b"x-empty:\t ").unwrap();
+
+        assert_eq!(field.name().as_slice(), b"x-empty");
+        assert_eq!(field.value().as_slice(), b"");
     }
 
     #[test]
@@ -190,10 +199,16 @@ mod tests {
     }
 
     #[test]
-    fn reports_incomplete_for_truncated_field_lines() {
-        assert!(matches!(
-            Field::try_from_slice(b"content-type"),
-            Err(ErrMode::Incomplete(_))
-        ));
+    fn rejects_truncated_field_lines() {
+        assert!(Field::try_from_slice(b"content-type").is_err());
+    }
+
+    #[quickcheck]
+    fn all_valid_field_names_are_also_utf8(bytes: Vec<u8>) -> bool {
+        if FieldName::try_from_slice(&bytes).is_ok() {
+            str::from_utf8(&bytes).is_ok()
+        } else {
+            true
+        }
     }
 }

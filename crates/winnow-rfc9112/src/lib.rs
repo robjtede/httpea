@@ -12,6 +12,27 @@ use winnow::{
 pub use winnow_rfc9110::{parse_bws, parse_quoted_pair, parse_quoted_string, parse_token};
 
 /// Parses a complete non-terminal chunk and returns its decoded size in octets.
+///
+/// # BNF
+///
+/// ```text
+/// chunk      = chunk-size [ chunk-ext ] CRLF
+///              chunk-data CRLF
+/// chunk-size = 1*HEXDIG
+/// chunk-data = 1*OCTET
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk;
+///
+/// let size = parse_chunk.parse(&b"4\r\nWiki\r\n"[..]).unwrap();
+/// assert_eq!(size, 4);
+/// ```
+///
+/// See: [RFC 9112 §7.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1)
 #[inline]
 pub fn parse_chunk<I>(input: &mut I) -> ModalResult<usize>
 where
@@ -33,6 +54,31 @@ where
 }
 
 /// Parses a `chunk-size [ chunk-ext ] CRLF` header and returns the decoded chunk size in octets.
+///
+/// # BNF
+///
+/// ```text
+/// chunk-size = 1*HEXDIG
+/// chunk-ext  = *( BWS ";" BWS chunk-ext-name
+///                [ BWS "=" BWS chunk-ext-val ] )
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_header;
+///
+/// let (rest, size) = parse_chunk_header
+///     .parse_peek(&b"000a;foo=bar\r\npayload"[..])
+///     .unwrap();
+/// assert_eq!(rest, b"payload");
+/// assert_eq!(size, 10);
+/// ```
+///
+/// See:
+/// - [RFC 9112 §7.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1)
+/// - [RFC 9112 §7.1.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1.1)
 #[inline]
 pub fn parse_chunk_header<I>(input: &mut I) -> ModalResult<usize>
 where
@@ -47,6 +93,25 @@ where
 }
 
 /// Parses `chunk-size` and returns its decoded numeric value.
+///
+/// # BNF
+///
+/// ```text
+/// chunk-size = 1*HEXDIG
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_size;
+///
+/// let (rest, size) = parse_chunk_size.parse_peek(&b"000a;ext"[..]).unwrap();
+/// assert_eq!(rest, b";ext");
+/// assert_eq!(size, 10);
+/// ```
+///
+/// See: [RFC 9112 §7.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1)
 #[inline]
 pub fn parse_chunk_size<I>(input: &mut I) -> ModalResult<usize>
 where
@@ -57,6 +122,24 @@ where
 }
 
 /// Parses exactly `size` octets of `chunk-data`.
+///
+/// # BNF
+///
+/// ```text
+/// chunk-data = 1*OCTET
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_data;
+///
+/// let (rest, ()) = parse_chunk_data(4).parse_peek(&b"Wiki\r\n"[..]).unwrap();
+/// assert_eq!(rest, b"\r\n");
+/// ```
+///
+/// See: [RFC 9112 §7.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1)
 #[inline]
 pub fn parse_chunk_data<I>(size: usize) -> impl Parser<I, (), ErrMode<winnow::error::ContextError>>
 where
@@ -80,6 +163,24 @@ where
 }
 
 /// Parses `last-chunk`.
+///
+/// # BNF
+///
+/// ```text
+/// last-chunk = 1*("0") [ chunk-ext ] CRLF
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_last_chunk;
+///
+/// let (rest, ()) = parse_last_chunk.parse_peek(&b"0;sig=ok\r\ntrailers"[..]).unwrap();
+/// assert_eq!(rest, b"trailers");
+/// ```
+///
+/// See: [RFC 9112 §7.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1)
 #[inline]
 pub fn parse_last_chunk<I>(input: &mut I) -> ModalResult<()>
 where
@@ -99,6 +200,29 @@ where
 }
 
 /// Parses `chunk-ext`.
+///
+/// # BNF
+///
+/// ```text
+/// chunk-ext      = *( BWS ";" BWS chunk-ext-name
+///                     [ BWS "=" BWS chunk-ext-val ] )
+/// chunk-ext-name = token
+/// chunk-ext-val  = token / quoted-string
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_ext;
+///
+/// let (rest, ()) = parse_chunk_ext
+///     .parse_peek(&b";foo=bar; baz = \"qux\"\r\n"[..])
+///     .unwrap();
+/// assert_eq!(rest, b"\r\n");
+/// ```
+///
+/// See: [RFC 9112 §7.1.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1.1)
 #[inline]
 pub fn parse_chunk_ext<I>(input: &mut I) -> ModalResult<()>
 where
@@ -113,6 +237,24 @@ where
 }
 
 /// Parses one `;`-prefixed chunk extension parameter.
+///
+/// # BNF
+///
+/// ```text
+/// ";" BWS chunk-ext-name [ BWS "=" BWS chunk-ext-val ]
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_ext_param;
+///
+/// let (rest, ()) = parse_chunk_ext_param.parse_peek(&b";foo=bar rest"[..]).unwrap();
+/// assert_eq!(rest, b" rest");
+/// ```
+///
+/// See: [RFC 9112 §7.1.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1.1)
 #[inline]
 pub fn parse_chunk_ext_param<I>(input: &mut I) -> ModalResult<()>
 where
@@ -129,6 +271,24 @@ where
 }
 
 /// Parses `chunk-ext-val`.
+///
+/// # BNF
+///
+/// ```text
+/// chunk-ext-val = token / quoted-string
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use winnow::Parser as _;
+/// use winnow_rfc9112::parse_chunk_ext_val;
+///
+/// let (rest, ()) = parse_chunk_ext_val.parse_peek(&b"\"qux\";"[..]).unwrap();
+/// assert_eq!(rest, b";");
+/// ```
+///
+/// See: [RFC 9112 §7.1.1](https://datatracker.ietf.org/doc/html/rfc9112#section-7.1.1)
 #[inline]
 pub fn parse_chunk_ext_val<I>(input: &mut I) -> ModalResult<()>
 where

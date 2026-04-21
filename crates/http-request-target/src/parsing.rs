@@ -53,13 +53,13 @@ pub(crate) struct AuthorityIndices {
 
 /// # Request Line Examples
 ///
-/// ```plain
+/// ```text
 /// GET /where?q=now HTTP/1.1
 /// ```
 ///
 /// # BNF
 ///
-/// ```plain
+/// ```text
 /// origin-form   = absolute-path [ "?" query ]
 /// absolute-path = 1*( "/" segment )
 /// segment       = *pchar
@@ -69,6 +69,11 @@ pub(crate) struct AuthorityIndices {
 /// sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 /// query         = *( pchar / "/" / "?" )
 /// ```
+///
+/// See:
+/// - [RFC 9112 §3.2](https://datatracker.ietf.org/doc/html/rfc9112#section-3.2)
+/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
+/// - [RFC 3986 §3.4](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4)
 #[inline]
 pub(crate) fn parse_origin_form<I>(input: &mut I) -> ModalResult<RequestTargetOriginIndices>
 where
@@ -92,13 +97,13 @@ where
 
 /// # Request Line Examples
 ///
-/// ```plain
+/// ```text
 /// CONNECT www.example.com:80 HTTP/1.1
 /// ```
 ///
 /// # BNF
 ///
-/// ```plain
+/// ```text
 /// authority-form = uri-host ":" port
 /// ```
 ///
@@ -132,7 +137,7 @@ where
 
 /// # Request Line Examples
 ///
-/// ```plain
+/// ```text
 /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
 /// ```
 ///
@@ -142,13 +147,20 @@ where
 /// `absolute-form = absolute-URI`, but this crate narrows absolute-form parsing to the
 /// authority-based URI shape commonly used by HTTP-family schemes:
 ///
-/// ```plain
+/// ```text
 /// scheme "://" authority path-abempty [ "?" query ]
 /// ```
 ///
 /// This rejects generic [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986)
 /// absolute URIs like `htt:p//host` while still allowing arbitrary schemes such as
 /// `git+http://...`.
+///
+/// See:
+/// - [RFC 9112 §3.2](https://datatracker.ietf.org/doc/html/rfc9112#section-3.2)
+/// - [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
+/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
+/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
+/// - [RFC 3986 §3.4](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4)
 #[inline]
 pub(crate) fn parse_absolute_form<I>(input: &mut I) -> ModalResult<RequestTargetAbsoluteIndices>
 where
@@ -199,9 +211,17 @@ where
 
 /// # Request Line Examples
 ///
-/// ```plain
+/// ```text
 /// OPTIONS * HTTP/1.1
 /// ```
+///
+/// # BNF
+///
+/// ```text
+/// asterisk-form = "*"
+/// ```
+///
+/// See: [RFC 9112 §3.2](https://datatracker.ietf.org/doc/html/rfc9112#section-3.2)
 #[inline]
 pub(crate) fn parse_asterisk<I>(input: &mut I) -> ModalResult<()>
 where
@@ -228,6 +248,19 @@ where
     .parse_next(input)
 }
 
+/// Parses an HTTP/1.1 `request-target`.
+///
+/// # BNF
+///
+/// ```text
+/// request-target = origin-form
+///                / absolute-form
+///                / authority-form
+///                / asterisk-form
+/// ```
+///
+/// See: [RFC 9112 §3.2](https://datatracker.ietf.org/doc/html/rfc9112#section-3.2)
+#[inline]
 pub(crate) fn parse_request_target<I>(input: &mut I) -> ModalResult<RequestTargetIndices>
 where
     I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
@@ -244,6 +277,18 @@ where
     .parse_next(input)
 }
 
+/// Parses `authority` into its URI subcomponents.
+///
+/// # BNF
+///
+/// ```text
+/// authority = [ userinfo "@" ] host [ ":" port ]
+/// userinfo  = *( unreserved / pct-encoded / sub-delims / ":" )
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 #[allow(dead_code)]
 pub(crate) fn parse_authority_parts<I>(input: &mut I) -> ModalResult<()>
@@ -261,6 +306,17 @@ where
         .parse_next(input)
 }
 
+/// Parses `authority` and records the spans of its URI subcomponents.
+///
+/// # BNF
+///
+/// ```text
+/// authority = [ userinfo "@" ] host [ ":" port ]
+/// ```
+///
+/// See:
+/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
+/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
 #[inline]
 pub(crate) fn parse_authority_indices<I>(input: &mut I) -> ModalResult<AuthorityIndices>
 where

@@ -10,12 +10,19 @@ license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[package.metadata.cargo-shear]
+ignored = [
+  "quickcheck", # used by quickcheck_macros
+]
+
 [dependencies]
 winnow = { version = "1", default-features = false, features = ["binary"] }
 winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
+quickcheck = { version = "1", default-features = false }
+quickcheck_macros = "1"
 
 [[bench]]
 name = "http-field"

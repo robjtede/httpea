@@ -21,7 +21,7 @@ pub use crate::error::ParseRequestTargetError;
 ///
 /// # Request Line Examples
 ///
-/// ```plain
+/// ```text
 /// GET /where?q=now HTTP/1.1
 /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
 /// CONNECT www.example.com:80 HTTP/1.1
@@ -30,7 +30,7 @@ pub use crate::error::ParseRequestTargetError;
 ///
 /// # BNF
 ///
-/// ```plain
+/// ```text
 /// request-target = origin-form
 ///                / absolute-form
 ///                / authority-form
@@ -47,13 +47,13 @@ pub enum RequestTarget<'a> {
     ///
     /// # Request Line Examples
     ///
-    /// ```plain
+    /// ```text
     /// GET /where?q=now HTTP/1.1
     /// ```
     ///
     /// # BNF
     ///
-    /// ```plain
+    /// ```text
     /// origin-form = absolute-path [ "?" query ]
     /// ```
     Origin(RequestTargetOrigin<'a>),
@@ -64,13 +64,13 @@ pub enum RequestTarget<'a> {
     ///
     /// # Request Line Examples
     ///
-    /// ```plain
+    /// ```text
     /// GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
     /// ```
     ///
     /// # BNF
     ///
-    /// ```plain
+    /// ```text
     /// absolute-form = absolute-URI
     /// ```
     Absolute(RequestTargetAbsolute<'a>),
@@ -81,13 +81,13 @@ pub enum RequestTarget<'a> {
     ///
     /// # Request Line Examples
     ///
-    /// ```plain
+    /// ```text
     /// CONNECT www.example.com:80 HTTP/1.1
     /// ```
     ///
     /// # BNF
     ///
-    /// ```plain
+    /// ```text
     /// authority-form = uri-host ":" port
     /// ```
     Authority(RequestTargetAuthority<'a>),
@@ -96,13 +96,13 @@ pub enum RequestTarget<'a> {
     ///
     /// # Request Line Examples
     ///
-    /// ```plain
+    /// ```text
     /// OPTIONS * HTTP/1.1
     /// ```
     ///
     /// # BNF
     ///
-    /// ```plain
+    /// ```text
     /// asterisk-form = "*"
     /// ```
     Asterisk,
