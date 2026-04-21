@@ -14,3 +14,8 @@ pub use http_request_target::{
 };
 pub use http_status_code::StatusCode;
 pub use http_version::Version;
+pub use winnow_rfc3986::{
+    parse_authority, parse_ip_literal, parse_path, parse_path_abempty, parse_port, parse_query,
+    parse_reg_name, parse_scheme, parse_uri_host,
+};
+pub use winnow_rfc9110::{parse_field_name, parse_field_value, parse_ows};

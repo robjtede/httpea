@@ -4,76 +4,14 @@ use winnow::{
     error::ErrMode,
     prelude::*,
     stream::{Compare, Location, Stream, StreamIsPartial},
-    token::{literal, take_while},
+    token::literal,
 };
+use winnow_rfc9110::{is_ows_byte, parse_field_name, parse_field_value, parse_ows};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct FieldIndices {
     pub(crate) name: Range<usize>,
     pub(crate) value: Range<usize>,
-}
-
-/// Parses an HTTP field name.
-///
-/// ```plain
-/// field-name = token
-/// token      = 1*tchar
-/// ```
-///
-/// See:
-/// - [RFC 9110 §5.1](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1)
-/// - [RFC 9110 §5.6.2](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2)
-pub(crate) fn parse_field_name<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial,
-{
-    take_while(1.., is_tchar).void().parse_next(input)
-}
-
-/// Parses a trimmed HTTP field value.
-///
-/// ```plain
-/// field-value   = *field-content
-/// field-content = field-vchar
-///                 [ 1*( SP / HTAB / field-vchar ) field-vchar ]
-/// field-vchar   = VCHAR / obs-text
-/// obs-text      = %x80-FF
-/// ```
-///
-/// This parser expects any surrounding OWS to have already been excluded.
-///
-/// See:
-/// - [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
-pub(crate) fn parse_field_value<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial,
-    I::Slice: AsRef<[u8]>,
-{
-    take_while(.., is_field_value_byte)
-        .verify(|slice: &I::Slice| {
-            let bytes = slice.as_ref();
-
-            bytes.is_empty()
-                || (bytes.first().copied().is_some_and(is_field_vchar)
-                    && bytes.last().copied().is_some_and(is_field_vchar))
-        })
-        .void()
-        .parse_next(input)
-}
-
-/// Parses optional whitespace.
-///
-/// ```plain
-/// OWS = *( SP / HTAB )
-/// ```
-///
-/// See:
-/// - [RFC 9110 §5.6.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.3)
-pub(crate) fn parse_ows<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial,
-{
-    take_while(.., is_ows_byte).void().parse_next(input)
 }
 
 /// Parses an entire HTTP field line, excluding the trailing CRLF.
@@ -86,6 +24,7 @@ where
 /// - [RFC 9112 §5](https://datatracker.ietf.org/doc/html/rfc9112#section-5)
 /// - [RFC 9110 §5.1](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1)
 /// - [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
+#[inline]
 pub(crate) fn parse_field_indices<I>(input: &mut I) -> ModalResult<FieldIndices>
 where
     I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
@@ -125,56 +64,10 @@ where
     })
 }
 
-/// Returns `true` if the given byte is valid in `tchar`.
-///
-/// See: [RFC 9110 §5.6.2](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2)
-pub(crate) fn is_tchar(byte: u8) -> bool {
-    matches!(
-        byte,
-        b'!' | b'#'
-            | b'$'
-            | b'%'
-            | b'&'
-            | b'\''
-            | b'*'
-            | b'+'
-            | b'-'
-            | b'.'
-            | b'^'
-            | b'_'
-            | b'`'
-            | b'|'
-            | b'~'
-            | b'0'..=b'9'
-            | b'A'..=b'Z'
-            | b'a'..=b'z'
-    )
-}
-
-/// Returns `true` if the given byte is valid as `field-vchar`.
-///
-/// See: [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
-pub(crate) fn is_field_vchar(byte: u8) -> bool {
-    matches!(byte, 0x21..=0x7E | 0x80..=0xFF)
-}
-
-/// Returns `true` if the given byte can appear inside a trimmed field value.
-///
-/// See: [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5)
-pub(crate) fn is_field_value_byte(byte: u8) -> bool {
-    is_field_vchar(byte) || is_ows_byte(byte)
-}
-
-/// Returns `true` if the given byte is optional whitespace.
-///
-/// See: [RFC 9110 §5.6.3](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.3)
-pub(crate) fn is_ows_byte(byte: u8) -> bool {
-    matches!(byte, b' ' | b'\t')
-}
-
 #[cfg(test)]
 mod tests {
     use winnow::{BStr, Partial, error::ErrMode, prelude::*, stream::LocatingSlice};
+    use winnow_rfc9110::{is_field_value_byte, is_field_vchar, is_tchar};
 
     use super::*;
 

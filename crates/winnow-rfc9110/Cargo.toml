@@ -1,0 +1,22 @@
+[package]
+name = "winnow-rfc9110"
+version = "0.0.1"
+description = "Winnow parsers for RFC 9110 HTTP syntax productions"
+authors = ["Rob Ede <robjtede@icloud.com>"]
+categories = ["parsing"]
+keywords = ["winnow", "http", "rfc9110"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[features]
+default = ["std", "simd"]
+std = ["winnow/std"]
+simd = ["winnow/simd"]
+
+[dependencies]
+winnow = { version = "1", default-features = false, features = ["binary"] }
+
+[lints]
+workspace = true

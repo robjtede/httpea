@@ -259,6 +259,7 @@ version = "0.0.1"
 dependencies = [
  "codspeed-divan-compat",
  "winnow",
+ "winnow-rfc9112",
 ]
 
 [[package]]
@@ -271,6 +272,8 @@ dependencies = [
  "http-request-target",
  "http-status-code",
  "http-version",
+ "winnow-rfc3986",
+ "winnow-rfc9110",
 ]
 
 [[package]]
@@ -279,6 +282,7 @@ version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
  "winnow",
+ "winnow-rfc9110",
 ]
 
 [[package]]
@@ -296,6 +300,7 @@ dependencies = [
  "http",
  "impl-more",
  "winnow",
+ "winnow-rfc3986",
 ]
 
 [[package]]
@@ -700,6 +705,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09dac053f1cd375980747450bfc7250c264eaae0583872e845c0c7cd578872b5"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "winnow-rfc3986"
+version = "0.0.1"
+dependencies = [
+ "winnow",
+]
+
+[[package]]
+name = "winnow-rfc9110"
+version = "0.0.1"
+dependencies = [
+ "winnow",
+]
+
+[[package]]
+name = "winnow-rfc9112"
+version = "0.0.1"
+dependencies = [
+ "winnow",
+ "winnow-rfc9110",
 ]
 
 [[package]]

@@ -1,11 +1,14 @@
 use core::ops::Range;
 
 use winnow::{
-    ascii::digit1,
-    combinator::{alt, delimited, fail, opt, peek, preceded, repeat},
+    combinator::{alt, fail, opt, preceded},
     prelude::*,
-    stream::{AsChar, Compare, LocatingSlice, Location, Stream, StreamIsPartial},
-    token::{literal, one_of, take_while},
+    stream::{AsChar, Compare, Location, Stream, StreamIsPartial},
+    token::{literal, take_while},
+};
+use winnow_rfc3986::{
+    is_userinfo_char, parse_authority, parse_path, parse_path_abempty, parse_port, parse_query,
+    parse_scheme, parse_uri_host,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -66,7 +69,18 @@ pub(crate) struct AuthorityIndices {
 /// sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 /// query         = *( pchar / "/" / "?" )
 /// ```
-pub(crate) fn parse_origin_form<I>(input: &mut I) -> ModalResult<()>
+#[inline]
+pub(crate) fn parse_origin_form<I>(input: &mut I) -> ModalResult<RequestTargetOriginIndices>
+where
+    I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
+{
+    (parse_path.span(), opt((b'?', parse_query).span()))
+        .map(|(path, search)| RequestTargetOriginIndices { path, search })
+        .parse_next(input)
+}
+
+#[allow(dead_code)]
+fn parse_origin_form_only<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
@@ -76,153 +90,25 @@ where
         .parse_next(input)
 }
 
-pub(crate) fn parse_origin_form_indices(
-    input: &mut LocatingSlice<&[u8]>,
-) -> ModalResult<RequestTargetOriginIndices> {
-    (parse_path.span(), opt((b'?', parse_query).span()))
-        .map(|(path, search)| RequestTargetOriginIndices { path, search })
-        .parse_next(input)
-}
-
-/// Parses a path.
-///
-/// Assumes entire input is a path, starting with a `/`, and does not include a query or fragment.
-///
-/// See:
-/// - <https://datatracker.ietf.org/doc/html/rfc9112#name-syntax-notation>
-/// - <https://datatracker.ietf.org/doc/html/rfc9110#name-uri-references>
-/// - [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
-pub(crate) fn parse_path<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-{
-    peek(b'/').parse_next(input)?;
-
-    // absolute-path
-    repeat(1.., (b'/', take_while(.., is_pchar)))
-        .map(|()| ())
-        .void()
-        .parse_next(input)
-}
-
-/// Parses a query string.
-///
-/// Assumes entire input is only a query string without preceding `?` and without a rogue, trailing
-/// fragement (i.e. `#`).
-///
-/// See:
-/// - [RFC 3986 §3.4](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4)
-/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
-pub(crate) fn parse_query<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial,
-    I::Token: Clone + AsChar,
-{
-    repeat(
-        ..,
-        one_of((
-            is_pchar,
-            // query literals
-            [b'/', b'?'],
-        )),
-    )
-    .map(|()| ())
-    .void()
-    .parse_next(input)
-}
-
-/// Returns `true` if the given character is in the `unreserved` group.
-///
-/// See: [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
-pub(crate) fn is_unreserved(char: char) -> bool {
-    matches!(char, '0'..='9' | 'A'..='Z' | 'a'..='z' | '-' | '.' | '_' | '~')
-}
-
-/// Returns `true` if the given character is in the `sub-delims` group.
-///
-/// See: [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
-pub(crate) fn is_sub_delim(char: char) -> bool {
-    matches!(
-        char,
-        '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
-    )
-}
-
-/// Returns `true` if the given character is a valid `pchar`.
-///
-/// See: [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
-pub(crate) fn is_pchar(char: impl AsChar) -> bool {
-    let char = char.as_char();
-
-    is_unreserved(char)
-        || is_sub_delim(char)
-        // pct-encoded
-        || matches!(char, '%') // HEXDIG are included in `unreserved`; we do not validate hex escape sequences
-        // pchar literals
-        || matches!(char, ':' | '@')
-}
-
-/// Returns `true` if the given character is valid in `reg-name`.
-///
-/// See: [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
-pub(crate) fn is_reg_name_char(char: impl AsChar) -> bool {
-    let char = char.as_char();
-
-    is_unreserved(char)
-        || is_sub_delim(char)
-        // pct-encoded
-        || matches!(char, '%') // HEXDIG are included in `unreserved`; we do not validate hex escape sequences
-}
-
-/// Returns `true` if the given character is valid in `userinfo`.
-///
-/// See: [RFC 3986 §3.2.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.1)
-pub(crate) fn is_userinfo_char(char: impl AsChar) -> bool {
-    let char = char.as_char();
-
-    is_unreserved(char)
-        || is_sub_delim(char)
-        // pct-encoded
-        || matches!(char, '%') // HEXDIG are included in `unreserved`; we do not validate hex escape sequences
-        || matches!(char, ':')
-}
-
-/// Returns `true` if the given character is valid within an `IP-literal` body.
-///
-/// This covers the character groups referenced by the `IPv6address` and `IPvFuture`
-/// productions from [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986).
-pub(crate) fn is_ip_literal_char(char: impl AsChar) -> bool {
-    let char = char.as_char();
-
-    is_unreserved(char)
-        || is_sub_delim(char)
-        // IPv6address / IPvFuture literals
-        || matches!(char, ':')
-}
-
-/// Returns `true` if the given slice looks like an `IPv6address` or `IPvFuture` payload.
-pub(crate) fn is_ip_literal_body(bytes: &[u8]) -> bool {
-    bytes.contains(&b':') || matches!(bytes.first(), Some(b'v' | b'V')) && bytes.contains(&b'.')
-}
-
 /// # Request Line Examples
 ///
 /// ```plain
 /// CONNECT www.example.com:80 HTTP/1.1
 /// ```
-pub(crate) fn parse_authority_form<I>(input: &mut I) -> ModalResult<()>
+///
+/// # BNF
+///
+/// ```plain
+/// authority-form = uri-host ":" port
+/// ```
+///
+/// See: [RFC 9112 §3.2](https://datatracker.ietf.org/doc/html/rfc9112#name-connect)
+#[inline]
+pub(crate) fn parse_authority_form<I>(input: &mut I) -> ModalResult<RequestTargetAuthorityIndices>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
+    I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
     I::Slice: AsRef<[u8]>,
 {
-    (parse_uri_host, b':', parse_port).void().parse_next(input)
-}
-
-pub(crate) fn parse_authority_form_indices(
-    input: &mut LocatingSlice<&[u8]>,
-) -> ModalResult<RequestTargetAuthorityIndices> {
     let authority_start = input.current_token_start();
 
     let (host, _, port) = (parse_uri_host.span(), b':', parse_port.span()).parse_next(input)?;
@@ -232,6 +118,16 @@ pub(crate) fn parse_authority_form_indices(
         host,
         port,
     })
+}
+
+#[allow(dead_code)]
+fn parse_authority_form_only<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
+{
+    (parse_uri_host, b':', parse_port).void().parse_next(input)
 }
 
 /// # Request Line Examples
@@ -253,27 +149,13 @@ pub(crate) fn parse_authority_form_indices(
 /// This rejects generic [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986)
 /// absolute URIs like `htt:p//host` while still allowing arbitrary schemes such as
 /// `git+http://...`.
-pub(crate) fn parse_absolute_form<I>(input: &mut I) -> ModalResult<()>
+#[inline]
+pub(crate) fn parse_absolute_form<I>(input: &mut I) -> ModalResult<RequestTargetAbsoluteIndices>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
+    I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
-    (
-        parse_scheme,
-        b':',
-        (b'/', b'/'),
-        parse_authority,
-        parse_path_abempty,
-        opt((b'?', parse_query)),
-    )
-        .void()
-        .parse_next(input)
-}
-
-pub(crate) fn parse_absolute_form_indices(
-    input: &mut LocatingSlice<&[u8]>,
-) -> ModalResult<RequestTargetAbsoluteIndices> {
     (
         parse_scheme.span(),
         b':',
@@ -296,11 +178,31 @@ pub(crate) fn parse_absolute_form_indices(
         .parse_next(input)
 }
 
+#[allow(dead_code)]
+fn parse_absolute_form_only<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream + StreamIsPartial + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
+{
+    (
+        parse_scheme,
+        b':',
+        (b'/', b'/'),
+        parse_authority,
+        parse_path_abempty,
+        opt((b'?', parse_query)),
+    )
+        .void()
+        .parse_next(input)
+}
+
 /// # Request Line Examples
 ///
 /// ```plain
 /// OPTIONS * HTTP/1.1
 /// ```
+#[inline]
 pub(crate) fn parse_asterisk<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -308,7 +210,8 @@ where
     literal(b'*').void().parse_next(input)
 }
 
-pub(crate) fn parse_request_target<I>(input: &mut I) -> ModalResult<()>
+#[allow(dead_code)]
+fn parse_request_target_only<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
@@ -316,129 +219,33 @@ where
 {
     alt((
         parse_asterisk,
-        parse_origin_form,
-        parse_authority_form,
-        parse_absolute_form,
+        parse_origin_form_only,
+        parse_authority_form_only,
+        parse_absolute_form_only,
         fail,
     ))
     .void()
     .parse_next(input)
 }
 
-pub(crate) fn parse_request_target_indices(
-    input: &mut LocatingSlice<&[u8]>,
-) -> ModalResult<RequestTargetIndices> {
-    alt((
-        parse_asterisk.value(RequestTargetIndices::Asterisk),
-        parse_origin_form_indices.map(RequestTargetIndices::Origin),
-        parse_authority_form_indices.map(RequestTargetIndices::Authority),
-        parse_absolute_form_indices.map(RequestTargetIndices::Absolute),
-        fail,
-    ))
-    .parse_next(input)
-}
-
-/// Parses a `uri-host`.
-///
-/// [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112) defines
-/// `authority-form = uri-host ":" port` and references the URI grammar for the host production.
-pub(crate) fn parse_uri_host<I>(input: &mut I) -> ModalResult<()>
+pub(crate) fn parse_request_target<I>(input: &mut I) -> ModalResult<RequestTargetIndices>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
+    I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
     alt((
-        parse_ip_literal,
-        // IPv4 addresses are valid in `reg-name` context
-        parse_reg_name,
+        parse_asterisk.value(RequestTargetIndices::Asterisk),
+        parse_origin_form.map(RequestTargetIndices::Origin),
+        parse_authority_form.map(RequestTargetIndices::Authority),
+        parse_absolute_form.map(RequestTargetIndices::Absolute),
+        fail,
     ))
-    .void()
     .parse_next(input)
 }
 
-/// Parses an `IP-literal`.
-///
-/// We enforce the surrounding brackets and restrict the inner character set to the `IPv6address` /
-/// `IPvFuture` productions, while leaving the detailed numeric validation to a future pass.
-pub(crate) fn parse_ip_literal<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    delimited(
-        b'[',
-        take_while(1.., is_ip_literal_char)
-            .verify(|slice: &I::Slice| is_ip_literal_body(slice.as_ref())),
-        b']',
-    )
-    .void()
-    .parse_next(input)
-}
-
-/// Parses a `reg-name`.
-///
-/// [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) permits an empty `reg-name`, but
-/// `authority-form` requires a concrete `uri-host`, so we require at least one character here.
-pub(crate) fn parse_reg_name<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial,
-    I::Token: Clone + AsChar,
-{
-    take_while(1.., is_reg_name_char).void().parse_next(input)
-}
-
-/// Parses a `port`.
-///
-/// See: [RFC 3986 §3.2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.3)
-pub(crate) fn parse_port<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial,
-    I::Token: AsChar,
-{
-    digit1.void().parse_next(input)
-}
-
-/// Returns `true` if the given character is a valid first character in `scheme`.
-///
-/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
-pub(crate) fn is_scheme_start(char: impl AsChar) -> bool {
-    char.as_char().is_ascii_alphabetic()
-}
-
-/// Returns `true` if the given character is valid in `scheme`.
-///
-/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
-pub(crate) fn is_scheme_char(char: impl AsChar) -> bool {
-    matches!(char.as_char(), '0'..='9' | 'A'..='Z' | 'a'..='z' | '+' | '-' | '.')
-}
-
-/// Parses `scheme`.
-///
-/// See: [RFC 3986 §3.1](https://datatracker.ietf.org/doc/html/rfc3986#section-3.1)
-pub(crate) fn parse_scheme<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial,
-    I::Token: Clone + AsChar,
-{
-    preceded(one_of(is_scheme_start), take_while(.., is_scheme_char))
-        .void()
-        .parse_next(input)
-}
-
-/// Parses `authority`.
-///
-/// See: [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
-pub(crate) fn parse_authority<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    parse_authority_parts.void().parse_next(input)
-}
-
+#[inline]
+#[allow(dead_code)]
 pub(crate) fn parse_authority_parts<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
@@ -454,9 +261,13 @@ where
         .parse_next(input)
 }
 
-pub(crate) fn parse_authority_indices(
-    input: &mut LocatingSlice<&[u8]>,
-) -> ModalResult<AuthorityIndices> {
+#[inline]
+pub(crate) fn parse_authority_indices<I>(input: &mut I) -> ModalResult<AuthorityIndices>
+where
+    I: Stream<Token = u8> + StreamIsPartial + Location + Compare<u8>,
+    I::Token: Clone + AsChar,
+    I::Slice: AsRef<[u8]>,
+{
     let authority_start = input.current_token_start();
 
     let (userinfo, host, port) = (
@@ -474,25 +285,17 @@ pub(crate) fn parse_authority_indices(
     })
 }
 
-/// Parses `path-abempty`.
-///
-/// See: [RFC 3986 §3.3](https://datatracker.ietf.org/doc/html/rfc3986#section-3.3)
-pub(crate) fn parse_path_abempty<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-{
-    repeat(.., (b'/', take_while(.., is_pchar)))
-        .map(|()| ())
-        .void()
-        .parse_next(input)
-}
-
 #[cfg(test)]
 mod tests {
     use winnow::{
         BStr, Partial,
         error::{ErrMode, Needed},
+        stream::LocatingSlice,
+    };
+    use winnow_rfc3986::{
+        is_ip_literal_body, is_ip_literal_char, is_pchar, is_reg_name_char, is_sub_delim,
+        is_unreserved, parse_authority, parse_ip_literal, parse_path, parse_query, parse_reg_name,
+        parse_scheme, parse_uri_host,
     };
 
     use super::*;
@@ -513,9 +316,14 @@ mod tests {
 
     macro_rules! assert_ok_remaining {
         ($parser:expr, $input:expr, $remaining:expr $(,)?) => {
-            assert_eq!(
+            assert!(
+                matches!(
+                    $parser.parse_peek(BStr::new($input)),
+                    Ok((remaining, _)) if remaining == BStr::new($remaining)
+                ),
+                "assertion failed: parser did not leave expected remaining input {:?}: {:?}",
+                $remaining,
                 $parser.parse_peek(BStr::new($input)),
-                Ok((BStr::new($remaining), ())),
             );
         };
     }
@@ -656,29 +464,54 @@ mod tests {
 
     #[test]
     fn parses_authority_form() {
-        assert_backtrack!(parse_authority_form, b"");
-        assert_partial_incomplete!(parse_authority_form, b"", Needed::Unknown);
+        assert_backtrack!(parse_authority_form_only, b"");
+        assert_partial_incomplete!(parse_authority_form_only, b"", Needed::Unknown);
 
-        assert_backtrack!(parse_authority_form, b"localhost");
-        assert_backtrack!(parse_authority_form, b"user@localhost:3000");
-        assert_backtrack!(parse_authority_form, b"[::1]");
+        assert_backtrack!(parse_authority_form_only, b"localhost");
+        assert_backtrack!(parse_authority_form_only, b"user@localhost:3000");
+        assert_backtrack!(parse_authority_form_only, b"[::1]");
 
-        assert_ok_remaining!(parse_authority_form, b"localhost:3000", b"");
-        assert_ok_remaining!(parse_authority_form, b"127.0.0.1:80", b"");
-        assert_ok_remaining!(parse_authority_form, b"[::1]:443", b"");
+        assert_ok_remaining!(parse_authority_form_only, b"localhost:3000", b"");
+        assert_ok_remaining!(parse_authority_form_only, b"127.0.0.1:80", b"");
+        assert_ok_remaining!(parse_authority_form_only, b"[::1]:443", b"");
+
+        let indices = parse_authority_form
+            .parse(LocatingSlice::new(&b"localhost:3000"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..14);
+        assert_eq!(indices.host, 0..9);
+        assert_eq!(indices.port, 10..14);
     }
 
     #[test]
     fn parses_absolute_form() {
-        assert_backtrack!(parse_absolute_form, b"");
-        assert_backtrack!(parse_absolute_form, b"/foo");
-        assert_backtrack!(parse_absolute_form, b"htt:p//host");
-        assert_partial_incomplete!(parse_absolute_form, b"", Needed::new(1));
+        assert_backtrack!(parse_absolute_form_only, b"");
+        assert_backtrack!(parse_absolute_form_only, b"/foo");
+        assert_backtrack!(parse_absolute_form_only, b"htt:p//host");
+        assert_partial_incomplete!(parse_absolute_form_only, b"", Needed::new(1));
 
-        assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1:61761/chunks", b"");
-        assert_ok_remaining!(parse_absolute_form, b"https://127.0.0.1:61761", b"");
-        assert_ok_remaining!(parse_absolute_form, b"http://127.0.0.1?foo=bar", b"");
-        assert_ok_remaining!(parse_absolute_form, b"git+http://example.com/repo", b"");
+        assert_ok_remaining!(
+            parse_absolute_form_only,
+            b"http://127.0.0.1:61761/chunks",
+            b""
+        );
+        assert_ok_remaining!(parse_absolute_form_only, b"https://127.0.0.1:61761", b"");
+        assert_ok_remaining!(parse_absolute_form_only, b"http://127.0.0.1?foo=bar", b"");
+        assert_ok_remaining!(
+            parse_absolute_form_only,
+            b"git+http://example.com/repo",
+            b""
+        );
+
+        let indices = parse_absolute_form
+            .parse(LocatingSlice::new(&b"http://127.0.0.1:61761/chunks"[..]))
+            .unwrap();
+        assert_eq!(indices.scheme, 0..4);
+        assert_eq!(indices.authority, 7..22);
+        assert_eq!(indices.host, 7..16);
+        assert_eq!(indices.port, Some(17..22));
+        assert_eq!(indices.path, 22..29);
+        assert_eq!(indices.search, None);
     }
 
     #[test]

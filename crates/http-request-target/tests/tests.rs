@@ -7,7 +7,7 @@ macro_rules! pass {
     ($target:literal) => {
         match RequestTarget::try_from_slice($target.as_bytes()) {
             Ok(_) => {}
-            Err(err) => panic!("{:?} {:?}", err.input(), err),
+            Err(err) => panic!("{err}"),
         };
     };
 }
@@ -15,23 +15,8 @@ macro_rules! pass {
 macro_rules! fail {
     ($target:literal) => {
         match RequestTarget::try_from_slice($target.as_bytes()) {
-            Ok(RequestTarget::Origin(target)) => panic!(
-                "unexpectedly parsed {:?} as Origin({:?})",
-                BStr::new($target.as_bytes()),
-                BStr::new(target.as_bytes()),
-            ),
-            Ok(RequestTarget::Absolute(target)) => panic!(
-                "unexpectedly parsed {:?} as Absolute({:?})",
-                BStr::new($target.as_bytes()),
-                BStr::new(target.as_bytes()),
-            ),
-            Ok(RequestTarget::Authority(target)) => panic!(
-                "unexpectedly parsed {:?} as Authority({:?})",
-                BStr::new($target.as_bytes()),
-                BStr::new(target.as_bytes()),
-            ),
-            Ok(RequestTarget::Asterisk) => panic!(
-                "unexpectedly parsed {:?} as Asterisk",
+            Ok(_) => panic!(
+                "unexpectedly parsed {:?} as a valid request-target",
                 BStr::new($target.as_bytes()),
             ),
             Err(_) => {}

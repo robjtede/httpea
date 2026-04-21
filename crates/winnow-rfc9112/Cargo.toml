@@ -1,25 +1,23 @@
 [package]
-name = "http-field"
-version = "0.0.3"
-description = "HTTP fields (headers & trailers)"
+name = "winnow-rfc9112"
+version = "0.0.1"
+description = "Winnow parsers for RFC 9112 HTTP/1.1 syntax productions"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
-keywords = ["http", "field", "fields", "header", "trailer"]
+keywords = ["winnow", "http", "rfc9112"]
 repository.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[features]
+default = ["std", "simd"]
+std = ["winnow/std", "winnow-rfc9110/std"]
+simd = ["winnow/simd", "winnow-rfc9110/simd"]
+
 [dependencies]
 winnow = { version = "1", default-features = false, features = ["binary"] }
 winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
-
-[dev-dependencies]
-divan = { package = "codspeed-divan-compat", version = "4" }
-
-[[bench]]
-name = "http-field"
-harness = false
 
 [lints]
 workspace = true

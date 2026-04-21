@@ -11,10 +11,11 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-winnow = { version = "1", default-features = false, features = ["binary"] }
+winnow-rfc9112 = { path = "../winnow-rfc9112", version = "0.0.1", default-features = false }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
+winnow = { version = "1", default-features = false, features = ["binary"] }
 
 [[bench]]
 name = "http-chunked"

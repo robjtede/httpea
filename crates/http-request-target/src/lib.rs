@@ -6,7 +6,7 @@
 // #![no_std]
 use core::ops::Range;
 
-use winnow::{error::ContextError, prelude::*, stream::LocatingSlice};
+use winnow::{prelude::*, stream::LocatingSlice};
 
 mod error;
 mod parsing;
@@ -145,10 +145,8 @@ impl<'a> RequestTarget<'a> {
     ///
     /// The returned value borrows from `input` and stores byte ranges into the original slice for
     /// each parsed component.
-    pub fn try_from_slice(
-        input: &'a [u8],
-    ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        match parsing::parse_request_target_indices.parse(LocatingSlice::new(input)) {
+    pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ParseRequestTargetError> {
+        match parsing::parse_request_target.parse(LocatingSlice::new(input)) {
             Ok(parsing::RequestTargetIndices::Origin(indices)) => {
                 Ok(RequestTarget::Origin(RequestTargetOrigin {
                     inner: input,
@@ -176,9 +174,7 @@ impl<'a> RequestTarget<'a> {
                 }))
             }
             Ok(parsing::RequestTargetIndices::Asterisk) => Ok(RequestTarget::Asterisk),
-            Err(_) => parsing::parse_request_target
-                .parse(input)
-                .map(|()| unreachable!("indexed parser and validator diverged")),
+            Err(_) => Err(ParseRequestTargetError::InvalidTarget),
         }
     }
 }

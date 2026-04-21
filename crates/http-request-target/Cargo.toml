@@ -12,19 +12,17 @@ rust-version.workspace = true
 
 [features]
 default = ["std", "simd"]
-std = ["winnow/std"]
-simd = ["winnow/simd"]
+std = ["winnow/std", "winnow-rfc3986/std"]
+simd = ["winnow/simd", "winnow-rfc3986/simd"]
 
 [dependencies]
-winnow = { version = "1", default-features = false, features = [
-  "ascii",
-  "binary",
-] }
 impl-more = "0.3"
+winnow = { version = "1", default-features = false, features = ["ascii", "binary"] }
+winnow-rfc3986 = { path = "../winnow-rfc3986", version = "0.0.1", default-features = false }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
-http = "0.2.9"
+http = "0.2"
 
 [[bench]]
 name = "parse-request-target"

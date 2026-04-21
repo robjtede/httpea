@@ -15,6 +15,7 @@ use winnow::{
     prelude::*,
     stream::{LocatingSlice, Partial},
 };
+pub use winnow_rfc9110::{parse_field_name, parse_field_value, parse_ows};
 
 mod parsing;
 
@@ -106,7 +107,7 @@ impl<'a> FieldName<'a> {
     pub fn try_from_slice(
         slice: &'a [u8],
     ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        parsing::parse_field_name.parse(slice)?;
+        parse_field_name.parse(slice)?;
 
         Ok(Self { slice })
     }
@@ -129,7 +130,7 @@ impl<'a> FieldValue<'a> {
     pub fn try_from_slice(
         slice: &'a [u8],
     ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        parsing::parse_field_value.parse(slice)?;
+        parse_field_value.parse(slice)?;
 
         Ok(Self { slice })
     }

@@ -17,6 +17,8 @@ http-method = { path = "../http-method", version = "0.0.2" }
 http-request-target = { path = "../http-request-target", version = "0.1.0" }
 http-status-code = { path = "../http-status-code", version = "0.0.2" }
 http-version = { path = "../http-version", version = "0.0.2" }
+winnow-rfc3986 = { path = "../winnow-rfc3986", version = "0.0.1", default-features = false }
+winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
 
 [lints]
 workspace = true
