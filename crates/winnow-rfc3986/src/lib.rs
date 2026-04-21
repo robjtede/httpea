@@ -74,18 +74,27 @@ where
     I: Stream + StreamIsPartial,
     I::Token: Clone + AsChar,
 {
-    repeat(.., one_of((is_pchar, [b'/', b'?'])))
-        .map(|()| ())
-        .void()
-        .parse_next(input)
+    repeat(
+        ..,
+        one_of((
+            is_pchar,
+            #[allow(clippy::byte_char_slices)]
+            [b'/', b'?'],
+        )),
+    )
+    .map(|()| ())
+    .void()
+    .parse_next(input)
 }
 
 /// Returns `true` if the given character is in the `unreserved` group.
+#[inline]
 pub fn is_unreserved(char: char) -> bool {
     matches!(char, '0'..='9' | 'A'..='Z' | 'a'..='z' | '-' | '.' | '_' | '~')
 }
 
 /// Returns `true` if the given character is in the `sub-delims` group.
+#[inline]
 pub fn is_sub_delim(char: char) -> bool {
     matches!(
         char,
@@ -94,6 +103,7 @@ pub fn is_sub_delim(char: char) -> bool {
 }
 
 /// Returns `true` if the given character is a valid `pchar`.
+#[inline]
 pub fn is_pchar(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -101,6 +111,7 @@ pub fn is_pchar(char: impl AsChar) -> bool {
 }
 
 /// Returns `true` if the given character is valid in `reg-name`.
+#[inline]
 pub fn is_reg_name_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -108,6 +119,7 @@ pub fn is_reg_name_char(char: impl AsChar) -> bool {
 }
 
 /// Returns `true` if the given character is valid in `userinfo`.
+#[inline]
 pub fn is_userinfo_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -115,6 +127,7 @@ pub fn is_userinfo_char(char: impl AsChar) -> bool {
 }
 
 /// Returns `true` if the given character is valid within an `IP-literal` body.
+#[inline]
 pub fn is_ip_literal_char(char: impl AsChar) -> bool {
     let char = char.as_char();
 
@@ -122,6 +135,9 @@ pub fn is_ip_literal_char(char: impl AsChar) -> bool {
 }
 
 /// Returns `true` if the given slice looks like an `IPv6address` or `IPvFuture` payload.
+///
+/// See: [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2)
+#[inline]
 pub fn is_ip_literal_body(bytes: &[u8]) -> bool {
     bytes.contains(&b':') || matches!(bytes.first(), Some(b'v' | b'V')) && bytes.contains(&b'.')
 }
