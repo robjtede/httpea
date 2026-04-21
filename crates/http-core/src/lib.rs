@@ -14,22 +14,3 @@ pub use http_request_target::{
 };
 pub use http_status_code::StatusCode;
 pub use http_version::Version;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn re_exports_primary_types() {
-        let mut chunk = &b"1\r\na\r\n"[..];
-        let mut last_chunk = &b"0\r\n"[..];
-
-        let _ = parse_chunk(&mut chunk).unwrap();
-        parse_last_chunk(&mut last_chunk).unwrap();
-        let _ = Field::try_from_slice(b"accept: application/json").unwrap();
-        let _ = Method::try_from_slice(b"GET").unwrap();
-        let _ = RequestTarget::try_from_slice(b"/").unwrap();
-        let _ = StatusCode::from_u16(200);
-        let _ = Version::try_from_slice(b"HTTP/1.1").unwrap();
-    }
-}

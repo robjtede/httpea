@@ -11,7 +11,7 @@ use winnow::{error::ContextError, prelude::*, stream::LocatingSlice};
 mod error;
 mod parsing;
 
-// use crate::error::ParseRequestTargetError;
+pub use crate::error::ParseRequestTargetError;
 
 /// Parsed HTTP/1.1 request target.
 ///
