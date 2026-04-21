@@ -41,4 +41,4 @@ jobs:
           DIVAN_MIN_TIME: "1"
         with:
           mode: simulation
-          run: cargo codspeed run
+          run: cargo codspeed run --all-features
