@@ -223,7 +223,7 @@ where
 /// use winnow::Parser as _;
 /// use winnow_rfc9110::parse_quoted_pair;
 ///
-/// let (rest, ()) = parse_quoted_pair.parse_peek(&b"\\\"rest"[..]).unwrap();
+/// let (rest, ()) = parse_quoted_pair.parse_peek(&br#"\"rest"#[..]).unwrap();
 /// assert_eq!(rest, b"rest");
 /// ```
 ///
@@ -233,13 +233,13 @@ pub fn parse_quoted_pair<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
 {
-    b'\\'.parse_next(input)?;
-    take_while(1..=1, is_quoted_pair_byte)
+    (b'\\', take_while(1..=1, is_quoted_pair_byte))
         .void()
         .parse_next(input)
 }
 
 /// Returns `true` if the given byte is valid in `tchar`.
+#[inline]
 pub fn is_tchar(byte: u8) -> bool {
     byte.is_ascii_alphanumeric()
         || matches!(
@@ -262,24 +262,38 @@ pub fn is_tchar(byte: u8) -> bool {
 }
 
 /// Returns `true` if the given byte is valid as `field-vchar`.
+#[inline]
 pub fn is_field_vchar(byte: u8) -> bool {
     matches!(byte, 0x21..=0x7E | 0x80..=0xFF)
 }
 
 /// Returns `true` if the given byte can appear inside a trimmed field value.
+#[inline]
 pub fn is_field_value_byte(byte: u8) -> bool {
     is_field_vchar(byte) || is_ows_byte(byte)
 }
 
 /// Returns `true` if the given byte is optional whitespace.
+#[inline]
 pub fn is_ows_byte(byte: u8) -> bool {
     matches!(byte, b' ' | b'\t')
 }
 
+/// Returns `true` if the given byte is valid as `qdtext`.
+///
+/// This matches the octets allowed unescaped inside a `quoted-string`, excluding
+/// DQUOTE (`"`) and backslash (`\`), which are handled separately by the parser.
+///
+/// See: [RFC 9110 §5.6.4](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.4)
 fn is_qdtext_byte(byte: u8) -> bool {
     matches!(byte, b'\t' | b' ' | 0x21 | 0x23..=0x5B | 0x5D..=0x7E | 0x80..=0xFF)
 }
 
+/// Returns `true` if the given byte is valid after the leading backslash in a `quoted-pair`.
+///
+/// This matches the `quoted-pair` production body: HTAB, SP, VCHAR, or `obs-text`.
+///
+/// See: [RFC 9110 §5.6.4](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.4)
 fn is_quoted_pair_byte(byte: u8) -> bool {
     matches!(byte, b'\t' | b' ' | 0x21..=0x7E | 0x80..=0xFF)
 }
