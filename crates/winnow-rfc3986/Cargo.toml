@@ -18,5 +18,12 @@ simd = ["winnow/simd"]
 [dependencies]
 winnow = { version = "1", default-features = false, features = ["ascii", "binary"] }
 
+[dev-dependencies]
+divan = { package = "codspeed-divan-compat", version = "4" }
+
+[[bench]]
+name = "rfc3986"
+harness = false
+
 [lints]
 workspace = true

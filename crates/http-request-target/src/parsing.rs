@@ -1,14 +1,15 @@
 use core::ops::Range;
 
 use winnow::{
+    ascii::digit1,
     combinator::{alt, fail, opt, preceded},
     prelude::*,
     stream::{AsChar, Compare, Location, Stream, StreamIsPartial},
     token::{literal, take_while},
 };
 use winnow_rfc3986::{
-    is_userinfo_char, parse_authority, parse_path, parse_path_abempty, parse_port, parse_query,
-    parse_scheme, parse_uri_host,
+    is_userinfo_char, parse_authority, parse_path, parse_path_abempty, parse_query, parse_scheme,
+    parse_uri_host,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -116,7 +117,7 @@ where
 {
     let authority_start = input.current_token_start();
 
-    let (host, _, port) = (parse_uri_host.span(), b':', parse_port.span()).parse_next(input)?;
+    let (host, _, port) = (parse_uri_host.span(), b':', parse_port_strict.span()).parse_next(input)?;
 
     Ok(RequestTargetAuthorityIndices {
         authority: authority_start..input.current_token_start(),
@@ -128,11 +129,13 @@ where
 #[allow(dead_code)]
 fn parse_authority_form_only<I>(input: &mut I) -> ModalResult<()>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
+    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
-    (parse_uri_host, b':', parse_port).void().parse_next(input)
+    (parse_uri_host, b':', parse_port_strict)
+        .void()
+        .parse_next(input)
 }
 
 /// # Request Line Examples
@@ -233,7 +236,7 @@ where
 #[allow(dead_code)]
 fn parse_request_target_only<I>(input: &mut I) -> ModalResult<()>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
+    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
@@ -293,14 +296,14 @@ where
 #[allow(dead_code)]
 pub(crate) fn parse_authority_parts<I>(input: &mut I) -> ModalResult<()>
 where
-    I: Stream + StreamIsPartial + Compare<u8>,
+    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
     I::Slice: AsRef<[u8]>,
 {
     (
         opt((take_while(1.., is_userinfo_char), b'@')),
         parse_uri_host,
-        opt((b':', parse_port)),
+        opt((b':', parse_port_strict)),
     )
         .void()
         .parse_next(input)
@@ -329,7 +332,7 @@ where
     let (userinfo, host, port) = (
         opt((take_while(1.., is_userinfo_char).span(), b'@').map(|(userinfo, _)| userinfo)),
         parse_uri_host.span(),
-        opt(preceded(b':', parse_port.span())),
+        opt(preceded(b':', parse_port_strict.span())),
     )
         .parse_next(input)?;
 
@@ -339,6 +342,14 @@ where
         host,
         port,
     })
+}
+
+#[inline]
+fn parse_port_strict<I>(input: &mut I) -> ModalResult<()>
+where
+    I: Stream<Token = u8> + StreamIsPartial,
+{
+    digit1.void().parse_next(input)
 }
 
 #[cfg(test)]
@@ -438,8 +449,8 @@ mod tests {
 
     #[test]
     fn parses_reg_name() {
-        assert_backtrack!(parse_reg_name, b"");
-        assert_backtrack!(parse_reg_name, b"@localhost");
+        assert_ok_remaining!(parse_reg_name, b"", b"");
+        assert_ok_remaining!(parse_reg_name, b"@localhost", b"@localhost");
 
         assert_ok_remaining!(parse_reg_name, b"localhost", b"");
         assert_ok_remaining!(parse_reg_name, b"example.com:80", b":80");
@@ -482,7 +493,7 @@ mod tests {
     fn parses_authority() {
         assert_backtrack!(parse_authority, b"");
         assert_backtrack!(parse_authority, b"@localhost");
-        assert_partial_incomplete!(parse_authority, b"", Needed::new(1));
+        assert_partial_incomplete!(parse_authority, b"", Needed::Unknown);
 
         assert_ok_remaining!(parse_authority, b"127.0.0.1:80", b"");
         assert_ok_remaining!(parse_authority, b"user:pass@localhost:3000", b"");

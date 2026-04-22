@@ -877,6 +877,7 @@ dependencies = [
 name = "winnow-rfc3986"
 version = "0.0.1"
 dependencies = [
+ "codspeed-divan-compat",
  "winnow",
 ]
 
