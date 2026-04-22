@@ -1,6 +1,6 @@
 [package]
 name = "winnow-rfc3986"
-version = "0.0.1"
+version = "0.0.2"
 description = "Winnow parsers for RFC 3986 URI syntax productions"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
