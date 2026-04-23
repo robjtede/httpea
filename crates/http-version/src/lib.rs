@@ -78,4 +78,13 @@ mod tests {
         assert_eq!(Version::try_from_slice(b"HTP/1.1"), Err(ParseVersionError));
         assert_eq!(Version::try_from_slice(b"HTTP/9.9"), Err(ParseVersionError));
     }
+
+    #[test]
+    fn renders_canonical_version_bytes() {
+        assert_eq!(Version::Http0_9.as_slice(), b"HTTP/0.9");
+        assert_eq!(Version::Http1_0.as_slice(), b"HTTP/1.0");
+        assert_eq!(Version::Http1_1.as_slice(), b"HTTP/1.1");
+        assert_eq!(Version::Http2.as_slice(), b"HTTP/2");
+        assert_eq!(Version::Http3.as_slice(), b"HTTP/3");
+    }
 }

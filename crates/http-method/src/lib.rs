@@ -170,6 +170,15 @@ mod tests {
     }
 
     #[test]
+    fn parses_remaining_well_known_methods() {
+        assert_eq!(Method::try_from_slice(b"CONNECT"), Ok(CONNECT));
+        assert_eq!(Method::try_from_slice(b"HEAD"), Ok(HEAD));
+        assert_eq!(Method::try_from_slice(b"OPTIONS"), Ok(OPTIONS));
+        assert_eq!(Method::try_from_slice(b"PUT"), Ok(PUT));
+        assert_eq!(Method::try_from_slice(b"TRACE"), Ok(TRACE));
+    }
+
+    #[test]
     fn parses_extension_method() {
         let method = Method::try_from_slice(b"PRI").unwrap();
 
@@ -191,5 +200,25 @@ mod tests {
             Method::try_from_slice(b"GET\r"),
             Err(ParseMethodError::InvalidByte(b'\r'))
         );
+    }
+
+    #[test]
+    fn renders_method_bytes() {
+        let well_known = [
+            (&CONNECT, b"CONNECT".as_slice()),
+            (&DELETE, b"DELETE".as_slice()),
+            (&GET, b"GET".as_slice()),
+            (&HEAD, b"HEAD".as_slice()),
+            (&OPTIONS, b"OPTIONS".as_slice()),
+            (&PATCH, b"PATCH".as_slice()),
+            (&POST, b"POST".as_slice()),
+            (&PUT, b"PUT".as_slice()),
+            (&QUERY, b"QUERY".as_slice()),
+            (&TRACE, b"TRACE".as_slice()),
+        ];
+
+        for (method, expected) in well_known {
+            assert_eq!(method.as_slice(), expected);
+        }
     }
 }

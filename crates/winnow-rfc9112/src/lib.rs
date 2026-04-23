@@ -361,3 +361,128 @@ fn has_chunk_ext_prefix(bytes: &[u8]) -> bool {
         Some(index) if bytes[index] == b';'
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_chunk_and_header_forms() {
+        assert_eq!(
+            parse_chunk.parse_peek(&b"4\r\nWiki\r\nrest"[..]),
+            Ok((&b"rest"[..], 4))
+        );
+        assert_eq!(
+            parse_chunk_header.parse_peek(&b"000a;foo=bar\r\npayload"[..]),
+            Ok((&b"payload"[..], 10))
+        );
+        assert_eq!(
+            parse_chunk_size.parse_peek(&b"0F;ext"[..]),
+            Ok((&b";ext"[..], 15))
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_non_terminal_chunks() {
+        assert!(parse_chunk.parse_peek(&b"0\r\n\r\n"[..]).is_err());
+        assert!(parse_chunk.parse_peek(&b"4\r\nabc\r\n"[..]).is_err());
+        assert!(parse_chunk_header.parse_peek(&b"4\n"[..]).is_err());
+        assert!(parse_chunk_size.parse_peek(&b"xyz"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_chunk_data_of_exact_size() {
+        assert_eq!(
+            parse_chunk_data(4).parse_peek(&b"Wiki\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_zero_length_or_truncated_chunk_data() {
+        assert!(parse_chunk_data(0).parse_peek(&b"anything"[..]).is_err());
+        assert!(parse_chunk_data(4).parse_peek(&b"abc"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_last_chunk_with_optional_extensions() {
+        assert_eq!(
+            parse_last_chunk.parse_peek(&b"000;sig=ok\r\ntrailers"[..]),
+            Ok((&b"trailers"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_non_last_chunk_in_last_chunk_parser() {
+        assert!(parse_last_chunk.parse_peek(&b"1\r\n"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_chunk_extensions() {
+        assert_eq!(
+            parse_chunk_ext.parse_peek(&b"\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+        assert_eq!(
+            parse_chunk_ext.parse_peek(&b" ;foo=bar; baz = \"qux\"\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+        assert_eq!(
+            parse_chunk_ext_param.parse_peek(&b";foo=bar rest"[..]),
+            Ok((&b" rest"[..], ()))
+        );
+        assert_eq!(
+            parse_chunk_ext_param.parse_peek(&b" ; token = \"quoted\"!"[..]),
+            Ok((&b"!"[..], ()))
+        );
+        assert_eq!(
+            parse_chunk_ext_val.parse_peek(&b"token;"[..]),
+            Ok((&b";"[..], ()))
+        );
+        assert_eq!(
+            parse_chunk_ext_val.parse_peek(&b"\"quoted\";"[..]),
+            Ok((&b";"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_chunk_extensions() {
+        assert!(parse_chunk_ext_param.parse_peek(&b"foo=bar"[..]).is_err());
+        assert!(parse_chunk_ext_param.parse_peek(&b"; =bad"[..]).is_err());
+        assert!(
+            parse_chunk_ext_val
+                .parse_peek(&b"\"unterminated"[..])
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn rejects_overflowing_chunk_size() {
+        let huge = [b'F'; 100];
+        assert!(parse_chunk_size.parse_peek(huge.as_slice()).is_err());
+    }
+
+    #[test]
+    fn parses_internal_chunk_helpers() {
+        assert_eq!(
+            parse_chunk_size_inner.parse_peek(&b"000f rest"[..]),
+            Ok((&b" rest"[..], (15, false)))
+        );
+        assert_eq!(
+            parse_crlf.parse_peek(&b"\r\nbody"[..]),
+            Ok((&b"body"[..], ()))
+        );
+        assert!(parse_crlf.parse_peek(&b"\n"[..]).is_err());
+
+        assert!(is_hex_digit(b'F'));
+        assert!(!is_hex_digit(b'g'));
+        assert_eq!(hex_digit_value(b'0'), Some(0));
+        assert_eq!(hex_digit_value(b'a'), Some(10));
+        assert_eq!(hex_digit_value(b'F'), Some(15));
+        assert_eq!(hex_digit_value(b'x'), None);
+
+        assert!(has_chunk_ext_prefix(b" ;foo"));
+        assert!(!has_chunk_ext_prefix(b" \t"));
+        assert!(!has_chunk_ext_prefix(b" data"));
+    }
+}

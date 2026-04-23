@@ -37,3 +37,27 @@ impl StatusCode {
         [DIGITS_START + d100, DIGITS_START + d10, DIGITS_START + d1]
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn constructs_status_codes_within_range() {
+        assert_eq!(StatusCode::from_u16(100).as_text_bytes(), *b"100");
+        assert_eq!(StatusCode::from_u16(204).as_text_bytes(), *b"204");
+        assert_eq!(StatusCode::from_u16(999).as_text_bytes(), *b"999");
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid status code: 99")]
+    fn rejects_status_codes_below_range() {
+        let _ = StatusCode::from_u16(99);
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid status code: 1000")]
+    fn rejects_status_codes_above_range() {
+        let _ = StatusCode::from_u16(1000);
+    }
+}

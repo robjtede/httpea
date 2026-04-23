@@ -125,3 +125,91 @@ fn is_reason_phrase_byte(byte: u8) -> bool {
 pub(crate) fn find_crlf(input: &[u8]) -> Option<usize> {
     input.windows(2).position(|window| window == b"\r\n")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_request_line_indices() {
+        let indices =
+            parse_request_line_indices(&mut LocatingSlice::new(&b"GET /items?q=1 HTTP/1.1"[..]))
+                .unwrap();
+
+        assert_eq!(indices.method, 0..3);
+        assert_eq!(indices.target, 4..14);
+        assert_eq!(indices.version, 15..23);
+    }
+
+    #[test]
+    fn rejects_invalid_request_line_components() {
+        assert!(
+            parse_request_line_indices(&mut LocatingSlice::new(&b"GE T / HTTP/1.1"[..])).is_err()
+        );
+        assert!(
+            parse_request_line_indices(&mut LocatingSlice::new(&b"GET localhost HTTP/1.1"[..]))
+                .is_err()
+        );
+        assert!(parse_request_line_indices(&mut LocatingSlice::new(&b"GET / HTTP/2"[..])).is_err());
+    }
+
+    #[test]
+    fn parses_status_line_indices() {
+        let indices =
+            parse_status_line_indices(&mut LocatingSlice::new(&b"HTTP/1.1 200 OK"[..])).unwrap();
+        assert_eq!(indices.version, 0..8);
+        assert_eq!(indices.status_code, 9..12);
+        assert_eq!(indices.reason_phrase, Some(13..15));
+
+        let indices =
+            parse_status_line_indices(&mut LocatingSlice::new(&b"HTTP/1.0 204 "[..])).unwrap();
+        assert_eq!(indices.version, 0..8);
+        assert_eq!(indices.status_code, 9..12);
+        assert_eq!(indices.reason_phrase, None);
+    }
+
+    #[test]
+    fn rejects_invalid_status_lines() {
+        assert!(parse_status_line_indices(&mut LocatingSlice::new(&b"HTTP/2 200 OK"[..])).is_err());
+        assert!(
+            parse_status_line_indices(&mut LocatingSlice::new(&b"HTTP/1.1 00 OK"[..])).is_err()
+        );
+        assert!(
+            parse_status_line_indices(&mut LocatingSlice::new(&b"HTTP/1.1 200 OK\r"[..])).is_err()
+        );
+    }
+
+    #[test]
+    fn validates_component_parsers() {
+        assert!(parse_method_component(&mut LocatingSlice::new(&b"GET"[..])).is_ok());
+        assert!(parse_method_component(&mut LocatingSlice::new(&b"\r"[..])).is_err());
+
+        assert!(parse_target_component(&mut LocatingSlice::new(&b"/items"[..])).is_ok());
+        assert!(parse_target_component(&mut LocatingSlice::new(&b"?"[..])).is_err());
+
+        assert!(parse_version_component(&mut LocatingSlice::new(&b"HTTP/1.1"[..])).is_ok());
+        assert!(parse_version_component(&mut LocatingSlice::new(&b"HTTP/3"[..])).is_err());
+
+        assert!(parse_status_code_component(&mut LocatingSlice::new(&b"200"[..])).is_ok());
+        assert!(parse_status_code_component(&mut LocatingSlice::new(&b"00"[..])).is_err());
+
+        assert!(parse_reason_phrase_component(&mut LocatingSlice::new(&b"OK\t\x80"[..])).is_ok());
+        assert!(parse_reason_phrase_component(&mut LocatingSlice::new(&b"\r"[..])).is_err());
+    }
+
+    #[test]
+    fn validates_byte_classifiers_and_crlf_search() {
+        assert!(is_request_line_visible_byte(b'G'));
+        assert!(!is_request_line_visible_byte(b' '));
+        assert!(!is_request_line_visible_byte(b'\r'));
+
+        assert!(is_reason_phrase_byte(b' '));
+        assert!(is_reason_phrase_byte(b'\t'));
+        assert!(is_reason_phrase_byte(0x80));
+        assert!(!is_reason_phrase_byte(b'\n'));
+
+        assert_eq!(find_crlf(b""), None);
+        assert_eq!(find_crlf(b"abc"), None);
+        assert_eq!(find_crlf(b"abc\r\ndef"), Some(3));
+    }
+}

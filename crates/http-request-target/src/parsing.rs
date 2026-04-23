@@ -2,14 +2,13 @@ use core::ops::Range;
 
 use winnow::{
     ascii::digit1,
-    combinator::{alt, fail, opt, preceded},
+    combinator::{alt, fail, opt, preceded, separated_pair},
     prelude::*,
     stream::{AsChar, Compare, Location, Stream, StreamIsPartial},
-    token::{literal, take_while},
+    token::take_while,
 };
 use winnow_rfc3986::{
-    is_userinfo_char, parse_authority, parse_path, parse_path_abempty, parse_query, parse_scheme,
-    parse_uri_host,
+    is_userinfo_char, parse_path, parse_path_abempty, parse_query, parse_scheme, parse_uri_host,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -85,17 +84,6 @@ where
         .parse_next(input)
 }
 
-#[allow(dead_code)]
-fn parse_origin_form_only<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-{
-    (parse_path, opt((b'?', parse_query)))
-        .void()
-        .parse_next(input)
-}
-
 /// # Request Line Examples
 ///
 /// ```text
@@ -117,25 +105,14 @@ where
 {
     let authority_start = input.current_token_start();
 
-    let (host, _, port) = (parse_uri_host.span(), b':', parse_port_strict.span()).parse_next(input)?;
+    let (host, port) =
+        separated_pair(parse_uri_host.span(), b':', parse_port_strict.span()).parse_next(input)?;
 
     Ok(RequestTargetAuthorityIndices {
         authority: authority_start..input.current_token_start(),
         host,
         port,
     })
-}
-
-#[allow(dead_code)]
-fn parse_authority_form_only<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    (parse_uri_host, b':', parse_port_strict)
-        .void()
-        .parse_next(input)
 }
 
 /// # Request Line Examples
@@ -173,14 +150,13 @@ where
 {
     (
         parse_scheme.span(),
-        b':',
-        (b'/', b'/'),
+        (b':', b'/', b'/'),
         parse_authority_indices,
         parse_path_abempty.span(),
         opt((b'?', parse_query).span()),
     )
         .map(
-            |(scheme, _, _, authority, path, search)| RequestTargetAbsoluteIndices {
+            |(scheme, _, authority, path, search)| RequestTargetAbsoluteIndices {
                 scheme,
                 authority: authority.authority,
                 userinfo: authority.userinfo,
@@ -190,25 +166,6 @@ where
                 search,
             },
         )
-        .parse_next(input)
-}
-
-#[allow(dead_code)]
-fn parse_absolute_form_only<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    (
-        parse_scheme,
-        b':',
-        (b'/', b'/'),
-        parse_authority,
-        parse_path_abempty,
-        opt((b'?', parse_query)),
-    )
-        .void()
         .parse_next(input)
 }
 
@@ -230,25 +187,7 @@ pub(crate) fn parse_asterisk<I>(input: &mut I) -> ModalResult<()>
 where
     I: Stream + StreamIsPartial + Compare<u8>,
 {
-    literal(b'*').void().parse_next(input)
-}
-
-#[allow(dead_code)]
-fn parse_request_target_only<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    alt((
-        parse_asterisk,
-        parse_origin_form_only,
-        parse_authority_form_only,
-        parse_absolute_form_only,
-        fail,
-    ))
-    .void()
-    .parse_next(input)
+    b'*'.void().parse_next(input)
 }
 
 /// Parses an HTTP/1.1 `request-target`.
@@ -287,34 +226,6 @@ where
 /// ```text
 /// authority = [ userinfo "@" ] host [ ":" port ]
 /// userinfo  = *( unreserved / pct-encoded / sub-delims / ":" )
-/// ```
-///
-/// See:
-/// - [RFC 3986 §3.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2)
-/// - [RFC 3986 Appendix A](https://datatracker.ietf.org/doc/html/rfc3986#appendix-A)
-#[inline]
-#[allow(dead_code)]
-pub(crate) fn parse_authority_parts<I>(input: &mut I) -> ModalResult<()>
-where
-    I: Stream<Token = u8> + StreamIsPartial + Compare<u8>,
-    I::Token: Clone + AsChar,
-    I::Slice: AsRef<[u8]>,
-{
-    (
-        opt((take_while(1.., is_userinfo_char), b'@')),
-        parse_uri_host,
-        opt((b':', parse_port_strict)),
-    )
-        .void()
-        .parse_next(input)
-}
-
-/// Parses `authority` and records the spans of its URI subcomponents.
-///
-/// # BNF
-///
-/// ```text
-/// authority = [ userinfo "@" ] host [ ":" port ]
 /// ```
 ///
 /// See:
@@ -361,8 +272,8 @@ mod tests {
     };
     use winnow_rfc3986::{
         is_ip_literal_body, is_ip_literal_char, is_pchar, is_reg_name_char, is_sub_delim,
-        is_unreserved, parse_authority, parse_ip_literal, parse_path, parse_query, parse_reg_name,
-        parse_scheme, parse_uri_host,
+        is_unreserved, parse_authority, parse_ip_literal, parse_path, parse_path_abempty,
+        parse_query, parse_reg_name, parse_scheme, parse_uri_host,
     };
 
     use super::*;
@@ -531,16 +442,27 @@ mod tests {
 
     #[test]
     fn parses_authority_form() {
-        assert_backtrack!(parse_authority_form_only, b"");
-        assert_partial_incomplete!(parse_authority_form_only, b"", Needed::Unknown);
+        assert!(matches!(
+            parse_authority_form.parse_peek(LocatingSlice::new(&b""[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert_eq!(
+            parse_authority_form.parse_peek(Partial::new(LocatingSlice::new(&b""[..]))),
+            Err(ErrMode::Incomplete(Needed::Unknown)),
+        );
 
-        assert_backtrack!(parse_authority_form_only, b"localhost");
-        assert_backtrack!(parse_authority_form_only, b"user@localhost:3000");
-        assert_backtrack!(parse_authority_form_only, b"[::1]");
-
-        assert_ok_remaining!(parse_authority_form_only, b"localhost:3000", b"");
-        assert_ok_remaining!(parse_authority_form_only, b"127.0.0.1:80", b"");
-        assert_ok_remaining!(parse_authority_form_only, b"[::1]:443", b"");
+        assert!(matches!(
+            parse_authority_form.parse_peek(LocatingSlice::new(&b"localhost"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert!(matches!(
+            parse_authority_form.parse_peek(LocatingSlice::new(&b"user@localhost:3000"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert!(matches!(
+            parse_authority_form.parse_peek(LocatingSlice::new(&b"[::1]"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
 
         let indices = parse_authority_form
             .parse(LocatingSlice::new(&b"localhost:3000"[..]))
@@ -548,26 +470,39 @@ mod tests {
         assert_eq!(indices.authority, 0..14);
         assert_eq!(indices.host, 0..9);
         assert_eq!(indices.port, 10..14);
+
+        let indices = parse_authority_form
+            .parse(LocatingSlice::new(&b"127.0.0.1:80"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..12);
+        assert_eq!(indices.host, 0..9);
+        assert_eq!(indices.port, 10..12);
+
+        let indices = parse_authority_form
+            .parse(LocatingSlice::new(&b"[::1]:443"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..9);
+        assert_eq!(indices.host, 0..5);
+        assert_eq!(indices.port, 6..9);
     }
 
     #[test]
     fn parses_absolute_form() {
-        assert_backtrack!(parse_absolute_form_only, b"");
-        assert_backtrack!(parse_absolute_form_only, b"/foo");
-        assert_backtrack!(parse_absolute_form_only, b"htt:p//host");
-        assert_partial_incomplete!(parse_absolute_form_only, b"", Needed::new(1));
-
-        assert_ok_remaining!(
-            parse_absolute_form_only,
-            b"http://127.0.0.1:61761/chunks",
-            b""
-        );
-        assert_ok_remaining!(parse_absolute_form_only, b"https://127.0.0.1:61761", b"");
-        assert_ok_remaining!(parse_absolute_form_only, b"http://127.0.0.1?foo=bar", b"");
-        assert_ok_remaining!(
-            parse_absolute_form_only,
-            b"git+http://example.com/repo",
-            b""
+        assert!(matches!(
+            parse_absolute_form.parse_peek(LocatingSlice::new(&b""[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert!(matches!(
+            parse_absolute_form.parse_peek(LocatingSlice::new(&b"/foo"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert!(matches!(
+            parse_absolute_form.parse_peek(LocatingSlice::new(&b"htt:p//host"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert_eq!(
+            parse_absolute_form.parse_peek(Partial::new(LocatingSlice::new(&b""[..]))),
+            Err(ErrMode::Incomplete(Needed::new(1))),
         );
 
         let indices = parse_absolute_form
@@ -579,6 +514,36 @@ mod tests {
         assert_eq!(indices.port, Some(17..22));
         assert_eq!(indices.path, 22..29);
         assert_eq!(indices.search, None);
+
+        let indices = parse_absolute_form
+            .parse(LocatingSlice::new(&b"https://127.0.0.1:61761"[..]))
+            .unwrap();
+        assert_eq!(indices.scheme, 0..5);
+        assert_eq!(indices.authority, 8..23);
+        assert_eq!(indices.host, 8..17);
+        assert_eq!(indices.port, Some(18..23));
+        assert_eq!(indices.path, 23..23);
+        assert_eq!(indices.search, None);
+
+        let indices = parse_absolute_form
+            .parse(LocatingSlice::new(&b"http://127.0.0.1?foo=bar"[..]))
+            .unwrap();
+        assert_eq!(indices.scheme, 0..4);
+        assert_eq!(indices.authority, 7..16);
+        assert_eq!(indices.host, 7..16);
+        assert_eq!(indices.port, None);
+        assert_eq!(indices.path, 16..16);
+        assert_eq!(indices.search, Some(16..24));
+
+        let indices = parse_absolute_form
+            .parse(LocatingSlice::new(&b"git+http://example.com/repo"[..]))
+            .unwrap();
+        assert_eq!(indices.scheme, 0..8);
+        assert_eq!(indices.authority, 11..22);
+        assert_eq!(indices.host, 11..22);
+        assert_eq!(indices.port, None);
+        assert_eq!(indices.path, 22..27);
+        assert_eq!(indices.search, None);
     }
 
     #[test]
@@ -588,5 +553,105 @@ mod tests {
 
         assert_ok_remaining!(parse_asterisk, b"*", b"");
         assert_ok_remaining!(parse_asterisk, b"**", b"*");
+    }
+
+    #[test]
+    fn parses_origin_form_variants() {
+        assert!(matches!(
+            parse_origin_form.parse_peek(LocatingSlice::new(&b""[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert_eq!(
+            parse_origin_form.parse_peek(Partial::new(LocatingSlice::new(&b""[..]))),
+            Err(ErrMode::Incomplete(Needed::Unknown)),
+        );
+
+        let indices = parse_origin_form
+            .parse(LocatingSlice::new(&b"/just/path"[..]))
+            .unwrap();
+        assert_eq!(indices.path, 0..10);
+        assert_eq!(indices.search, None);
+
+        let indices = parse_origin_form
+            .parse(LocatingSlice::new(&b"/where?q=now"[..]))
+            .unwrap();
+        assert_eq!(indices.path, 0..6);
+        assert_eq!(indices.search, Some(6..12));
+    }
+
+    #[test]
+    fn parses_request_target_dispatch() {
+        assert!(matches!(
+            parse_request_target.parse_peek(LocatingSlice::new(&b""[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+        assert!(matches!(
+            parse_request_target.parse_peek(LocatingSlice::new(&b"localhost"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+
+        assert!(matches!(
+            parse_request_target
+                .parse(LocatingSlice::new(&b"*"[..]))
+                .unwrap(),
+            RequestTargetIndices::Asterisk
+        ));
+        assert!(matches!(
+            parse_request_target
+                .parse(LocatingSlice::new(&b"/path?x=1"[..]))
+                .unwrap(),
+            RequestTargetIndices::Origin(_)
+        ));
+        assert!(matches!(
+            parse_request_target
+                .parse(LocatingSlice::new(&b"localhost:3000"[..]))
+                .unwrap(),
+            RequestTargetIndices::Authority(_)
+        ));
+        assert!(matches!(
+            parse_request_target
+                .parse(LocatingSlice::new(&b"http://example.com/"[..]))
+                .unwrap(),
+            RequestTargetIndices::Absolute(_)
+        ));
+    }
+
+    #[test]
+    fn parses_authority_indices() {
+        assert!(matches!(
+            parse_authority_indices.parse_peek(LocatingSlice::new(&b"@example.com"[..])),
+            Err(ErrMode::Backtrack(_))
+        ));
+
+        let indices = parse_authority_indices
+            .parse(LocatingSlice::new(&b"user:pass@example.com:443"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..25);
+        assert_eq!(indices.userinfo, Some(0..9));
+        assert_eq!(indices.host, 10..21);
+        assert_eq!(indices.port, Some(22..25));
+
+        let indices = parse_authority_indices
+            .parse(LocatingSlice::new(&b"example.com"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..11);
+        assert_eq!(indices.userinfo, None);
+        assert_eq!(indices.host, 0..11);
+        assert_eq!(indices.port, None);
+
+        let indices = parse_authority_indices
+            .parse(LocatingSlice::new(&b"[::1]:8080"[..]))
+            .unwrap();
+        assert_eq!(indices.authority, 0..10);
+        assert_eq!(indices.userinfo, None);
+        assert_eq!(indices.host, 0..5);
+        assert_eq!(indices.port, Some(6..10));
+    }
+
+    #[test]
+    fn parses_strict_port() {
+        assert_ok_remaining!(parse_port_strict, b"8080/", b"/");
+        assert_backtrack!(parse_port_strict, b"");
+        assert_backtrack!(parse_port_strict, b"port");
     }
 }

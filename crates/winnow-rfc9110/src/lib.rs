@@ -297,3 +297,124 @@ fn is_qdtext_byte(byte: u8) -> bool {
 fn is_quoted_pair_byte(byte: u8) -> bool {
     matches!(byte, b'\t' | b' ' | 0x21..=0x7E | 0x80..=0xFF)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_tokens_and_field_names() {
+        assert_eq!(parse_token.parse_peek(&b"gzip,"[..]), Ok((&b","[..], ())));
+        assert_eq!(
+            parse_field_name.parse_peek(&b"content-type: text/plain"[..]),
+            Ok((&b": text/plain"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_tokens() {
+        assert!(parse_token.parse(&b""[..]).is_err());
+        assert!(parse_token.parse(&b"bad token"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_and_trims_field_values() {
+        assert_eq!(
+            parse_field_value.parse_peek(&b"\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+        assert_eq!(
+            parse_field_value.parse_peek(&b"text/plain\t;charset=utf-8\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+        assert_eq!(
+            parse_field_value.parse_peek(&b"\x80value\r\n"[..]),
+            Ok((&b"\r\n"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_untrimmed_or_invalid_field_values() {
+        assert!(parse_field_value.parse(&b" value"[..]).is_err());
+        assert!(parse_field_value.parse(&b"value "[..]).is_err());
+        assert!(parse_field_value.parse(&b"value\n"[..]).is_err());
+    }
+
+    #[test]
+    fn parses_optional_and_bad_whitespace() {
+        assert_eq!(
+            parse_ows.parse_peek(&b" \tvalue"[..]),
+            Ok((&b"value"[..], ()))
+        );
+        assert_eq!(
+            parse_bws.parse_peek(&b"\t ;foo"[..]),
+            Ok((&b";foo"[..], ()))
+        );
+    }
+
+    #[test]
+    fn parses_quoted_strings_and_pairs() {
+        assert_eq!(
+            parse_quoted_string.parse_peek(&b"\"text\\\t\\x80\";"[..]),
+            Ok((&b";"[..], ()))
+        );
+        assert_eq!(
+            parse_quoted_pair.parse_peek(&br#"\"rest"#[..]),
+            Ok((&b"rest"[..], ()))
+        );
+        assert_eq!(
+            parse_quoted_pair.parse_peek(&b"\\\tmore"[..]),
+            Ok((&b"more"[..], ()))
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_quoted_strings_and_pairs() {
+        assert!(
+            parse_quoted_string
+                .parse_peek(&b"unterminated"[..])
+                .is_err()
+        );
+        assert!(
+            parse_quoted_string
+                .parse_peek(&b"\"unterminated"[..])
+                .is_err()
+        );
+        assert!(
+            parse_quoted_string
+                .parse_peek(&b"\"bad\ntext\""[..])
+                .is_err()
+        );
+        assert!(parse_quoted_pair.parse_peek(&b"\\"[..]).is_err());
+        assert!(parse_quoted_pair.parse_peek(&b"\\\n"[..]).is_err());
+    }
+
+    #[test]
+    fn validates_character_classes() {
+        assert!(is_tchar(b'Z'));
+        assert!(is_tchar(b'~'));
+        assert!(!is_tchar(b' '));
+        assert!(!is_tchar(b':'));
+
+        assert!(is_field_vchar(b'!'));
+        assert!(is_field_vchar(0xFF));
+        assert!(!is_field_vchar(b' '));
+
+        assert!(is_field_value_byte(b'\t'));
+        assert!(is_field_value_byte(b'A'));
+        assert!(!is_field_value_byte(b'\n'));
+
+        assert!(is_ows_byte(b' '));
+        assert!(is_ows_byte(b'\t'));
+        assert!(!is_ows_byte(b'\r'));
+
+        assert!(is_qdtext_byte(b' '));
+        assert!(is_qdtext_byte(0x80));
+        assert!(!is_qdtext_byte(b'"'));
+        assert!(!is_qdtext_byte(b'\\'));
+
+        assert!(is_quoted_pair_byte(b' '));
+        assert!(is_quoted_pair_byte(0x80));
+        assert!(!is_quoted_pair_byte(b'\n'));
+    }
+}

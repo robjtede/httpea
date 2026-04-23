@@ -16,7 +16,9 @@ static ALLOC: AllocProfiler = AllocProfiler::system();
 fn absolute_uri_http() {
     black_box(
         parse_absolute_uri
-            .parse(black_box(&b"https://example.com:8443/a/b/c?q=1&lang=en"[..]))
+            .parse(black_box(
+                &b"https://example.com:8443/a/b/c?q=1&lang=en"[..],
+            ))
             .unwrap(),
     );
 }
@@ -43,7 +45,9 @@ fn relative_ref_nested() {
 fn full_uri_with_fragment() {
     black_box(
         parse_uri
-            .parse(black_box(&b"https://user:pass@example.com:443/docs/latest?q=1#install"[..]))
+            .parse(black_box(
+                &b"https://user:pass@example.com:443/docs/latest?q=1#install"[..],
+            ))
             .unwrap(),
     );
 }
