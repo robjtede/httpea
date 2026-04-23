@@ -1,6 +1,6 @@
-use winnow::{error::ContextError, prelude::*};
+use winnow::prelude::*;
 
-use crate::parse_field_value;
+use crate::{ParseFieldValueError, parse_field_value};
 
 /// Field value.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,10 +10,10 @@ pub struct FieldValue<'a> {
 
 impl<'a> FieldValue<'a> {
     /// Parses a field value from bytes.
-    pub fn try_from_slice(
-        slice: &'a [u8],
-    ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        parse_field_value.parse(slice)?;
+    pub fn try_from_slice(slice: &'a [u8]) -> Result<Self, ParseFieldValueError> {
+        parse_field_value
+            .parse(slice)
+            .map_err(|_| ParseFieldValueError)?;
 
         Ok(Self { slice })
     }

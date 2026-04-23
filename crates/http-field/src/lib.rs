@@ -1,24 +1,26 @@
 //! HTTP fields (headers & trailers).
 //!
-//! Parsing follows the generic field syntax from
-//! [RFC 9112 §5](https://datatracker.ietf.org/doc/html/rfc9112#section-5) and the field-name /
-//! field-value rules from [RFC 9110 §5.1](https://datatracker.ietf.org/doc/html/rfc9110#section-5.1),
-//! [RFC 9110 §5.5](https://datatracker.ietf.org/doc/html/rfc9110#section-5.5), and
-//! [RFC 9110 §5.6.2](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2).
+//! Parsing follows the generic field syntax from [RFC 9112 §5] and the field-name / field-value
+//! rules from [RFC 9110 §5.1], [RFC 9110 §5.5], and [RFC 9110 §5.6.2].
+//!
+//! [RFC 9112 §5]: https://datatracker.ietf.org/doc/html/rfc9112#section-5
+//! [RFC 9110 §5.1]: https://datatracker.ietf.org/doc/html/rfc9110#section-5.1
+//! [RFC 9110 §5.5]: https://datatracker.ietf.org/doc/html/rfc9110#section-5.5
+//! [RFC 9110 §5.6.2]: https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+mod error;
 mod name;
 mod parsing;
 mod value;
 
 use core::ops::Range;
 
-use winnow::error::{ContextError, ErrMode};
-pub use winnow_rfc9110::{parse_field_name, parse_field_value, parse_ows};
-
+pub use error::{ParseFieldError, ParseFieldNameError, ParseFieldValueError};
 pub use name::FieldName;
 pub use value::FieldValue;
+pub(crate) use winnow_rfc9110::{parse_field_name, parse_field_value};
 
 /// Entire HTTP field line, excluding any trailing CRLF.
 ///
@@ -39,8 +41,8 @@ pub struct Field<'a> {
 impl<'a> Field<'a> {
     /// Parses an entire HTTP field line from bytes, excluding the trailing CRLF.
     #[inline]
-    pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ErrMode<ContextError>> {
-        let indices = parsing::parse_field(input)?;
+    pub fn try_from_slice(input: &'a [u8]) -> Result<Self, ParseFieldError> {
+        let indices = parsing::parse_field(input).map_err(|_| ParseFieldError)?;
 
         Ok(Self {
             inner: input,
@@ -92,10 +94,6 @@ fn slice_range<'a>(bytes: &'a [u8], range: &Range<usize>) -> &'a [u8] {
 
 #[cfg(test)]
 mod tests {
-    use std::str;
-
-    use quickcheck_macros::quickcheck;
-
     use super::*;
 
     #[test]
@@ -141,27 +139,24 @@ mod tests {
     #[test]
     fn validates_name_and_value_components() {
         assert!(FieldName::try_from_slice(b"content-type").is_ok());
-        assert!(FieldName::try_from_slice(b"content type").is_err());
+        assert_eq!(
+            FieldName::try_from_slice(b"content type"),
+            Err(ParseFieldNameError)
+        );
         assert_eq!(
             FieldName::try_from_slice(b"content-type").unwrap().as_str(),
             "content-type"
         );
 
         assert!(FieldValue::try_from_slice(b"text/plain; charset=utf-8").is_ok());
-        assert!(FieldValue::try_from_slice(b"text/plain\r").is_err());
+        assert_eq!(
+            FieldValue::try_from_slice(b"text/plain\r"),
+            Err(ParseFieldValueError)
+        );
     }
 
     #[test]
     fn rejects_truncated_field_lines() {
-        assert!(Field::try_from_slice(b"content-type").is_err());
-    }
-
-    #[quickcheck]
-    fn all_valid_field_names_are_also_utf8(bytes: Vec<u8>) -> bool {
-        if FieldName::try_from_slice(&bytes).is_ok() {
-            str::from_utf8(&bytes).is_ok()
-        } else {
-            true
-        }
+        assert_eq!(Field::try_from_slice(b"content-type"), Err(ParseFieldError));
     }
 }

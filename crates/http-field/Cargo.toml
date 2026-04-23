@@ -15,6 +15,9 @@ ignored = [
   "quickcheck", # used by quickcheck_macros
 ]
 
+[package.metadata.cargo_check_external_types]
+allowed_external_types = []
+
 [features]
 default = ["std", "simd"]
 std = ["winnow/std", "winnow-rfc9110/std"]

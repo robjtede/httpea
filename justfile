@@ -2,6 +2,7 @@ _list:
     @just --list
 
 toolchain := ""
+external-types-toolchain := "nightly-2025-10-18"
 msrv := ```
     cargo metadata --format-version=1 \
     | jq -r 'first(.packages[] | select(.source == null and .rust_version)) | .rust_version' \
@@ -25,6 +26,14 @@ check:
     fd --hidden -e=toml --exec-batch taplo format
     fd --hidden -e=toml --exec-batch taplo lint
     cargo shear
+
+# Check crates are not leaking unexpected external types
+check-external-types:
+    cargo metadata --no-deps --format-version=1 \
+        | jq -r '(.workspace_root + "/") as $root | .workspace_members as $members | .packages[] | select(.id as $id | $members | index($id)) | .manifest_path | ltrimstr($root)' \
+        | while IFS= read -r manifest; do \
+            cargo +{{ external-types-toolchain }} check-external-types --manifest-path "$manifest"; \
+        done
 
 # Lint workspace with Clippy
 clippy:
