@@ -309,6 +309,7 @@ name = "http-field"
 version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
+ "impl-more",
  "quickcheck",
  "quickcheck_macros",
  "winnow",

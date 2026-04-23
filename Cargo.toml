@@ -14,3 +14,6 @@ nonstandard-style = "deny"
 future-incompatible = "deny"
 missing-debug-implementations = "warn"
 missing-docs = "warn"
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"

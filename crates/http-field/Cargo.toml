@@ -21,6 +21,7 @@ std = ["winnow/std", "winnow-rfc9110/std"]
 simd = ["winnow/simd", "winnow-rfc9110/simd"]
 
 [dependencies]
+impl-more = "0.3"
 winnow = { version = "1", default-features = false, features = ["binary"] }
 winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
 

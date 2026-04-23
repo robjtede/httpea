@@ -8,15 +8,17 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+mod name;
+mod parsing;
+mod value;
+
 use core::ops::Range;
 
-use winnow::{
-    error::{ContextError, ErrMode},
-    prelude::*,
-};
+use winnow::error::{ContextError, ErrMode};
 pub use winnow_rfc9110::{parse_field_name, parse_field_value, parse_ows};
 
-mod parsing;
+pub use name::FieldName;
+pub use value::FieldValue;
 
 /// Entire HTTP field line, excluding any trailing CRLF.
 ///
@@ -32,19 +34,6 @@ pub struct Field<'a> {
     inner: &'a [u8],
     name: Range<usize>,
     value: Range<usize>,
-}
-
-/// Field name.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct FieldName<'a> {
-    // TODO: use string slice soon
-    slice: &'a [u8],
-}
-
-/// Field value.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct FieldValue<'a> {
-    slice: &'a [u8],
 }
 
 impl<'a> Field<'a> {
@@ -76,7 +65,8 @@ impl<'a> Field<'a> {
     #[inline]
     pub fn name(&self) -> FieldName<'a> {
         FieldName {
-            slice: slice_range(self.inner, &self.name),
+            // SAFETY: all valid field names are a subset of UTF-8; validated with property tests
+            slice: unsafe { str::from_utf8_unchecked(slice_range(self.inner, &self.name)) },
         }
     }
 
@@ -92,52 +82,6 @@ impl<'a> Field<'a> {
         FieldValue {
             slice: slice_range(self.inner, &self.value),
         }
-    }
-}
-
-impl<'a> FieldName<'a> {
-    /// Constructs field name from bytes.
-    #[inline]
-    pub fn from_slice(slice: &'a [u8]) -> Self {
-        Self { slice }
-    }
-
-    /// Parses a field name from bytes.
-    pub fn try_from_slice(
-        slice: &'a [u8],
-    ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        parse_field_name.parse(slice)?;
-
-        Ok(Self { slice })
-    }
-
-    /// Returns field name as bytes.
-    #[inline]
-    pub fn as_slice(&self) -> &'a [u8] {
-        self.slice
-    }
-}
-
-impl<'a> FieldValue<'a> {
-    /// Constructs field value from bytes.
-    #[inline]
-    pub fn from_slice(slice: &'a [u8]) -> Self {
-        Self { slice }
-    }
-
-    /// Parses a field value from bytes.
-    pub fn try_from_slice(
-        slice: &'a [u8],
-    ) -> Result<Self, winnow::error::ParseError<&'a [u8], ContextError>> {
-        parse_field_value.parse(slice)?;
-
-        Ok(Self { slice })
-    }
-
-    /// Returns field value as bytes.
-    #[inline]
-    pub fn as_slice(&self) -> &'a [u8] {
-        self.slice
     }
 }
 
@@ -160,7 +104,9 @@ mod tests {
 
         assert_eq!(field.as_bytes(), b"content-type: text/plain; charset=utf-8");
         assert_eq!(field.name_indices(), 0..12);
+        assert_eq!(field.name().as_str(), "content-type");
         assert_eq!(field.name().as_slice(), b"content-type");
+        assert_eq!(field.name().to_string(), "content-type");
         assert_eq!(field.value_indices(), 14..39);
         assert_eq!(field.value().as_slice(), b"text/plain; charset=utf-8");
     }
@@ -169,6 +115,7 @@ mod tests {
     fn trims_optional_whitespace_around_value() {
         let field = Field::try_from_slice(b"accept:\t application/json \t").unwrap();
 
+        assert_eq!(field.name().as_str(), "accept");
         assert_eq!(field.name().as_slice(), b"accept");
         assert_eq!(field.value().as_slice(), b"application/json");
     }
@@ -177,6 +124,7 @@ mod tests {
     fn parses_empty_field_value() {
         let field = Field::try_from_slice(b"x-empty:").unwrap();
 
+        assert_eq!(field.name().as_str(), "x-empty");
         assert_eq!(field.name().as_slice(), b"x-empty");
         assert_eq!(field.value().as_slice(), b"");
     }
@@ -185,6 +133,7 @@ mod tests {
     fn parses_empty_field_value_with_trailing_whitespace() {
         let field = Field::try_from_slice(b"x-empty:\t ").unwrap();
 
+        assert_eq!(field.name().as_str(), "x-empty");
         assert_eq!(field.name().as_slice(), b"x-empty");
         assert_eq!(field.value().as_slice(), b"");
     }
@@ -193,6 +142,10 @@ mod tests {
     fn validates_name_and_value_components() {
         assert!(FieldName::try_from_slice(b"content-type").is_ok());
         assert!(FieldName::try_from_slice(b"content type").is_err());
+        assert_eq!(
+            FieldName::try_from_slice(b"content-type").unwrap().as_str(),
+            "content-type"
+        );
 
         assert!(FieldValue::try_from_slice(b"text/plain; charset=utf-8").is_ok());
         assert!(FieldValue::try_from_slice(b"text/plain\r").is_err());
