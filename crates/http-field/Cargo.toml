@@ -15,6 +15,11 @@ ignored = [
   "quickcheck", # used by quickcheck_macros
 ]
 
+[features]
+default = ["std", "simd"]
+std = ["winnow/std", "winnow-rfc9110/std"]
+simd = ["winnow/simd", "winnow-rfc9110/simd"]
+
 [dependencies]
 winnow = { version = "1", default-features = false, features = ["binary"] }
 winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }

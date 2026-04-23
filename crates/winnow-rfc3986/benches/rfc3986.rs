@@ -1,4 +1,4 @@
-#![allow(missing_docs)]
+#![allow(missing_docs, clippy::unit_arg)]
 
 use std::hint::black_box;
 
