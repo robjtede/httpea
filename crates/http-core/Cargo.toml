@@ -10,6 +10,18 @@ license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[package.metadata.cargo_check_external_types]
+allowed_external_types = [
+    "http_field::*",
+    "http_method::*",
+    "http_request_target::*",
+    "http_status_code::*",
+    "http_version::*",
+    "winnow_rfc3986::*",
+    "winnow_rfc9110::*",
+    "winnow_rfc9112::*",
+]
+
 [dependencies]
 http-chunked = { path = "../http-chunked", version = "0.0.1" }
 http-field = { path = "../http-field", version = "0.0.3" }

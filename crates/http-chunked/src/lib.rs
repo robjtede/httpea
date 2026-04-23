@@ -9,8 +9,10 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+// TODO: move useful constructs, not just reexports from the rfc lib
+
+pub use winnow_rfc9110::{parse_bws, parse_quoted_pair, parse_quoted_string, parse_token};
 pub use winnow_rfc9112::{
-    parse_bws, parse_chunk, parse_chunk_data, parse_chunk_ext, parse_chunk_ext_param,
-    parse_chunk_ext_val, parse_chunk_header, parse_chunk_size, parse_last_chunk, parse_quoted_pair,
-    parse_quoted_string, parse_token,
+    parse_chunk, parse_chunk_data, parse_chunk_ext, parse_chunk_ext_param, parse_chunk_ext_val,
+    parse_chunk_header, parse_chunk_size, parse_last_chunk,
 };

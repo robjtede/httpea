@@ -10,7 +10,11 @@ license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[package.metadata.cargo_check_external_types]
+allowed_external_types = ["winnow_rfc9110::*", "winnow_rfc9112::*"]
+
 [dependencies]
+winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
 winnow-rfc9112 = { path = "../winnow-rfc9112", version = "0.0.1", default-features = false }
 
 [dev-dependencies]

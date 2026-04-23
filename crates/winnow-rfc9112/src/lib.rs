@@ -9,7 +9,7 @@ use winnow::{
     prelude::*,
     stream::{Compare, Stream, StreamIsPartial},
 };
-pub use winnow_rfc9110::{parse_bws, parse_quoted_pair, parse_quoted_string, parse_token};
+use winnow_rfc9110::{parse_bws, parse_quoted_string, parse_token};
 
 /// Parses a complete non-terminal chunk and returns its decoded size in octets.
 ///

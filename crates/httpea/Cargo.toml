@@ -9,6 +9,9 @@ rust-version.workspace = true
 # TODO: remove when examples are moved
 autoexamples = false
 
+[package.metadata.cargo_check_external_types]
+allowed_external_types = []
+
 [features]
 default = ["std", "simd"]
 std = ["winnow?/std", "http-request-target?/std"]
