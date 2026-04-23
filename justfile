@@ -31,9 +31,14 @@ clippy:
 test-no-doc:
     cargo {{ toolchain }} nextest run --workspace --lib --tests --examples
 
-# Test workspace
-test: test-no-doc
+# Test workspace doc tests
+[private]
+test-doc:
     cargo {{ toolchain }} test --doc --workspace
+
+# Test workspace
+[parallel]
+test: test-no-doc test-doc
 
 # Test workspace using MSRV
 test-msrv:
