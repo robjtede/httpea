@@ -1,0 +1,36 @@
+name: External Types
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-external-types:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install just,cargo-check-external-types
+        uses: taiki-e/install-action@055f5df8c3f65ea01cd41e9dc855becd88953486 # v2.75.18
+        with:
+          tool: just,cargo-check-external-types
+
+      - name: Resolve external types toolchain
+        id: toolchain
+        run: echo "toolchain=$(just --evaluate external-types-toolchain)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@2b1f5e9b395427c92ee4e3331786ca3c37afe2d7 # v1.16.0
+        with:
+          toolchain: ${{ steps.toolchain.outputs.toolchain }}
+
+      - name: Check external types
+        run: just check-external-types
