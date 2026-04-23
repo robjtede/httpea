@@ -2,7 +2,10 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-use std::boxed::Box;
+extern crate alloc;
+
+use alloc::boxed::Box;
+use core::str;
 
 /// `CONNECT` method.
 pub const CONNECT: Method = Method {
@@ -55,7 +58,7 @@ pub const TRACE: Method = Method {
 };
 
 /// HTTP method.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct Method {
     repr: Repr,
 }
@@ -63,50 +66,141 @@ pub struct Method {
 impl Method {
     /// Parses an HTTP method from the request-line method component.
     pub fn try_from_slice(input: &[u8]) -> Result<Self, ParseMethodError> {
-        if input.is_empty() {
-            return Err(ParseMethodError::Empty);
-        }
+        validate_method_bytes(input)?;
 
-        if let Some(&byte) = input.iter().find(|&&byte| !is_tchar(byte)) {
-            return Err(ParseMethodError::InvalidByte(byte));
-        }
+        // SAFETY: just validated input as HTTP `token` which is a subset of UTF-8
+        let method = unsafe { str::from_utf8_unchecked(input) };
 
-        Ok(match input {
-            b"CONNECT" => Some(WellKnown::Connect),
-            b"DELETE" => Some(WellKnown::Delete),
-            b"GET" => Some(WellKnown::Get),
-            b"HEAD" => Some(WellKnown::Head),
-            b"OPTIONS" => Some(WellKnown::Options),
-            b"PATCH" => Some(WellKnown::Patch),
-            b"POST" => Some(WellKnown::Post),
-            b"PUT" => Some(WellKnown::Put),
-            b"QUERY" => Some(WellKnown::Query),
-            b"TRACE" => Some(WellKnown::Trace),
-            _ => None,
-        })
-        .map(|well_known| match well_known {
+        Ok(match classify_well_known(method) {
             Some(well_known) => Self {
                 repr: Repr::WellKnown(well_known),
             },
             None => Self {
-                repr: Repr::Extension(Box::from(input)),
+                repr: Repr::HeapExtension(Box::from(method)),
             },
         })
     }
 
-    /// Returns the method as bytes.
-    pub fn as_slice(&self) -> &[u8] {
+    /// Constructs an HTTP method from a static string.
+    ///
+    /// This constructor is usable in const contexts and validates that the input is in the
+    /// expected method form: non-empty, composed only of HTTP `tchar` bytes, and without
+    /// lowercase ASCII letters.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `input` is empty, contains an invalid token byte, or contains lowercase ASCII.
+    #[track_caller]
+    pub const fn from_static(method: &'static str) -> Self {
+        validate_static_method_form(method);
+
+        match classify_well_known(method) {
+            Some(well_known) => Self {
+                repr: Repr::WellKnown(well_known),
+            },
+            None => Self {
+                repr: Repr::StaticExtension(method),
+            },
+        }
+    }
+
+    /// Returns a string representation of the method.
+    pub fn as_str(&self) -> &str {
         match &self.repr {
-            Repr::WellKnown(well_known) => well_known.as_slice(),
-            Repr::Extension(bytes) => bytes,
+            Repr::WellKnown(well_known) => well_known.as_str(),
+            Repr::StaticExtension(string) => string,
+            Repr::HeapExtension(string) => string,
         }
     }
 }
 
-fn is_tchar(byte: u8) -> bool {
-    const TCHAR_PUNCT: &[u8] = b"!#$%&'*+-.^_`|~";
+impl PartialEq for Method {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_str() == other.as_str()
+    }
+}
 
-    byte.is_ascii_alphanumeric() || TCHAR_PUNCT.binary_search(&byte).is_ok()
+impl Eq for Method {}
+
+const fn validate_method_bytes(input: &[u8]) -> Result<(), ParseMethodError> {
+    if input.is_empty() {
+        return Err(ParseMethodError::Empty);
+    }
+
+    let mut idx = 0;
+
+    while idx < input.len() {
+        let byte = input[idx];
+
+        if !is_tchar(byte) {
+            return Err(ParseMethodError::InvalidByte(byte));
+        }
+
+        idx += 1;
+    }
+
+    Ok(())
+}
+
+const fn validate_static_method_form(input: &'static str) {
+    let bytes = input.as_bytes();
+
+    match validate_method_bytes(bytes) {
+        Ok(()) => {}
+        Err(ParseMethodError::Empty) => panic!("Empty HTTP method"),
+        Err(ParseMethodError::InvalidByte(_)) => panic!("Invalid HTTP method byte"),
+    }
+
+    let mut idx = 0;
+
+    while idx < bytes.len() {
+        if bytes[idx].is_ascii_lowercase() {
+            panic!("HTTP methods must not contain lowercase ASCII");
+        }
+
+        idx += 1;
+    }
+}
+
+const fn classify_well_known(input: &str) -> Option<WellKnown> {
+    match input.as_bytes() {
+        b"CONNECT" => Some(WellKnown::Connect),
+        b"DELETE" => Some(WellKnown::Delete),
+        b"GET" => Some(WellKnown::Get),
+        b"HEAD" => Some(WellKnown::Head),
+        b"OPTIONS" => Some(WellKnown::Options),
+        b"PATCH" => Some(WellKnown::Patch),
+        b"POST" => Some(WellKnown::Post),
+        b"PUT" => Some(WellKnown::Put),
+        b"QUERY" => Some(WellKnown::Query),
+        b"TRACE" => Some(WellKnown::Trace),
+        _ => None,
+    }
+}
+
+/// Returns `true` if the given byte is valid in HTTP `tchar`.
+///
+/// See RFC 9110 Section 5.6.2, "Tokens":
+/// <https://www.rfc-editor.org/rfc/rfc9110.html#section-5.6.2>.
+const fn is_tchar(byte: u8) -> bool {
+    byte.is_ascii_alphanumeric()
+        || matches!(
+            byte,
+            b'!' | b'#'
+                | b'$'
+                | b'%'
+                | b'&'
+                | b'\''
+                | b'*'
+                | b'+'
+                | b'-'
+                | b'.'
+                | b'^'
+                | b'_'
+                | b'`'
+                | b'|'
+                | b'~'
+        )
 }
 
 /// Error returned when parsing an HTTP method fails.
@@ -119,10 +213,11 @@ pub enum ParseMethodError {
     InvalidByte(u8),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 enum Repr {
     WellKnown(WellKnown),
-    Extension(Box<[u8]>),
+    StaticExtension(&'static str),
+    HeapExtension(Box<str>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -140,18 +235,18 @@ pub(crate) enum WellKnown {
 }
 
 impl WellKnown {
-    fn as_slice(self) -> &'static [u8] {
+    const fn as_str(self) -> &'static str {
         match self {
-            Self::Connect => b"CONNECT",
-            Self::Delete => b"DELETE",
-            Self::Get => b"GET",
-            Self::Head => b"HEAD",
-            Self::Options => b"OPTIONS",
-            Self::Patch => b"PATCH",
-            Self::Post => b"POST",
-            Self::Put => b"PUT",
-            Self::Query => b"QUERY",
-            Self::Trace => b"TRACE",
+            Self::Connect => "CONNECT",
+            Self::Delete => "DELETE",
+            Self::Get => "GET",
+            Self::Head => "HEAD",
+            Self::Options => "OPTIONS",
+            Self::Patch => "PATCH",
+            Self::Post => "POST",
+            Self::Put => "PUT",
+            Self::Query => "QUERY",
+            Self::Trace => "TRACE",
         }
     }
 }
@@ -180,9 +275,24 @@ mod tests {
 
     #[test]
     fn parses_extension_method() {
-        let method = Method::try_from_slice(b"PRI").unwrap();
+        let method = Method::try_from_slice(b"PROPFIND").unwrap();
+        assert_eq!(method.as_str(), "PROPFIND");
+    }
 
-        assert_eq!(method.as_slice(), b"PRI");
+    #[test]
+    fn constructs_well_known_method_from_static() {
+        const METHOD: Method = Method::from_static("GET");
+
+        assert_eq!(METHOD, GET);
+        assert_eq!(METHOD.as_str(), "GET");
+    }
+
+    #[test]
+    fn constructs_extension_method_from_static() {
+        const METHOD: Method = Method::from_static("M-SEARCH");
+
+        assert_eq!(METHOD.as_str(), "M-SEARCH");
+        assert_eq!(METHOD, Method::try_from_slice(b"M-SEARCH").unwrap());
     }
 
     #[test]
@@ -203,22 +313,47 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "Empty HTTP method")]
+    fn from_static_rejects_empty_method() {
+        let _ = Method::from_static("");
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid HTTP method byte")]
+    fn from_static_rejects_invalid_method_byte() {
+        let _ = Method::from_static("GE T");
+    }
+
+    #[test]
+    #[should_panic(expected = "HTTP methods must not contain lowercase ASCII")]
+    fn from_static_rejects_lowercase_ascii() {
+        let _ = Method::from_static("get");
+    }
+
+    #[test]
     fn renders_method_bytes() {
         let well_known = [
-            (&CONNECT, b"CONNECT".as_slice()),
-            (&DELETE, b"DELETE".as_slice()),
-            (&GET, b"GET".as_slice()),
-            (&HEAD, b"HEAD".as_slice()),
-            (&OPTIONS, b"OPTIONS".as_slice()),
-            (&PATCH, b"PATCH".as_slice()),
-            (&POST, b"POST".as_slice()),
-            (&PUT, b"PUT".as_slice()),
-            (&QUERY, b"QUERY".as_slice()),
-            (&TRACE, b"TRACE".as_slice()),
+            (CONNECT, "CONNECT"),
+            (DELETE, "DELETE"),
+            (GET, "GET"),
+            (HEAD, "HEAD"),
+            (OPTIONS, "OPTIONS"),
+            (PATCH, "PATCH"),
+            (POST, "POST"),
+            (PUT, "PUT"),
+            (QUERY, "QUERY"),
+            (TRACE, "TRACE"),
         ];
 
         for (method, expected) in well_known {
-            assert_eq!(method.as_slice(), expected);
+            assert_eq!(method.as_str(), expected);
         }
+    }
+
+    #[test]
+    fn renders_method_str() {
+        assert_eq!(GET.as_str(), "GET");
+        assert_eq!(Method::from_static("M-SEARCH").as_str(), "M-SEARCH");
+        assert_eq!(Method::try_from_slice(b"PRI").unwrap().as_str(), "PRI");
     }
 }

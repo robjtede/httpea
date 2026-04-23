@@ -900,7 +900,7 @@ mod tests {
 
         assert_eq!(line.as_bytes(), b"GET /where?q=now HTTP/1.1");
         assert_eq!(line.method_indices(), 0..3);
-        assert_eq!(line.method().as_slice(), b"GET");
+        assert_eq!(line.method().as_str(), "GET");
         assert_eq!(line.target_indices(), 4..16);
         assert_eq!(line.version_indices(), 17..25);
         assert_eq!(line.version(), Version::Http1_1);
@@ -988,7 +988,7 @@ mod tests {
             .into_complete()
             .unwrap();
 
-        assert_eq!(head.request_line().method().as_slice(), b"POST");
+        assert_eq!(head.request_line().method().as_str(), "POST");
         assert_eq!(head.fields().len(), 2);
         assert_eq!(head.fields()[0].name().as_slice(), b"host");
         assert_eq!(head.fields()[0].value().as_slice(), b"example.com");

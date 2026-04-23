@@ -239,8 +239,10 @@ where
 }
 
 /// Returns `true` if the given byte is valid in `tchar`.
+///
+/// See [RFC 9110 §5.6.2, "Tokens"](https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.2).
 #[inline]
-pub fn is_tchar(byte: u8) -> bool {
+pub const fn is_tchar(byte: u8) -> bool {
     byte.is_ascii_alphanumeric()
         || matches!(
             byte,

@@ -14,6 +14,7 @@ rust-version.workspace = true
 allowed_external_types = []
 
 [dependencies]
+winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }
