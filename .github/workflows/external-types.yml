@@ -20,10 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install just,cargo-check-external-types
+      - name: Install cargo-check-external-types,just
         uses: taiki-e/install-action@055f5df8c3f65ea01cd41e9dc855becd88953486 # v2.75.18
         with:
-          tool: just,cargo-check-external-types
+          tool: cargo-check-external-types,just
 
       - name: Resolve external types toolchain
         id: toolchain

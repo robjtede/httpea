@@ -27,10 +27,14 @@ check:
     fd --hidden -e=toml --exec-batch taplo lint
     cargo shear
 
+[private]
+workspace-crate-manifests:
+    @cargo metadata --no-deps --format-version=1 \
+        | jq -r '(.workspace_root + "/") as $root | .workspace_members as $members | .packages[] | select(.id as $id | $members | index($id)) | .manifest_path | ltrimstr($root)'
+
 # Check crates are not leaking unexpected external types
 check-external-types:
-    cargo metadata --no-deps --format-version=1 \
-        | jq -r '(.workspace_root + "/") as $root | .workspace_members as $members | .packages[] | select(.id as $id | $members | index($id)) | .manifest_path | ltrimstr($root)' \
+    just workspace-crate-manifests \
         | while IFS= read -r manifest; do \
             cargo +{{ external-types-toolchain }} check-external-types --manifest-path "$manifest"; \
         done
