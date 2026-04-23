@@ -2,7 +2,11 @@ _list:
     @just --list
 
 toolchain := ""
-msrv := `awk '/^\[workspace.package\]/{flag=1; next} /^\[/{flag=0} flag && /^rust-version = / {gsub(/"/, "", $3); print $3; exit}' Cargo.toml`
+msrv := ```
+    cargo metadata --format-version=1 \
+    | jq -r 'first(.packages[] | select(.source == null and .rust_version)) | .rust_version' \
+    | sed -E 's/^1\.([0-9]{2})$/1\.\1\.0/'
+```
 msrv_rustup := "+" + msrv
 
 # Format project
@@ -11,7 +15,6 @@ fmt:
     cargo +nightly fmt
     fd --hidden -e=yml --exec-batch prettier --write
     fd --hidden -e=toml --exec-batch taplo format
-    cargo shear
 
 # Check project
 check:
@@ -21,6 +24,7 @@ check:
     fd --hidden -e=yml --exec-batch prettier --check
     fd --hidden -e=toml --exec-batch taplo format
     fd --hidden -e=toml --exec-batch taplo lint
+    cargo shear
 
 # Lint workspace with Clippy
 clippy:
