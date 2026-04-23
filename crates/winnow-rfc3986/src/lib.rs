@@ -403,7 +403,7 @@ where
     I::Token: Clone + AsChar,
 {
     (
-        one_of([b'v', b'V']),
+        one_of(*b"vV"),
         take_while(1.., is_hexdig),
         b'.',
         repeat::<_, _, (), _, _>(1.., parse_ipvfuture_item),
@@ -1268,7 +1268,7 @@ where
         parse_pct_encoded,
         parse_unreserved_item,
         parse_sub_delim_item,
-        one_of([b':', b'@']).void(),
+        one_of(*b":@").void(),
     ))
     .parse_next(input)
 }
@@ -1294,7 +1294,7 @@ where
     I: Stream + StreamIsPartial + Compare<u8>,
     I::Token: Clone + AsChar,
 {
-    alt((parse_pchar_item, one_of([b'/', b'?']).void())).parse_next(input)
+    alt((parse_pchar_item, one_of(*b"/?").void())).parse_next(input)
 }
 
 #[inline]
