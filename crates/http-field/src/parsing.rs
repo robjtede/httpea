@@ -61,7 +61,7 @@ pub(crate) fn parse_field(input: &[u8]) -> Result<FieldIndices, ErrMode<ContextE
 
 #[cfg(test)]
 mod tests {
-    use winnow::{BStr, prelude::*};
+    use winnow::BStr;
     use winnow_rfc9110::{is_field_value_byte, is_field_vchar, is_tchar};
 
     use super::*;
