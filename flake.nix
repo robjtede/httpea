@@ -18,6 +18,10 @@
       perSystem = { pkgs, config, lib, ... }: {
         formatter = pkgs.nixpkgs-fmt;
 
+        devShells.ci = pkgs.mkShell {
+          shellHook = config.x52.justRust.shellHook;
+        };
+
         devShells.default = pkgs.mkShell {
           packages = [
             config.formatter
