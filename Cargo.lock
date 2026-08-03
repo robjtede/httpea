@@ -322,7 +322,6 @@ name = "http-method"
 version = "0.0.2"
 dependencies = [
  "codspeed-divan-compat",
- "winnow-rfc9110",
 ]
 
 [[package]]
