@@ -52,15 +52,4 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
-
-      - name: Enter Nix devshell
-        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
-        with:
-          arguments: .#ci
-
-      - uses: x52dev/actions/setup-external-types@5b150f6dba9d62eefdf334f60b7ad240cb16750f
-
-      - name: Check external types
-        run: just check-external-types
+      - uses: x52dev/actions/setup-external-types@dcac20665d3bfbaa72d15479a5c8e0f4b92e990c
