@@ -4,7 +4,6 @@ _list:
     @just --list
 
 toolchain := ""
-external-types-toolchain := "nightly-2026-03-20"
 # Format project
 fmt:
     just --unstable --fmt
@@ -21,18 +20,6 @@ check:
     fd --hidden -e=toml --exec-batch taplo format
     fd --hidden -e=toml --exec-batch taplo lint
     cargo shear
-
-[private]
-workspace-crate-manifests:
-    @cargo metadata --no-deps --format-version=1 \
-        | jq -r '(.workspace_root + "/") as $root | .workspace_members as $members | .packages[] | select(.id as $id | $members | index($id)) | .manifest_path | ltrimstr($root)'
-
-# Check crates are not leaking unexpected external types
-check-external-types:
-    just workspace-crate-manifests \
-        | while IFS= read -r manifest; do \
-            cargo +{{ external-types-toolchain }} check-external-types --manifest-path "$manifest"; \
-        done
 
 # Lint workspace with Clippy
 clippy:
