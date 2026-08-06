@@ -49,10 +49,11 @@ jobs:
           components: clippy
 
       - name: Check with Clippy
-        uses: actions-rs/clippy-check@b5b5f21f4797c02da247df37026fcd0a5024aa4d # v1.0.7
+        uses: giraffate/clippy-action@13b9d32482f25d29ead141b79e7e04e7900281e0 # v1.0.1
         with:
-          args: --workspace --tests --examples --all-features
-          token: ${{ secrets.GITHUB_TOKEN }}
+          clippy_flags: --workspace --tests --examples --all-features
+          reporter: github-pr-check
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   lint-docs:
     runs-on: ubuntu-latest
@@ -82,3 +83,17 @@ jobs:
           persist-credentials: false
 
       - uses: x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b
+
+  zizmor:
+    name: GitHub Actions Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+        with:
+          advanced-security: false
+          annotations: true
