@@ -57,7 +57,7 @@ jobs:
           const environment = Object.fromEntries(keys.map(k => [k, process.env[k] ?? null]));
           const tools = Object.fromEntries(['rustc', 'cargo', 'just', 'cargo-nextest', 'cargo-hack', 'nix']
             .map(t => [t, { path: execFileSync('which', [t], {encoding:'utf8'}).trim(),
-              version: execFileSync(t, ['--version'], {encoding:'utf8'}).trim() }]));
+              version: execFileSync(t, t === 'cargo-hack' ? ['hack', '--version'] : ['--version'], {encoding:'utf8'}).trim() }]));
           const recipeSha256 = crypto.createHash('sha256')
             .update(fs.readFileSync('.toolchain/rust.just')).digest('hex');
           console.log('BENCH_ENV=' + JSON.stringify({environment, tools, recipeSha256}));
