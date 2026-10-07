@@ -16,6 +16,8 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      RUSTUP_HOME: ${{ runner.temp }}/ci-rustup
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -26,7 +28,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: nightly-2026-10-07
-          cache-shared-key: httpea-ci-exp-baseline-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
+          cache-shared-key: httpea-ci-exp-controlled-baseline-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
 
       - name: Install cargo-hack,cargo-nextest,just
         uses: taiki-e/install-action@9983c65e42da123ff25d1f78505eb6de315aa172 # v2.87.20
