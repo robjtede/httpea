@@ -12,6 +12,8 @@ autoexamples = false
 [package.metadata.cargo_check_external_types]
 allowed_external_types = []
 
+[lints]
+
 [features]
 default = ["std", "simd"]
 std = ["winnow?/std", "http-request-target?/std"]
