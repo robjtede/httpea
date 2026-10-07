@@ -26,6 +26,14 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install Rust
+        id: rust
+        background: true
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          toolchain: ${{ matrix.fault == 'rust' && 'nightly-2000-01-01' || 'nightly-2026-10-07' }}
+          cache: false
+
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
 
@@ -36,12 +44,8 @@ jobs:
         with:
           arguments: ${{ matrix.fault == 'devshell' && '.#missing-ci-shell' || '.#ci' }}
 
-      - name: Install Rust
-        id: rust
-        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
-        with:
-          toolchain: ${{ matrix.fault == 'rust' && 'nightly-2000-01-01' || 'nightly-2026-10-07' }}
-          cache: false
+      - name: Wait for Rust
+        wait: rust
 
       - name: Install cargo-hack,cargo-nextest,just
         id: tools
