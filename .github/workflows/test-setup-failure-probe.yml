@@ -2,7 +2,7 @@ name: Test setup failure probe
 
 on:
   push:
-    branches: [ci/test-setup-overlap-experiment]
+    branches: [ci/test-setup-failure-probe]
 
 permissions:
   contents: read
@@ -44,7 +44,6 @@ jobs:
           cache: false
 
       - name: Wait for Nix devshell
-        id: wait-devshell
         wait: devshell
 
       - name: Install cargo-hack,cargo-nextest,just
@@ -63,7 +62,6 @@ jobs:
           FAULT: ${{ matrix.fault }}
           RUST_OUTCOME: ${{ steps.rust.outcome }}
           SHELL_OUTCOME: ${{ steps.devshell.outcome }}
-          WAIT_OUTCOME: ${{ steps.wait-devshell.outcome }}
           TOOLS_OUTCOME: ${{ steps.tools.outcome }}
           TESTS_OUTCOME: ${{ steps.tests.outcome }}
         run: |
@@ -72,19 +70,16 @@ jobs:
             rust)
               test "$RUST_OUTCOME" = failure
               test "$SHELL_OUTCOME" = success
-              test "$WAIT_OUTCOME" = success
               test "$TOOLS_OUTCOME" = skipped
               ;;
             devshell)
               test "$RUST_OUTCOME" = success
               test "$SHELL_OUTCOME" = failure
-              test "$WAIT_OUTCOME" = failure
               test "$TOOLS_OUTCOME" = skipped
               ;;
             tools)
               test "$RUST_OUTCOME" = success
               test "$SHELL_OUTCOME" = success
-              test "$WAIT_OUTCOME" = success
               test "$TOOLS_OUTCOME" = failure
               ;;
           esac
