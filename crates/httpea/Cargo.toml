@@ -6,8 +6,11 @@ repository.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+
 # TODO: remove when examples are moved
 autoexamples = false
+
+[lints]
 
 [package.metadata.cargo_check_external_types]
 allowed_external_types = []
