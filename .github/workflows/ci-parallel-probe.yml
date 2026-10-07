@@ -1,0 +1,54 @@
+name: Parallel lint failure probes
+
+on:
+  push:
+    branches: [ci/parallel-lint-failure-probe]
+
+permissions:
+  contents: read
+
+jobs:
+  failure:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        failure: [fmt, clippy, docs]
+    env:
+      EXPECTED_FAILURE: ${{ matrix.failure }}
+    steps:
+      - name: Setup completed
+        id: rust
+        run: 'true'
+
+      - name: Check formatting
+        id: fmt
+        background: true
+        run: test "$EXPECTED_FAILURE" != fmt
+
+      - name: Check with Clippy
+        id: clippy
+        background: true
+        run: test "$EXPECTED_FAILURE" != clippy
+
+      - name: Install test tools
+        id: tools
+        run: 'true'
+
+      - name: Enter Nix devshell
+        id: devshell
+        run: 'true'
+
+      - name: Wait for Clippy
+        wait: clippy
+
+      - name: Check documentation
+        if: ${{ !cancelled() && steps.rust.outcome == 'success' }}
+        run: test "$EXPECTED_FAILURE" != docs
+
+      - name: Run tests
+        if: ${{ !cancelled() && steps.rust.outcome == 'success' && steps.tools.outcome == 'success' && steps.devshell.outcome == 'success' }}
+        run: 'true'
+
+      - name: Wait for formatting
+        wait: fmt
