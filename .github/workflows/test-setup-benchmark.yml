@@ -1,0 +1,67 @@
+name: Test setup benchmark
+
+on:
+  push:
+    branches: [ci/test-setup-overlap-experiment]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      RUSTUP_HOME: /tmp/httpea-test-setup-rustup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          toolchain: nightly-2026-10-07
+          cache-shared-key: httpea-test-setup-serial-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}
+
+      - name: Install cargo-hack,cargo-nextest,just
+        uses: taiki-e/install-action@9983c65e42da123ff25d1f78505eb6de315aa172 # v2.87.20
+        with:
+          tool: cargo-hack,cargo-nextest,just
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+
+      - name: Enter Nix devshell
+        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        with:
+          arguments: .#ci
+
+      - name: Record test environment
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const { execFileSync } = require('node:child_process');
+          const keys = ['PATH', 'RUSTUP_HOME', 'CARGO_HOME', 'CARGO_BUILD_WARNINGS',
+            'CARGO_INCREMENTAL', 'CARGO_PROFILE_DEV_DEBUG', 'CARGO_TERM_COLOR',
+            'RUST_BACKTRACE', 'RUSTFLAGS', 'RUSTDOCFLAGS',
+            'CARGO_UNSTABLE_SPARSE_REGISTRY', 'CARGO_REGISTRIES_CRATES_IO_PROTOCOL',
+            'IN_NIX_SHELL', 'NIX_ENFORCE_PURITY', 'NIX_CFLAGS_COMPILE',
+            'NIX_LDFLAGS', 'NIX_HARDENING_ENABLE', 'NIX_SSL_CERT_FILE',
+            'SSL_CERT_FILE', 'PKG_CONFIG_PATH', 'CC', 'CXX', 'CFLAGS', 'CXXFLAGS'];
+          const environment = Object.fromEntries(keys.map(k => [k, process.env[k] ?? null]));
+          const tools = Object.fromEntries(['rustc', 'cargo', 'just', 'cargo-nextest', 'cargo-hack', 'nix']
+            .map(t => [t, { path: execFileSync('which', [t], {encoding:'utf8'}).trim(),
+              version: execFileSync(t, ['--version'], {encoding:'utf8'}).trim() }]));
+          const recipeSha256 = crypto.createHash('sha256')
+            .update(fs.readFileSync('.toolchain/rust.just')).digest('hex');
+          console.log('BENCH_ENV=' + JSON.stringify({environment, tools, recipeSha256}));
+          NODE
+
+      - name: Run tests
+        run: just test
