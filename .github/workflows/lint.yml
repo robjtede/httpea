@@ -25,7 +25,8 @@ jobs:
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
-          toolchain: nightly
+          toolchain: nightly-2026-10-07
+          cache-shared-key: httpea-ci-exp-baseline-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
           components: rustfmt
 
       - run: cargo fmt --all -- --check
@@ -45,7 +46,8 @@ jobs:
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
-          toolchain: nightly
+          toolchain: nightly-2026-10-07
+          cache-shared-key: httpea-ci-exp-baseline-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
           components: clippy
 
       - name: Check with Clippy
@@ -66,7 +68,8 @@ jobs:
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
-          toolchain: nightly
+          toolchain: nightly-2026-10-07
+          cache-shared-key: httpea-ci-exp-baseline-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
           components: rust-docs
 
       - name: Check for broken intra-doc links
