@@ -1,0 +1,91 @@
+name: Test setup failure probe
+
+on:
+  push:
+    branches: [ci/test-setup-overlap-experiment]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        fault: [rust, devshell, tools]
+    env:
+      RUSTUP_HOME: /tmp/httpea-test-setup-rustup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+
+      - name: Enter Nix devshell
+        id: devshell
+        background: true
+        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        with:
+          arguments: ${{ matrix.fault == 'devshell' && '.#missing-ci-shell' || '.#ci' }}
+
+      - name: Install Rust
+        id: rust
+        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
+        with:
+          toolchain: ${{ matrix.fault == 'rust' && 'nightly-2000-01-01' || 'nightly-2026-10-07' }}
+          cache: false
+
+      - name: Wait for Nix devshell
+        id: wait-devshell
+        wait: devshell
+
+      - name: Install cargo-hack,cargo-nextest,just
+        id: tools
+        uses: taiki-e/install-action@9983c65e42da123ff25d1f78505eb6de315aa172 # v2.87.20
+        with:
+          tool: ${{ matrix.fault == 'tools' && 'httpea-missing-ci-tool' || 'cargo-hack,cargo-nextest,just' }}
+
+      - name: Run tests
+        id: tests
+        run: just test
+
+      - name: Assert failure behavior
+        if: ${{ !cancelled() }}
+        env:
+          FAULT: ${{ matrix.fault }}
+          RUST_OUTCOME: ${{ steps.rust.outcome }}
+          SHELL_OUTCOME: ${{ steps.devshell.outcome }}
+          WAIT_OUTCOME: ${{ steps.wait-devshell.outcome }}
+          TOOLS_OUTCOME: ${{ steps.tools.outcome }}
+          TESTS_OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          test "$TESTS_OUTCOME" = skipped
+          case "$FAULT" in
+            rust)
+              test "$RUST_OUTCOME" = failure
+              test "$SHELL_OUTCOME" = success
+              test "$WAIT_OUTCOME" = success
+              test "$TOOLS_OUTCOME" = skipped
+              ;;
+            devshell)
+              test "$RUST_OUTCOME" = success
+              test "$SHELL_OUTCOME" = failure
+              test "$WAIT_OUTCOME" = failure
+              test "$TOOLS_OUTCOME" = skipped
+              ;;
+            tools)
+              test "$RUST_OUTCOME" = success
+              test "$SHELL_OUTCOME" = success
+              test "$WAIT_OUTCOME" = success
+              test "$TOOLS_OUTCOME" = failure
+              ;;
+          esac
+          echo 'EXPECTED_FAILURE_BEHAVIOR=verified'
