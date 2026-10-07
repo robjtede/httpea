@@ -1,0 +1,5293 @@
+{
+  "date": "2026-10-07",
+  "selectedConfiguration": "lint-only",
+  "units": "seconds",
+  "definitions": {
+    "allRunnerSeconds": "Sum of CI and Lint real runner jobs including post-job work; excludes queue",
+    "coreRunnerSeconds": "Format, Clippy, docs and Linux test jobs",
+    "queueFreeAllSeconds": "Maximum core-job runner duration with simultaneous runner assignment",
+    "observedAllSeconds": "Last core completion minus earliest workflow run_started_at; includes queue"
+  },
+  "comparable": {
+    "records": [
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 1,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:35:56Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112901931486,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:36:10Z",
+            "completedAt": "2026-10-07T16:37:22Z",
+            "runnerSeconds": 72,
+            "queueSeconds": 13,
+            "admissionSeconds": 1,
+            "setupSeconds": 34,
+            "postAndTeardownSeconds": 24,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 2, "success"],
+              ["Enter Nix devshell", 16, "success"],
+              ["Run tests", 14, "success"],
+              ["Post Install Rust", 21, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 1,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:35:56Z",
+        "jobs": [
+          {
+            "name": "lint-docs",
+            "id": 112901931608,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:38:53Z",
+            "completedAt": "2026-10-07T16:39:20Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 176,
+            "admissionSeconds": 1,
+            "setupSeconds": 19,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 15, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112901932014,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:38:53Z",
+            "completedAt": "2026-10-07T16:39:00Z",
+            "runnerSeconds": 7,
+            "queueSeconds": 176,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                3,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112901932054,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:38:44Z",
+            "completedAt": "2026-10-07T16:39:04Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 167,
+            "admissionSeconds": 1,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112901932057,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:39:22Z",
+            "completedAt": "2026-10-07T16:39:50Z",
+            "runnerSeconds": 28,
+            "queueSeconds": 205,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 0, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                21,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112901932076,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:35:57Z",
+            "startedAt": "2026-10-07T16:39:04Z",
+            "completedAt": "2026-10-07T16:39:51Z",
+            "runnerSeconds": 47,
+            "queueSeconds": 187,
+            "admissionSeconds": 1,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Check with Clippy", 27, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 1, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 2,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:40:05Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112903813043,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:07Z",
+            "startedAt": "2026-10-07T16:41:02Z",
+            "completedAt": "2026-10-07T16:41:38Z",
+            "runnerSeconds": 36,
+            "queueSeconds": 55,
+            "admissionSeconds": 2,
+            "setupSeconds": 31,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 11, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 12, "success"],
+              ["Run tests", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 2,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:40:04Z",
+        "jobs": [
+          {
+            "name": "lint-docs",
+            "id": 112903807501,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:06Z",
+            "startedAt": "2026-10-07T16:41:41Z",
+            "completedAt": "2026-10-07T16:42:01Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 95,
+            "admissionSeconds": 2,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 12, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112903807622,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:06Z",
+            "startedAt": "2026-10-07T16:41:24Z",
+            "completedAt": "2026-10-07T16:41:50Z",
+            "runnerSeconds": 26,
+            "queueSeconds": 78,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 0, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                18,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112903807656,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:06Z",
+            "startedAt": "2026-10-07T16:41:41Z",
+            "completedAt": "2026-10-07T16:41:53Z",
+            "runnerSeconds": 12,
+            "queueSeconds": 95,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112903807661,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:06Z",
+            "startedAt": "2026-10-07T16:41:46Z",
+            "completedAt": "2026-10-07T16:42:07Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 100,
+            "admissionSeconds": 2,
+            "setupSeconds": 15,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 10, "success"],
+              ["Check with Clippy", 4, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112903807774,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:06Z",
+            "startedAt": "2026-10-07T16:42:08Z",
+            "completedAt": "2026-10-07T16:42:26Z",
+            "runnerSeconds": 18,
+            "queueSeconds": 122,
+            "admissionSeconds": 2,
+            "setupSeconds": 15,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 11, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 3,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:42:43Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112904994528,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:46Z",
+            "startedAt": "2026-10-07T16:43:25Z",
+            "completedAt": "2026-10-07T16:44:16Z",
+            "runnerSeconds": 51,
+            "queueSeconds": 39,
+            "admissionSeconds": 3,
+            "setupSeconds": 30,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 7, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 15, "success"],
+              ["Run tests", 14, "success"],
+              ["Post Install Rust", 5, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 3,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:42:41Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112904975942,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:43Z",
+            "startedAt": "2026-10-07T16:43:05Z",
+            "completedAt": "2026-10-07T16:43:34Z",
+            "runnerSeconds": 29,
+            "queueSeconds": 22,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 7,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                18,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112904976303,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:43Z",
+            "startedAt": "2026-10-07T16:43:05Z",
+            "completedAt": "2026-10-07T16:43:34Z",
+            "runnerSeconds": 29,
+            "queueSeconds": 22,
+            "admissionSeconds": 2,
+            "setupSeconds": 20,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 16, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112904976317,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:43Z",
+            "startedAt": "2026-10-07T16:43:19Z",
+            "completedAt": "2026-10-07T16:43:51Z",
+            "runnerSeconds": 32,
+            "queueSeconds": 36,
+            "admissionSeconds": 2,
+            "setupSeconds": 13,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Check with Clippy", 14, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112904976361,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:43Z",
+            "startedAt": "2026-10-07T16:43:16Z",
+            "completedAt": "2026-10-07T16:43:27Z",
+            "runnerSeconds": 11,
+            "queueSeconds": 33,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 4,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                5,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112904976438,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:43Z",
+            "startedAt": "2026-10-07T16:43:30Z",
+            "completedAt": "2026-10-07T16:43:48Z",
+            "runnerSeconds": 18,
+            "queueSeconds": 47,
+            "admissionSeconds": 2,
+            "setupSeconds": 12,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 4,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:44:35Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112905809870,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:37Z",
+            "startedAt": "2026-10-07T16:44:40Z",
+            "completedAt": "2026-10-07T16:45:14Z",
+            "runnerSeconds": 34,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 29,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 12, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 10, "success"],
+              ["Run tests", 3, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 4,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:44:34Z",
+        "jobs": [
+          {
+            "name": "fmt",
+            "id": 112905805355,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:36Z",
+            "startedAt": "2026-10-07T16:44:39Z",
+            "completedAt": "2026-10-07T16:44:54Z",
+            "runnerSeconds": 15,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 12,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112905805602,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:36Z",
+            "startedAt": "2026-10-07T16:44:40Z",
+            "completedAt": "2026-10-07T16:44:52Z",
+            "runnerSeconds": 12,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                7,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112905805782,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:36Z",
+            "startedAt": "2026-10-07T16:44:39Z",
+            "completedAt": "2026-10-07T16:45:01Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                16,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112905805792,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:36Z",
+            "startedAt": "2026-10-07T16:44:40Z",
+            "completedAt": "2026-10-07T16:45:03Z",
+            "runnerSeconds": 23,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 19,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 15, "success"],
+              ["Check for broken intra-doc links", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112905805802,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:36Z",
+            "startedAt": "2026-10-07T16:44:40Z",
+            "completedAt": "2026-10-07T16:45:00Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 15,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 11, "success"],
+              ["Check with Clippy", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 5,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:34Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906243840,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:38Z",
+            "completedAt": "2026-10-07T16:46:28Z",
+            "runnerSeconds": 50,
+            "queueSeconds": 3,
+            "admissionSeconds": 1,
+            "setupSeconds": 26,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 0, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 13, "success"],
+              ["Run tests", 18, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 5,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:32Z",
+        "jobs": [
+          {
+            "name": "lint-docs",
+            "id": 112906239381,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:38Z",
+            "completedAt": "2026-10-07T16:46:01Z",
+            "runnerSeconds": 23,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112906239486,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:39Z",
+            "completedAt": "2026-10-07T16:46:05Z",
+            "runnerSeconds": 26,
+            "queueSeconds": 4,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112906239520,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:38Z",
+            "completedAt": "2026-10-07T16:45:58Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 15,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906239576,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:38Z",
+            "completedAt": "2026-10-07T16:45:55Z",
+            "runnerSeconds": 17,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                2,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                10,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112906239650,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:35Z",
+            "startedAt": "2026-10-07T16:45:37Z",
+            "completedAt": "2026-10-07T16:46:12Z",
+            "runnerSeconds": 35,
+            "queueSeconds": 2,
+            "admissionSeconds": 3,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 10, "success"],
+              ["Check with Clippy", 14, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300423,
+        "attempt": 6,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:42Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906751588,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:44Z",
+            "startedAt": "2026-10-07T16:46:48Z",
+            "completedAt": "2026-10-07T16:47:22Z",
+            "runnerSeconds": 34,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 30,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 14, "success"],
+              ["Run tests", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "runId": 37653300412,
+        "attempt": 6,
+        "sourceSha": "fcd32f8dd2bf06285382e2dea92db0832770c465",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:41Z",
+        "jobs": [
+          {
+            "name": "lint-docs",
+            "id": 112906739383,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:43Z",
+            "startedAt": "2026-10-07T16:46:46Z",
+            "completedAt": "2026-10-07T16:47:11Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 22,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 18, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112906739754,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:43Z",
+            "startedAt": "2026-10-07T16:46:46Z",
+            "completedAt": "2026-10-07T16:47:06Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 15,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 10, "success"],
+              ["Check with Clippy", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112906739843,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:43Z",
+            "startedAt": "2026-10-07T16:46:46Z",
+            "completedAt": "2026-10-07T16:47:02Z",
+            "runnerSeconds": 16,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 13,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 1, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112906739990,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:43Z",
+            "startedAt": "2026-10-07T16:46:46Z",
+            "completedAt": "2026-10-07T16:47:13Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                19,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906740000,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:43Z",
+            "startedAt": "2026-10-07T16:46:47Z",
+            "completedAt": "2026-10-07T16:47:03Z",
+            "runnerSeconds": 16,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                9,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 1,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:40:50Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112904154291,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:51Z",
+            "startedAt": "2026-10-07T16:41:02Z",
+            "completedAt": "2026-10-07T16:41:51Z",
+            "runnerSeconds": 49,
+            "queueSeconds": 11,
+            "admissionSeconds": 1,
+            "setupSeconds": 26,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 13, "success"],
+              ["Run tests", 17, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 1,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:40:50Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112904174708,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:54Z",
+            "startedAt": "2026-10-07T16:42:10Z",
+            "completedAt": "2026-10-07T16:42:34Z",
+            "runnerSeconds": 24,
+            "queueSeconds": 76,
+            "admissionSeconds": 4,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint",
+            "id": 112904175133,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:54Z",
+            "startedAt": "2026-10-07T16:42:13Z",
+            "completedAt": "2026-10-07T16:42:51Z",
+            "runnerSeconds": 38,
+            "queueSeconds": 79,
+            "admissionSeconds": 4,
+            "setupSeconds": 18,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 14, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 14, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112904175230,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:40:54Z",
+            "startedAt": "2026-10-07T16:42:13Z",
+            "completedAt": "2026-10-07T16:42:27Z",
+            "runnerSeconds": 14,
+            "queueSeconds": 79,
+            "admissionSeconds": 4,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                9,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 2,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:43:09Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112905198239,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:13Z",
+            "startedAt": "2026-10-07T16:43:31Z",
+            "completedAt": "2026-10-07T16:44:08Z",
+            "runnerSeconds": 37,
+            "queueSeconds": 18,
+            "admissionSeconds": 4,
+            "setupSeconds": 30,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 12, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 0, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 13, "success"],
+              ["Run tests", 3, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 2,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:43:07Z",
+        "jobs": [
+          {
+            "name": "lint",
+            "id": 112905168659,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:09Z",
+            "startedAt": "2026-10-07T16:43:38Z",
+            "completedAt": "2026-10-07T16:44:06Z",
+            "runnerSeconds": 28,
+            "queueSeconds": 29,
+            "admissionSeconds": 2,
+            "setupSeconds": 20,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 16, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 3, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112905169000,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:09Z",
+            "startedAt": "2026-10-07T16:43:54Z",
+            "completedAt": "2026-10-07T16:44:15Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 45,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                16,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112905169083,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:09Z",
+            "startedAt": "2026-10-07T16:43:51Z",
+            "completedAt": "2026-10-07T16:44:04Z",
+            "runnerSeconds": 13,
+            "queueSeconds": 42,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                7,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 3,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:44:26Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112905738519,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:27Z",
+            "startedAt": "2026-10-07T16:44:30Z",
+            "completedAt": "2026-10-07T16:45:23Z",
+            "runnerSeconds": 53,
+            "queueSeconds": 3,
+            "admissionSeconds": 1,
+            "setupSeconds": 30,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 10, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 14, "success"],
+              ["Run tests", 17, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 3,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:44:24Z",
+        "jobs": [
+          {
+            "name": "lint",
+            "id": 112905728960,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:26Z",
+            "startedAt": "2026-10-07T16:44:29Z",
+            "completedAt": "2026-10-07T16:45:10Z",
+            "runnerSeconds": 41,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 19,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 14, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 15, "success"],
+              ["Check for broken intra-doc links", 0, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 1, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112905729342,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:26Z",
+            "startedAt": "2026-10-07T16:44:29Z",
+            "completedAt": "2026-10-07T16:44:52Z",
+            "runnerSeconds": 23,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 0, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112905729403,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:26Z",
+            "startedAt": "2026-10-07T16:44:33Z",
+            "completedAt": "2026-10-07T16:44:44Z",
+            "runnerSeconds": 11,
+            "queueSeconds": 7,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 4,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:43Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906322400,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:46Z",
+            "startedAt": "2026-10-07T16:45:50Z",
+            "completedAt": "2026-10-07T16:46:27Z",
+            "runnerSeconds": 37,
+            "queueSeconds": 4,
+            "admissionSeconds": 3,
+            "setupSeconds": 31,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 11, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 14, "success"],
+              ["Run tests", 3, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 4,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:42Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112906307778,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:44Z",
+            "startedAt": "2026-10-07T16:45:47Z",
+            "completedAt": "2026-10-07T16:46:09Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 2, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                13,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint",
+            "id": 112906308128,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:44Z",
+            "startedAt": "2026-10-07T16:45:47Z",
+            "completedAt": "2026-10-07T16:46:09Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 12, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 2, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906308209,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:44Z",
+            "startedAt": "2026-10-07T16:45:48Z",
+            "completedAt": "2026-10-07T16:46:01Z",
+            "runnerSeconds": 13,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                7,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 5,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:49Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906802460,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:51Z",
+            "startedAt": "2026-10-07T16:46:54Z",
+            "completedAt": "2026-10-07T16:47:46Z",
+            "runnerSeconds": 52,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 31,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 13, "success"],
+              ["Run tests", 15, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 5,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:48Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112906788786,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:50Z",
+            "startedAt": "2026-10-07T16:46:53Z",
+            "completedAt": "2026-10-07T16:47:14Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                14,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint",
+            "id": 112906789058,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:50Z",
+            "startedAt": "2026-10-07T16:46:52Z",
+            "completedAt": "2026-10-07T16:47:23Z",
+            "runnerSeconds": 31,
+            "queueSeconds": 2,
+            "admissionSeconds": 2,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 11, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 12, "success"],
+              ["Check for broken intra-doc links", 0, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906789251,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:50Z",
+            "startedAt": "2026-10-07T16:46:53Z",
+            "completedAt": "2026-10-07T16:47:08Z",
+            "runnerSeconds": 15,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                2,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                8,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942382,
+        "attempt": 6,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:48:07Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112907368064,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:48:09Z",
+            "startedAt": "2026-10-07T16:48:13Z",
+            "completedAt": "2026-10-07T16:48:48Z",
+            "runnerSeconds": 35,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 29,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 13, "success"],
+              ["Run tests", 3, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "runId": 37653942344,
+        "attempt": 6,
+        "sourceSha": "e74d7f5fff4141a3b7236ec895506b2c0d797bf3",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:48:06Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112907357650,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:48:08Z",
+            "startedAt": "2026-10-07T16:48:11Z",
+            "completedAt": "2026-10-07T16:48:22Z",
+            "runnerSeconds": 11,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint",
+            "id": 112907357964,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:48:08Z",
+            "startedAt": "2026-10-07T16:48:11Z",
+            "completedAt": "2026-10-07T16:48:32Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 1,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 14, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 3, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112907357978,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:48:08Z",
+            "startedAt": "2026-10-07T16:48:11Z",
+            "completedAt": "2026-10-07T16:48:36Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                18,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 1,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:42:16Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112904784165,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:17Z",
+            "startedAt": "2026-10-07T16:42:45Z",
+            "completedAt": "2026-10-07T16:43:40Z",
+            "runnerSeconds": 55,
+            "queueSeconds": 28,
+            "admissionSeconds": 1,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 14, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 17, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 20, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Run tests", 10, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 1,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:42:16Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112904783602,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:17Z",
+            "startedAt": "2026-10-07T16:42:40Z",
+            "completedAt": "2026-10-07T16:43:04Z",
+            "runnerSeconds": 24,
+            "queueSeconds": 23,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112904784052,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:42:17Z",
+            "startedAt": "2026-10-07T16:42:59Z",
+            "completedAt": "2026-10-07T16:43:13Z",
+            "runnerSeconds": 14,
+            "queueSeconds": 42,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                9,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 2,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:43:58Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112905537928,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:44:00Z",
+            "startedAt": "2026-10-07T16:44:11Z",
+            "completedAt": "2026-10-07T16:44:57Z",
+            "runnerSeconds": 46,
+            "queueSeconds": 11,
+            "admissionSeconds": 2,
+            "setupSeconds": 21,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 15, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 8, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 15, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Run tests", 5, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 2,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:43:57Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112905529751,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:59Z",
+            "startedAt": "2026-10-07T16:44:06Z",
+            "completedAt": "2026-10-07T16:44:24Z",
+            "runnerSeconds": 18,
+            "queueSeconds": 7,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                4,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                10,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112905530057,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:43:59Z",
+            "startedAt": "2026-10-07T16:44:09Z",
+            "completedAt": "2026-10-07T16:44:31Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 10,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                14,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 3,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:14Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906094372,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:16Z",
+            "startedAt": "2026-10-07T16:45:18Z",
+            "completedAt": "2026-10-07T16:46:13Z",
+            "runnerSeconds": 55,
+            "queueSeconds": 2,
+            "admissionSeconds": 2,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 18, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 20, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Run tests", 11, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 3,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:45:13Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112906084745,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:14Z",
+            "startedAt": "2026-10-07T16:45:18Z",
+            "completedAt": "2026-10-07T16:45:45Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                19,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906085086,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:45:14Z",
+            "startedAt": "2026-10-07T16:45:18Z",
+            "completedAt": "2026-10-07T16:45:30Z",
+            "runnerSeconds": 12,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 4,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:30Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112906669697,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:33Z",
+            "startedAt": "2026-10-07T16:46:36Z",
+            "completedAt": "2026-10-07T16:47:29Z",
+            "runnerSeconds": 53,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 22,
+            "postAndTeardownSeconds": 8,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 0, "success"],
+              ["Install Rust", 19, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 8, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 16, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Run tests", 5, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 1, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 4,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:46:29Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112906646626,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:30Z",
+            "startedAt": "2026-10-07T16:46:35Z",
+            "completedAt": "2026-10-07T16:46:57Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 5,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 5,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                14,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112906647028,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:46:30Z",
+            "startedAt": "2026-10-07T16:46:34Z",
+            "completedAt": "2026-10-07T16:46:48Z",
+            "runnerSeconds": 14,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 1,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                9,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 5,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:47:46Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112907242905,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:47:52Z",
+            "startedAt": "2026-10-07T16:47:58Z",
+            "completedAt": "2026-10-07T16:48:52Z",
+            "runnerSeconds": 54,
+            "queueSeconds": 6,
+            "admissionSeconds": 6,
+            "setupSeconds": 18,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check formatting", 1, "success"],
+              ["Check with Clippy", 17, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 17, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Run tests", 10, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 5, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 5,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:47:45Z",
+        "jobs": [
+          {
+            "name": "external-types",
+            "id": 112907209766,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:47:47Z",
+            "startedAt": "2026-10-07T16:47:50Z",
+            "completedAt": "2026-10-07T16:48:10Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 1,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 2, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                15,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112907210059,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:47:47Z",
+            "startedAt": "2026-10-07T16:47:51Z",
+            "completedAt": "2026-10-07T16:48:01Z",
+            "runnerSeconds": 10,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                4,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126604,
+        "attempt": 6,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:49:03Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112907795549,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:49:08Z",
+            "startedAt": "2026-10-07T16:49:11Z",
+            "completedAt": "2026-10-07T16:49:56Z",
+            "runnerSeconds": 45,
+            "queueSeconds": 3,
+            "admissionSeconds": 5,
+            "setupSeconds": 21,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 15, "success"],
+              ["Check formatting", 0, "success"],
+              ["Check with Clippy", 8, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 3, "success"],
+              ["Install Nix", 2, "success"],
+              ["Enter Nix devshell", 12, "success"],
+              ["Wait for Clippy and test tools", 0, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Run tests", 5, "success"],
+              ["Wait for formatting", 0, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "runId": 37654126387,
+        "attempt": 6,
+        "sourceSha": "d7acf9273d5147cadf6c47064cc2c15f7b589c22",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:49:02Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112907765845,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:49:04Z",
+            "startedAt": "2026-10-07T16:49:07Z",
+            "completedAt": "2026-10-07T16:49:18Z",
+            "runnerSeconds": 11,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112907766267,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:49:04Z",
+            "startedAt": "2026-10-07T16:49:07Z",
+            "completedAt": "2026-10-07T16:49:35Z",
+            "runnerSeconds": 28,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                20,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      }
+    ],
+    "samples": [
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 1,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 94,
+        "setupStepSeconds": 78,
+        "postRunnerSeconds": 42,
+        "fmtSeconds": 0,
+        "clippySeconds": 27,
+        "docsSeconds": 2,
+        "testSeconds": 14,
+        "coreRunnerSeconds": 166,
+        "allRunnerSeconds": 201,
+        "queueFreeAllSeconds": 72,
+        "requiredTestSeconds": 72,
+        "lintSeconds": 47,
+        "observedAllSeconds": 235,
+        "queueRange": [13, 187],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint-docs", "miss"],
+          ["fmt", "miss"],
+          ["clippy", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/1",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/1"
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 2,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 59,
+        "setupStepSeconds": 74,
+        "postRunnerSeconds": 10,
+        "fmtSeconds": 0,
+        "clippySeconds": 4,
+        "docsSeconds": 1,
+        "testSeconds": 2,
+        "coreRunnerSeconds": 95,
+        "allRunnerSeconds": 133,
+        "queueFreeAllSeconds": 36,
+        "requiredTestSeconds": 36,
+        "lintSeconds": 21,
+        "observedAllSeconds": 142,
+        "queueRange": [55, 122],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint-docs", "exact-hit"],
+          ["clippy", "exact-hit"],
+          ["fmt", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/2",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/2"
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 3,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 79,
+        "setupStepSeconds": 71,
+        "postRunnerSeconds": 25,
+        "fmtSeconds": 0,
+        "clippySeconds": 14,
+        "docsSeconds": 2,
+        "testSeconds": 14,
+        "coreRunnerSeconds": 130,
+        "allRunnerSeconds": 170,
+        "queueFreeAllSeconds": 51,
+        "requiredTestSeconds": 51,
+        "lintSeconds": 32,
+        "observedAllSeconds": 95,
+        "queueRange": [22, 47],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint-docs", "miss"],
+          ["clippy", "miss"],
+          ["fmt", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/3",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/3"
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 4,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 58,
+        "setupStepSeconds": 71,
+        "postRunnerSeconds": 12,
+        "fmtSeconds": 0,
+        "clippySeconds": 2,
+        "docsSeconds": 0,
+        "testSeconds": 3,
+        "coreRunnerSeconds": 92,
+        "allRunnerSeconds": 126,
+        "queueFreeAllSeconds": 34,
+        "requiredTestSeconds": 34,
+        "lintSeconds": 23,
+        "observedAllSeconds": 40,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["fmt", "exact-hit"],
+          ["lint-docs", "exact-hit"],
+          ["clippy", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/4",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/4"
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 5,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 78,
+        "setupStepSeconds": 67,
+        "postRunnerSeconds": 23,
+        "fmtSeconds": 0,
+        "clippySeconds": 14,
+        "docsSeconds": 2,
+        "testSeconds": 18,
+        "coreRunnerSeconds": 128,
+        "allRunnerSeconds": 171,
+        "queueFreeAllSeconds": 50,
+        "requiredTestSeconds": 50,
+        "lintSeconds": 35,
+        "observedAllSeconds": 56,
+        "queueRange": [2, 3],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint-docs", "miss"],
+          ["fmt", "miss"],
+          ["clippy", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/5",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/5"
+        ]
+      },
+      {
+        "configuration": "controlled-baseline",
+        "attempt": 6,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 61,
+        "setupStepSeconds": 77,
+        "postRunnerSeconds": 9,
+        "fmtSeconds": 1,
+        "clippySeconds": 2,
+        "docsSeconds": 1,
+        "testSeconds": 2,
+        "coreRunnerSeconds": 95,
+        "allRunnerSeconds": 138,
+        "queueFreeAllSeconds": 34,
+        "requiredTestSeconds": 34,
+        "lintSeconds": 25,
+        "observedAllSeconds": 41,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint-docs", "exact-hit"],
+          ["clippy", "exact-hit"],
+          ["fmt", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653300423/attempts/6",
+          "https://github.com/robjtede/httpea/actions/runs/37653300412/attempts/6"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 1,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 38,
+        "setupStepSeconds": 42,
+        "postRunnerSeconds": 11,
+        "fmtSeconds": 0,
+        "clippySeconds": 14,
+        "docsSeconds": 1,
+        "testSeconds": 17,
+        "coreRunnerSeconds": 87,
+        "allRunnerSeconds": 125,
+        "queueFreeAllSeconds": 49,
+        "requiredTestSeconds": 49,
+        "lintSeconds": 38,
+        "observedAllSeconds": 121,
+        "queueRange": [11, 79],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/1",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/1"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 2,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 28,
+        "setupStepSeconds": 48,
+        "postRunnerSeconds": 8,
+        "fmtSeconds": 0,
+        "clippySeconds": 3,
+        "docsSeconds": 1,
+        "testSeconds": 3,
+        "coreRunnerSeconds": 65,
+        "allRunnerSeconds": 99,
+        "queueFreeAllSeconds": 37,
+        "requiredTestSeconds": 37,
+        "lintSeconds": 28,
+        "observedAllSeconds": 61,
+        "queueRange": [18, 29],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/2",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/2"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 3,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 41,
+        "setupStepSeconds": 47,
+        "postRunnerSeconds": 13,
+        "fmtSeconds": 0,
+        "clippySeconds": 15,
+        "docsSeconds": 0,
+        "testSeconds": 17,
+        "coreRunnerSeconds": 94,
+        "allRunnerSeconds": 128,
+        "queueFreeAllSeconds": 53,
+        "requiredTestSeconds": 53,
+        "lintSeconds": 41,
+        "observedAllSeconds": 59,
+        "queueRange": [3, 3],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/3",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/3"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 4,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 22,
+        "setupStepSeconds": 46,
+        "postRunnerSeconds": 5,
+        "fmtSeconds": 0,
+        "clippySeconds": 2,
+        "docsSeconds": 2,
+        "testSeconds": 3,
+        "coreRunnerSeconds": 59,
+        "allRunnerSeconds": 94,
+        "queueFreeAllSeconds": 37,
+        "requiredTestSeconds": 37,
+        "lintSeconds": 22,
+        "observedAllSeconds": 45,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/4",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/4"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 5,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 31,
+        "setupStepSeconds": 43,
+        "postRunnerSeconds": 11,
+        "fmtSeconds": 0,
+        "clippySeconds": 12,
+        "docsSeconds": 0,
+        "testSeconds": 15,
+        "coreRunnerSeconds": 83,
+        "allRunnerSeconds": 119,
+        "queueFreeAllSeconds": 52,
+        "requiredTestSeconds": 52,
+        "lintSeconds": 31,
+        "observedAllSeconds": 58,
+        "queueRange": [2, 3],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/5",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/5"
+        ]
+      },
+      {
+        "configuration": "lint-only",
+        "attempt": 6,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 21,
+        "setupStepSeconds": 45,
+        "postRunnerSeconds": 4,
+        "fmtSeconds": 0,
+        "clippySeconds": 3,
+        "docsSeconds": 1,
+        "testSeconds": 3,
+        "coreRunnerSeconds": 56,
+        "allRunnerSeconds": 92,
+        "queueFreeAllSeconds": 35,
+        "requiredTestSeconds": 35,
+        "lintSeconds": 21,
+        "observedAllSeconds": 42,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37653942382/attempts/6",
+          "https://github.com/robjtede/httpea/actions/runs/37653942344/attempts/6"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 1,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 39,
+        "postRunnerSeconds": 6,
+        "fmtSeconds": 0,
+        "clippySeconds": 17,
+        "docsSeconds": 1,
+        "testSeconds": 10,
+        "coreRunnerSeconds": 55,
+        "allRunnerSeconds": 93,
+        "queueFreeAllSeconds": 55,
+        "requiredTestSeconds": 55,
+        "lintSeconds": null,
+        "observedAllSeconds": 84,
+        "queueRange": [28, 28],
+        "cacheStates": [["test", "miss"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/1",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/1"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 2,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 37,
+        "postRunnerSeconds": 3,
+        "fmtSeconds": 0,
+        "clippySeconds": 8,
+        "docsSeconds": 1,
+        "testSeconds": 5,
+        "coreRunnerSeconds": 46,
+        "allRunnerSeconds": 86,
+        "queueFreeAllSeconds": 46,
+        "requiredTestSeconds": 46,
+        "lintSeconds": null,
+        "observedAllSeconds": 60,
+        "queueRange": [11, 11],
+        "cacheStates": [["test", "exact-hit"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/2",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/2"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 3,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 39,
+        "postRunnerSeconds": 5,
+        "fmtSeconds": 0,
+        "clippySeconds": 18,
+        "docsSeconds": 1,
+        "testSeconds": 11,
+        "coreRunnerSeconds": 55,
+        "allRunnerSeconds": 94,
+        "queueFreeAllSeconds": 55,
+        "requiredTestSeconds": 55,
+        "lintSeconds": null,
+        "observedAllSeconds": 60,
+        "queueRange": [2, 2],
+        "cacheStates": [["test", "miss"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/3",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/3"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 4,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 39,
+        "postRunnerSeconds": 8,
+        "fmtSeconds": 0,
+        "clippySeconds": 8,
+        "docsSeconds": 1,
+        "testSeconds": 5,
+        "coreRunnerSeconds": 53,
+        "allRunnerSeconds": 89,
+        "queueFreeAllSeconds": 53,
+        "requiredTestSeconds": 53,
+        "lintSeconds": null,
+        "observedAllSeconds": 60,
+        "queueRange": [3, 3],
+        "cacheStates": [["test", "exact-hit"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/4",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/4"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 5,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 36,
+        "postRunnerSeconds": 7,
+        "fmtSeconds": 1,
+        "clippySeconds": 17,
+        "docsSeconds": 1,
+        "testSeconds": 10,
+        "coreRunnerSeconds": 54,
+        "allRunnerSeconds": 84,
+        "queueFreeAllSeconds": 54,
+        "requiredTestSeconds": 54,
+        "lintSeconds": null,
+        "observedAllSeconds": 67,
+        "queueRange": [6, 6],
+        "cacheStates": [["test", "miss"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/5",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/5"
+        ]
+      },
+      {
+        "configuration": "shared-test",
+        "attempt": 6,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 0,
+        "setupStepSeconds": 37,
+        "postRunnerSeconds": 3,
+        "fmtSeconds": 0,
+        "clippySeconds": 8,
+        "docsSeconds": 2,
+        "testSeconds": 5,
+        "coreRunnerSeconds": 45,
+        "allRunnerSeconds": 84,
+        "queueFreeAllSeconds": 45,
+        "requiredTestSeconds": 45,
+        "lintSeconds": null,
+        "observedAllSeconds": 54,
+        "queueRange": [3, 3],
+        "cacheStates": [["test", "exact-hit"]],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37654126604/attempts/6",
+          "https://github.com/robjtede/httpea/actions/runs/37654126387/attempts/6"
+        ]
+      }
+    ],
+    "summary": [
+      {
+        "configuration": "controlled-baseline",
+        "cachePhase": "cold",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 71,
+          "range": [67, 78]
+        },
+        "postRunnerSeconds": {
+          "median": 25,
+          "range": [23, 42]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "clippySeconds": {
+          "median": 14,
+          "range": [14, 27]
+        },
+        "docsSeconds": {
+          "median": 2,
+          "range": [2, 2]
+        },
+        "testSeconds": {
+          "median": 14,
+          "range": [14, 18]
+        },
+        "lintRunnerSeconds": {
+          "median": 79,
+          "range": [78, 94]
+        },
+        "coreRunnerSeconds": {
+          "median": 130,
+          "range": [128, 166]
+        },
+        "allRunnerSeconds": {
+          "median": 171,
+          "range": [170, 201]
+        },
+        "queueFreeAllSeconds": {
+          "median": 51,
+          "range": [50, 72]
+        },
+        "requiredTestSeconds": {
+          "median": 51,
+          "range": [50, 72]
+        },
+        "lintSeconds": {
+          "median": 35,
+          "range": [32, 47]
+        },
+        "observedAllSeconds": {
+          "median": 95,
+          "range": [56, 235]
+        }
+      },
+      {
+        "configuration": "controlled-baseline",
+        "cachePhase": "warm",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 74,
+          "range": [71, 77]
+        },
+        "postRunnerSeconds": {
+          "median": 10,
+          "range": [9, 12]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 1]
+        },
+        "clippySeconds": {
+          "median": 2,
+          "range": [2, 4]
+        },
+        "docsSeconds": {
+          "median": 1,
+          "range": [0, 1]
+        },
+        "testSeconds": {
+          "median": 2,
+          "range": [2, 3]
+        },
+        "lintRunnerSeconds": {
+          "median": 59,
+          "range": [58, 61]
+        },
+        "coreRunnerSeconds": {
+          "median": 95,
+          "range": [92, 95]
+        },
+        "allRunnerSeconds": {
+          "median": 133,
+          "range": [126, 138]
+        },
+        "queueFreeAllSeconds": {
+          "median": 34,
+          "range": [34, 36]
+        },
+        "requiredTestSeconds": {
+          "median": 34,
+          "range": [34, 36]
+        },
+        "lintSeconds": {
+          "median": 23,
+          "range": [21, 25]
+        },
+        "observedAllSeconds": {
+          "median": 41,
+          "range": [40, 142]
+        }
+      },
+      {
+        "configuration": "lint-only",
+        "cachePhase": "cold",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 43,
+          "range": [42, 47]
+        },
+        "postRunnerSeconds": {
+          "median": 11,
+          "range": [11, 13]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "clippySeconds": {
+          "median": 14,
+          "range": [12, 15]
+        },
+        "docsSeconds": {
+          "median": 0,
+          "range": [0, 1]
+        },
+        "testSeconds": {
+          "median": 17,
+          "range": [15, 17]
+        },
+        "lintRunnerSeconds": {
+          "median": 38,
+          "range": [31, 41]
+        },
+        "coreRunnerSeconds": {
+          "median": 87,
+          "range": [83, 94]
+        },
+        "allRunnerSeconds": {
+          "median": 125,
+          "range": [119, 128]
+        },
+        "queueFreeAllSeconds": {
+          "median": 52,
+          "range": [49, 53]
+        },
+        "requiredTestSeconds": {
+          "median": 52,
+          "range": [49, 53]
+        },
+        "lintSeconds": {
+          "median": 38,
+          "range": [31, 41]
+        },
+        "observedAllSeconds": {
+          "median": 59,
+          "range": [58, 121]
+        }
+      },
+      {
+        "configuration": "lint-only",
+        "cachePhase": "warm",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 46,
+          "range": [45, 48]
+        },
+        "postRunnerSeconds": {
+          "median": 5,
+          "range": [4, 8]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "clippySeconds": {
+          "median": 3,
+          "range": [2, 3]
+        },
+        "docsSeconds": {
+          "median": 1,
+          "range": [1, 2]
+        },
+        "testSeconds": {
+          "median": 3,
+          "range": [3, 3]
+        },
+        "lintRunnerSeconds": {
+          "median": 22,
+          "range": [21, 28]
+        },
+        "coreRunnerSeconds": {
+          "median": 59,
+          "range": [56, 65]
+        },
+        "allRunnerSeconds": {
+          "median": 94,
+          "range": [92, 99]
+        },
+        "queueFreeAllSeconds": {
+          "median": 37,
+          "range": [35, 37]
+        },
+        "requiredTestSeconds": {
+          "median": 37,
+          "range": [35, 37]
+        },
+        "lintSeconds": {
+          "median": 22,
+          "range": [21, 28]
+        },
+        "observedAllSeconds": {
+          "median": 45,
+          "range": [42, 61]
+        }
+      },
+      {
+        "configuration": "shared-test",
+        "cachePhase": "cold",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 39,
+          "range": [36, 39]
+        },
+        "postRunnerSeconds": {
+          "median": 6,
+          "range": [5, 7]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 1]
+        },
+        "clippySeconds": {
+          "median": 17,
+          "range": [17, 18]
+        },
+        "docsSeconds": {
+          "median": 1,
+          "range": [1, 1]
+        },
+        "testSeconds": {
+          "median": 10,
+          "range": [10, 11]
+        },
+        "lintRunnerSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "coreRunnerSeconds": {
+          "median": 55,
+          "range": [54, 55]
+        },
+        "allRunnerSeconds": {
+          "median": 93,
+          "range": [84, 94]
+        },
+        "queueFreeAllSeconds": {
+          "median": 55,
+          "range": [54, 55]
+        },
+        "requiredTestSeconds": {
+          "median": 55,
+          "range": [54, 55]
+        },
+        "observedAllSeconds": {
+          "median": 67,
+          "range": [60, 84]
+        }
+      },
+      {
+        "configuration": "shared-test",
+        "cachePhase": "warm",
+        "n": 3,
+        "setupStepSeconds": {
+          "median": 37,
+          "range": [37, 39]
+        },
+        "postRunnerSeconds": {
+          "median": 3,
+          "range": [3, 8]
+        },
+        "fmtSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "clippySeconds": {
+          "median": 8,
+          "range": [8, 8]
+        },
+        "docsSeconds": {
+          "median": 1,
+          "range": [1, 2]
+        },
+        "testSeconds": {
+          "median": 5,
+          "range": [5, 5]
+        },
+        "lintRunnerSeconds": {
+          "median": 0,
+          "range": [0, 0]
+        },
+        "coreRunnerSeconds": {
+          "median": 46,
+          "range": [45, 53]
+        },
+        "allRunnerSeconds": {
+          "median": 86,
+          "range": [84, 89]
+        },
+        "queueFreeAllSeconds": {
+          "median": 46,
+          "range": [45, 53]
+        },
+        "requiredTestSeconds": {
+          "median": 46,
+          "range": [45, 53]
+        },
+        "observedAllSeconds": {
+          "median": 60,
+          "range": [54, 60]
+        }
+      }
+    ]
+  },
+  "exploratory": {
+    "reason": "Preinstalled stable compiler variation invalidates nominal warm-cache classification",
+    "records": [
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 1,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:24:31Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112896665718,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:24:39Z",
+            "completedAt": "2026-10-07T16:25:29Z",
+            "runnerSeconds": 50,
+            "queueSeconds": 7,
+            "admissionSeconds": 1,
+            "setupSeconds": 28,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 11, "success"],
+              ["Run tests", 16, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 1,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/1",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:24:31Z",
+        "jobs": [
+          {
+            "name": "fmt",
+            "id": 112896666321,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:25:21Z",
+            "completedAt": "2026-10-07T16:25:41Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 49,
+            "admissionSeconds": 1,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112896666707,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:25:21Z",
+            "completedAt": "2026-10-07T16:25:45Z",
+            "runnerSeconds": 24,
+            "queueSeconds": 49,
+            "admissionSeconds": 1,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 14, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112896666751,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:25:21Z",
+            "completedAt": "2026-10-07T16:25:36Z",
+            "runnerSeconds": 15,
+            "queueSeconds": 49,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 6,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                7,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112896666974,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:25:21Z",
+            "completedAt": "2026-10-07T16:25:51Z",
+            "runnerSeconds": 30,
+            "queueSeconds": 49,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 7,
+            "cache": "partial-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                3,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112896667121,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:24:32Z",
+            "startedAt": "2026-10-07T16:25:21Z",
+            "completedAt": "2026-10-07T16:25:50Z",
+            "runnerSeconds": 29,
+            "queueSeconds": 49,
+            "admissionSeconds": 1,
+            "setupSeconds": 13,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Check with Clippy", 11, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 2,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:27:59Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112898287016,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:01Z",
+            "startedAt": "2026-10-07T16:28:04Z",
+            "completedAt": "2026-10-07T16:28:40Z",
+            "runnerSeconds": 36,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 32,
+            "postAndTeardownSeconds": 2,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 14, "success"],
+              ["Run tests", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 2,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/2",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:27:58Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112898275663,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:00Z",
+            "startedAt": "2026-10-07T16:28:03Z",
+            "completedAt": "2026-10-07T16:28:19Z",
+            "runnerSeconds": 16,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                9,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112898275765,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:00Z",
+            "startedAt": "2026-10-07T16:28:03Z",
+            "completedAt": "2026-10-07T16:28:30Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 20,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 16, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112898275841,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:00Z",
+            "startedAt": "2026-10-07T16:28:09Z",
+            "completedAt": "2026-10-07T16:28:34Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 9,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                17,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112898275929,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:00Z",
+            "startedAt": "2026-10-07T16:28:04Z",
+            "completedAt": "2026-10-07T16:28:25Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 11, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112898276010,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:00Z",
+            "startedAt": "2026-10-07T16:28:04Z",
+            "completedAt": "2026-10-07T16:28:26Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check with Clippy", 2, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 3,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:28:57Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112898746062,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:59Z",
+            "startedAt": "2026-10-07T16:29:03Z",
+            "completedAt": "2026-10-07T16:29:58Z",
+            "runnerSeconds": 55,
+            "queueSeconds": 4,
+            "admissionSeconds": 2,
+            "setupSeconds": 30,
+            "postAndTeardownSeconds": 8,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 0, "success"],
+              ["Enter Nix devshell", 15, "success"],
+              ["Run tests", 17, "success"],
+              ["Post Install Rust", 5, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 3,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/3",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:28:56Z",
+        "jobs": [
+          {
+            "name": "fmt",
+            "id": 112898731158,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:58Z",
+            "startedAt": "2026-10-07T16:29:00Z",
+            "completedAt": "2026-10-07T16:29:16Z",
+            "runnerSeconds": 16,
+            "queueSeconds": 2,
+            "admissionSeconds": 2,
+            "setupSeconds": 12,
+            "postAndTeardownSeconds": 4,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112898731386,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:58Z",
+            "startedAt": "2026-10-07T16:29:01Z",
+            "completedAt": "2026-10-07T16:29:26Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 18,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 15, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112898731431,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:58Z",
+            "startedAt": "2026-10-07T16:29:01Z",
+            "completedAt": "2026-10-07T16:29:14Z",
+            "runnerSeconds": 13,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                7,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112898731569,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:58Z",
+            "startedAt": "2026-10-07T16:29:01Z",
+            "completedAt": "2026-10-07T16:29:41Z",
+            "runnerSeconds": 40,
+            "queueSeconds": 3,
+            "admissionSeconds": 2,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 9, "success"],
+              ["Check with Clippy", 21, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112898731581,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:28:58Z",
+            "startedAt": "2026-10-07T16:29:06Z",
+            "completedAt": "2026-10-07T16:29:33Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 8,
+            "admissionSeconds": 2,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                18,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 4,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:30:18Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112899377221,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:21Z",
+            "startedAt": "2026-10-07T16:30:24Z",
+            "completedAt": "2026-10-07T16:31:23Z",
+            "runnerSeconds": 59,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 36,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 14, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 15, "success"],
+              ["Run tests", 17, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 4,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/4",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:30:17Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112899371187,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:20Z",
+            "startedAt": "2026-10-07T16:30:23Z",
+            "completedAt": "2026-10-07T16:30:32Z",
+            "runnerSeconds": 9,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 1, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                5,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112899371580,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:20Z",
+            "startedAt": "2026-10-07T16:30:23Z",
+            "completedAt": "2026-10-07T16:30:39Z",
+            "runnerSeconds": 16,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 11,
+            "postAndTeardownSeconds": 4,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 8, "success"],
+              ["Run cargo fmt --all -- --check", 1, "success"],
+              ["Post Install Rust", 2, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112899371630,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:20Z",
+            "startedAt": "2026-10-07T16:30:24Z",
+            "completedAt": "2026-10-07T16:30:49Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 4,
+            "admissionSeconds": 3,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112899371663,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:20Z",
+            "startedAt": "2026-10-07T16:30:25Z",
+            "completedAt": "2026-10-07T16:30:52Z",
+            "runnerSeconds": 27,
+            "queueSeconds": 5,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                19,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                1,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112899371668,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:30:20Z",
+            "startedAt": "2026-10-07T16:30:23Z",
+            "completedAt": "2026-10-07T16:30:45Z",
+            "runnerSeconds": 22,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 11, "success"],
+              ["Check with Clippy", 2, "success"],
+              ["Post Install Rust", 1, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 5,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:31:38Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112900007332,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:41Z",
+            "startedAt": "2026-10-07T16:31:44Z",
+            "completedAt": "2026-10-07T16:32:33Z",
+            "runnerSeconds": 49,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 27,
+            "postAndTeardownSeconds": 4,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 1, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 12, "success"],
+              ["Run tests", 18, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 5,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/5",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:31:36Z",
+        "jobs": [
+          {
+            "name": "fmt",
+            "id": 112899985921,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:39Z",
+            "startedAt": "2026-10-07T16:31:41Z",
+            "completedAt": "2026-10-07T16:31:58Z",
+            "runnerSeconds": 17,
+            "queueSeconds": 2,
+            "admissionSeconds": 3,
+            "setupSeconds": 13,
+            "postAndTeardownSeconds": 4,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112899985926,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:39Z",
+            "startedAt": "2026-10-07T16:31:42Z",
+            "completedAt": "2026-10-07T16:32:13Z",
+            "runnerSeconds": 31,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 13,
+            "postAndTeardownSeconds": 4,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 1, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 10, "success"],
+              ["Check with Clippy", 13, "success"],
+              ["Post Install Rust", 2, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "GitHub Actions Security",
+            "id": 112899985941,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:39Z",
+            "startedAt": "2026-10-07T16:31:41Z",
+            "completedAt": "2026-10-07T16:31:52Z",
+            "runnerSeconds": 11,
+            "queueSeconds": 2,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 2,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                6,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112899986024,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:39Z",
+            "startedAt": "2026-10-07T16:31:42Z",
+            "completedAt": "2026-10-07T16:32:06Z",
+            "runnerSeconds": 24,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": 17,
+            "postAndTeardownSeconds": 5,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 13, "success"],
+              ["Check for broken intra-doc links", 2, "success"],
+              ["Post Install Rust", 3, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112899986240,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:31:39Z",
+            "startedAt": "2026-10-07T16:31:42Z",
+            "completedAt": "2026-10-07T16:32:03Z",
+            "runnerSeconds": 21,
+            "queueSeconds": 3,
+            "admissionSeconds": 3,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                13,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                0,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781432,
+        "attempt": 6,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "CI",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:32:58Z",
+        "jobs": [
+          {
+            "name": "test",
+            "id": 112900611387,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:33:01Z",
+            "startedAt": "2026-10-07T16:33:05Z",
+            "completedAt": "2026-10-07T16:34:02Z",
+            "runnerSeconds": 57,
+            "queueSeconds": 4,
+            "admissionSeconds": 3,
+            "setupSeconds": 32,
+            "postAndTeardownSeconds": 7,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 4, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 9, "success"],
+              ["Install cargo-hack,cargo-nextest,just", 2, "success"],
+              ["Install Nix", 1, "success"],
+              ["Enter Nix devshell", 14, "success"],
+              ["Run tests", 18, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "runId": 37651781490,
+        "attempt": 6,
+        "sourceSha": "325b9ecef6f77e5059c0289458a6ce0ff9f287bd",
+        "workflow": "Lint",
+        "url": "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/6",
+        "conclusion": "success",
+        "runStartedAt": "2026-10-07T16:32:57Z",
+        "jobs": [
+          {
+            "name": "GitHub Actions Security",
+            "id": 112900587372,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:32:58Z",
+            "startedAt": "2026-10-07T16:33:01Z",
+            "completedAt": "2026-10-07T16:33:19Z",
+            "runnerSeconds": 18,
+            "queueSeconds": 3,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 3,
+            "cache": "unreported",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "steps": [
+              ["Set up job", 2, "success"],
+              [
+                "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                1,
+                "success"
+              ],
+              [
+                "Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                11,
+                "success"
+              ],
+              [
+                "Post Run zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482",
+                0,
+                "success"
+              ],
+              [
+                "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                0,
+                "success"
+              ],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "lint-docs",
+            "id": 112900587522,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:32:58Z",
+            "startedAt": "2026-10-07T16:33:01Z",
+            "completedAt": "2026-10-07T16:33:26Z",
+            "runnerSeconds": 25,
+            "queueSeconds": 3,
+            "admissionSeconds": 1,
+            "setupSeconds": 21,
+            "postAndTeardownSeconds": 3,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 17, "success"],
+              ["Check for broken intra-doc links", 1, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "clippy",
+            "id": 112900587596,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:32:58Z",
+            "startedAt": "2026-10-07T16:33:02Z",
+            "completedAt": "2026-10-07T16:33:26Z",
+            "runnerSeconds": 24,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": 16,
+            "postAndTeardownSeconds": 4,
+            "cache": "exact-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 2, "success"],
+              ["Install Rust", 11, "success"],
+              ["Check with Clippy", 4, "success"],
+              ["Post Install Rust", 0, "success"],
+              ["Post Checkout", 1, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "fmt",
+            "id": 112900587636,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:32:58Z",
+            "startedAt": "2026-10-07T16:33:02Z",
+            "completedAt": "2026-10-07T16:33:22Z",
+            "runnerSeconds": 20,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": 14,
+            "postAndTeardownSeconds": 6,
+            "cache": "miss",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20260927.320.1",
+            "compiler": "rustc 1.101.0-nightly (8d1a76430 2026-10-06)",
+            "steps": [
+              ["Set up job", 2, "success"],
+              ["Checkout", 1, "success"],
+              ["Install Rust", 10, "success"],
+              ["Run cargo fmt --all -- --check", 0, "success"],
+              ["Post Install Rust", 4, "success"],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          },
+          {
+            "name": "external-types",
+            "id": 112900587707,
+            "conclusion": "success",
+            "labels": ["ubuntu-latest"],
+            "createdAt": "2026-10-07T16:32:58Z",
+            "startedAt": "2026-10-07T16:33:02Z",
+            "completedAt": "2026-10-07T16:33:30Z",
+            "runnerSeconds": 28,
+            "queueSeconds": 4,
+            "admissionSeconds": 1,
+            "setupSeconds": null,
+            "postAndTeardownSeconds": 5,
+            "cache": "partial-hit",
+            "runnerVersion": "2.337.0",
+            "imageVersion": "20261004.327.1",
+            "compiler": "rustc 1.96.0-nightly (bcf3d36c9 2026-03-19)",
+            "steps": [
+              ["Set up job", 3, "success"],
+              ["Checkout", 1, "success"],
+              [
+                "Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                18,
+                "success"
+              ],
+              [
+                "Post Run x52dev/actions/cargo-workspace-check-external-types@8dc0274800321d780097bc9b3b1ffa9f8dfb1e8b",
+                2,
+                "success"
+              ],
+              ["Post Checkout", 0, "success"],
+              ["Complete job", 0, "success"]
+            ]
+          }
+        ]
+      }
+    ],
+    "samples": [
+      {
+        "configuration": "baseline",
+        "attempt": 1,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 73,
+        "setupStepSeconds": 69,
+        "postRunnerSeconds": 22,
+        "fmtSeconds": 0,
+        "clippySeconds": 11,
+        "docsSeconds": 2,
+        "testSeconds": 16,
+        "coreRunnerSeconds": 123,
+        "allRunnerSeconds": 168,
+        "queueFreeAllSeconds": 50,
+        "requiredTestSeconds": 50,
+        "lintSeconds": 29,
+        "observedAllSeconds": 79,
+        "queueRange": [7, 49],
+        "cacheStates": [
+          ["test", "miss"],
+          ["fmt", "miss"],
+          ["lint-docs", "miss"],
+          ["clippy", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/1",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/1"
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "attempt": 2,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 70,
+        "setupStepSeconds": 80,
+        "postRunnerSeconds": 17,
+        "fmtSeconds": 0,
+        "clippySeconds": 2,
+        "docsSeconds": 2,
+        "testSeconds": 2,
+        "coreRunnerSeconds": 106,
+        "allRunnerSeconds": 147,
+        "queueFreeAllSeconds": 36,
+        "requiredTestSeconds": 36,
+        "lintSeconds": 27,
+        "observedAllSeconds": 42,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "exact-hit"],
+          ["lint-docs", "miss"],
+          ["fmt", "miss"],
+          ["clippy", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/2",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/2"
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "attempt": 3,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 81,
+        "setupStepSeconds": 71,
+        "postRunnerSeconds": 22,
+        "fmtSeconds": 0,
+        "clippySeconds": 21,
+        "docsSeconds": 2,
+        "testSeconds": 17,
+        "coreRunnerSeconds": 136,
+        "allRunnerSeconds": 176,
+        "queueFreeAllSeconds": 55,
+        "requiredTestSeconds": 55,
+        "lintSeconds": 40,
+        "observedAllSeconds": 62,
+        "queueRange": [2, 4],
+        "cacheStates": [
+          ["test", "miss"],
+          ["fmt", "miss"],
+          ["lint-docs", "miss"],
+          ["clippy", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/3",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/3"
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "attempt": 4,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 63,
+        "setupStepSeconds": 76,
+        "postRunnerSeconds": 21,
+        "fmtSeconds": 1,
+        "clippySeconds": 2,
+        "docsSeconds": 2,
+        "testSeconds": 17,
+        "coreRunnerSeconds": 122,
+        "allRunnerSeconds": 158,
+        "queueFreeAllSeconds": 59,
+        "requiredTestSeconds": 59,
+        "lintSeconds": 25,
+        "observedAllSeconds": 66,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "miss"],
+          ["fmt", "miss"],
+          ["lint-docs", "miss"],
+          ["clippy", "exact-hit"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/4",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/4"
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "attempt": 5,
+        "cachePhase": "cold",
+        "lintRunnerSeconds": 72,
+        "setupStepSeconds": 67,
+        "postRunnerSeconds": 17,
+        "fmtSeconds": 0,
+        "clippySeconds": 13,
+        "docsSeconds": 2,
+        "testSeconds": 18,
+        "coreRunnerSeconds": 121,
+        "allRunnerSeconds": 153,
+        "queueFreeAllSeconds": 49,
+        "requiredTestSeconds": 49,
+        "lintSeconds": 31,
+        "observedAllSeconds": 57,
+        "queueRange": [2, 3],
+        "cacheStates": [
+          ["test", "miss"],
+          ["fmt", "miss"],
+          ["clippy", "miss"],
+          ["lint-docs", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/5",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/5"
+        ]
+      },
+      {
+        "configuration": "baseline",
+        "attempt": 6,
+        "cachePhase": "warm",
+        "lintRunnerSeconds": 69,
+        "setupStepSeconds": 79,
+        "postRunnerSeconds": 20,
+        "fmtSeconds": 0,
+        "clippySeconds": 4,
+        "docsSeconds": 1,
+        "testSeconds": 18,
+        "coreRunnerSeconds": 126,
+        "allRunnerSeconds": 172,
+        "queueFreeAllSeconds": 57,
+        "requiredTestSeconds": 57,
+        "lintSeconds": 25,
+        "observedAllSeconds": 65,
+        "queueRange": [3, 4],
+        "cacheStates": [
+          ["test", "miss"],
+          ["lint-docs", "exact-hit"],
+          ["clippy", "exact-hit"],
+          ["fmt", "miss"]
+        ],
+        "urls": [
+          "https://github.com/robjtede/httpea/actions/runs/37651781432/attempts/6",
+          "https://github.com/robjtede/httpea/actions/runs/37651781490/attempts/6"
+        ]
+      }
+    ]
+  },
+  "stepColumns": ["name", "seconds", "conclusion"]
+}
