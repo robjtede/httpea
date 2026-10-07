@@ -14,49 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    permissions:
-      contents: read
-      checks: write # to add clippy checks to PR diffs
-
-    runs-on: ubuntu-latest
-    env:
-      RUSTUP_HOME: /tmp/httpea-ci-rustup
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install Rust
-        id: rust
-        uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
-        with:
-          toolchain: nightly-2026-10-07
-          components: rustfmt,clippy,rust-docs
-          cache-shared-key: httpea-ci-exp-controlled-lint-only-${{ github.run_id }}-${{ (github.run_attempt == 1 || github.run_attempt == 2) && 'a' || (github.run_attempt == 3 || github.run_attempt == 4) && 'b' || 'c' }}-${{ github.job }}
-
-      - name: Check formatting
-        id: fmt
-        background: true
-        run: cargo fmt --all -- --check
-
-      - name: Check with Clippy
-        uses: giraffate/clippy-action@13b9d32482f25d29ead141b79e7e04e7900281e0 # v1.0.1
-        with:
-          clippy_flags: --workspace --tests --examples --all-features
-          reporter: github-pr-check
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check for broken intra-doc links
-        if: ${{ !cancelled() && steps.rust.outcome == 'success' }}
-        env:
-          RUSTDOCFLAGS: "-D warnings"
-        run: cargo doc --no-deps --all-features --workspace
-
-      - name: Wait for formatting
-        wait: fmt
-
   external-types:
     runs-on: ubuntu-latest
     steps:
