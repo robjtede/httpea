@@ -3,8 +3,6 @@ name: Lint
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  merge_group:
-    types: [checks_requested]
   push:
     branches: [main]
 
@@ -51,16 +49,11 @@ jobs:
           components: clippy
 
       - name: Check with Clippy
-        if: github.event_name == 'pull_request'
         uses: giraffate/clippy-action@13b9d32482f25d29ead141b79e7e04e7900281e0 # v1.0.1
         with:
           clippy_flags: --workspace --tests --examples --all-features
           reporter: github-pr-check
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check with Clippy
-        if: github.event_name != 'pull_request'
-        run: cargo clippy --workspace --tests --examples --all-features
 
   lint-docs:
     runs-on: ubuntu-latest
