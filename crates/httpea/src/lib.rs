@@ -1,3 +1,5 @@
+//! HTTP parsing experiments.
+
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(feature = "http-1_1")]

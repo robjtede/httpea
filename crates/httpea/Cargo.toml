@@ -13,6 +13,7 @@ autoexamples = false
 allowed_external_types = []
 
 [lints]
+workspace = true
 
 [features]
 default = ["std", "simd"]
