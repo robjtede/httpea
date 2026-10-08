@@ -1,4 +1,4 @@
-//! Pimitive HTTP types.
+//! Primitive HTTP types.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

@@ -1,6 +1,6 @@
 //! HTTP status code.
 //!
-//! See [`StatusCode`].
+//! See the [`StatusCode` type](crate::StatusCode).
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

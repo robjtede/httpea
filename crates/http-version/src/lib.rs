@@ -1,6 +1,6 @@
 //! HTTP versions.
 //!
-//! See [`Version`].
+//! See the [`Version` enum](crate::Version).
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
