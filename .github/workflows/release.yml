@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Install Rust
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
@@ -55,9 +55,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_PLZ_PR_JSON: ${{ steps.release-plz.outputs.pr }}
-        run: |
-          gh auth setup-git --hostname github.com
-          x52-bump-changelogs
+        run: x52-bump-changelogs
 
       - name: Update release notes
         if: ${{ steps.release-plz.outputs.releases_created == 'true' }}
