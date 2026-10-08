@@ -2,6 +2,8 @@
 name = "httpea"
 version = "0.0.1"
 description = "HTTP experiments and parsers"
+categories = ["network-programming", "parser-implementations"]
+keywords = ["http", "http1", "http-parser", "request-line"]
 repository.workspace = true
 license.workspace = true
 edition.workspace = true
