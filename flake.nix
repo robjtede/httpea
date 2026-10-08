@@ -26,6 +26,7 @@
           packages = [
             config.formatter
             pkgs.cargo-nextest
+            pkgs.cargo-rdme
             pkgs.cargo-shear
             pkgs.jq
             pkgs.just

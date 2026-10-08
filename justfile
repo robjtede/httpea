@@ -10,11 +10,13 @@ fmt:
     cargo +nightly fmt
     fd --hidden -e=yml --exec-batch prettier --write
     fd --hidden -e=toml --exec-batch taplo format
+    just rdme --force
 
 # Check project
 check:
     just --unstable --fmt --check
     cargo +nightly fmt --all --check
+    just rdme --check
     cargo {{ toolchain }} clippy --workspace --all-targets --all-features
     fd --hidden -e=yml --exec-batch prettier --check
     fd --hidden -e=toml --exec-batch taplo format
@@ -51,6 +53,12 @@ test-coverage-codecov:
 test-coverage-lcov:
     cargo {{ toolchain }} llvm-cov --workspace --all-features --lcov --output-path lcov.info
 
-# Document workspace
+# Document workspace and check for broken intra-doc links
 doc *args:
     RUSTDOCFLAGS="--cfg docsrs -D warnings" cargo +nightly doc --workspace --all-features --no-deps {{ args }}
+
+# Generate or check crate READMEs from crate documentation
+rdme *args:
+    @for manifest in crates/*/Cargo.toml; do \
+        (cd "$(dirname "$manifest")" && cargo rdme {{ args }}) || exit; \
+    done
