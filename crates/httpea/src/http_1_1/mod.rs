@@ -793,6 +793,8 @@ fn parse_field_section_with_uninit_fields<'buf, 'fields>(
                 EmptyLinePolicy::Consume => line_end + 2,
                 EmptyLinePolicy::Leave => line_end,
             };
+
+            // SAFETY: Each slot in this prefix was initialized before field_index was increased.
             let initialized = unsafe { assume_init_fields_slice(&fields[..field_index]) };
 
             return Ok(ParseStatus::Complete(ParsedFieldSection {
@@ -879,9 +881,14 @@ fn optional_slice_range<'a>(input: &'a [u8], range: Option<&Range<usize>>) -> Op
     range.map(|range| slice_range(input, range))
 }
 
+/// # Safety
+///
+/// Every element in `fields` must contain an initialized `Field`.
 unsafe fn assume_init_fields_slice<'buf, 'fields>(
     fields: &'fields [MaybeUninit<Field<'buf>>],
 ) -> &'fields [Field<'buf>] {
+    // SAFETY: The caller guarantees initialized elements. MaybeUninit<Field> has the same
+    // size and alignment as Field, and the slice retains its length and borrow lifetime.
     unsafe { slice::from_raw_parts(fields.as_ptr() as *const Field<'buf>, fields.len()) }
 }
 
