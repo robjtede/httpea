@@ -1,5 +1,4 @@
-//! HTTP/1.1 request-target parser from
-//! [RFC 9112](https://datatracker.ietf.org/doc/html/rfc9112).
+//! HTTP/1.1 request-target parser with a zero-copy bias.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
