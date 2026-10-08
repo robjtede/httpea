@@ -1,5 +1,17 @@
 # `http-request-target`
 
+<!-- prettier-ignore-start -->
+
+[![crates.io](https://img.shields.io/crates/v/http-request-target?label=latest)](https://crates.io/crates/http-request-target)
+[![Documentation](https://docs.rs/http-request-target/badge.svg?version=0.1.0)](https://docs.rs/http-request-target/0.1.0)
+![MIT licensed](https://img.shields.io/crates/l/http-request-target.svg)
+<br />
+[![dependency status](https://deps.rs/crate/http-request-target/0.1.0/status.svg)](https://deps.rs/crate/http-request-target/0.1.0)
+[![Download](https://img.shields.io/crates/d/http-request-target.svg)](https://crates.io/crates/http-request-target)
+[![CI](https://github.com/robjtede/httpea/actions/workflows/ci.yml/badge.svg)](https://github.com/robjtede/httpea/actions/workflows/ci.yml)
+
+<!-- prettier-ignore-end -->
+
 <!-- cargo-rdme start -->
 
 HTTP/1.1 request-target parser from
