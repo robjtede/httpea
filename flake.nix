@@ -15,16 +15,23 @@
 
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
-      perSystem = { pkgs, config, lib, ... }: {
+      perSystem = { pkgs, config, inputs', lib, ... }: {
         formatter = pkgs.nixpkgs-fmt;
 
         devShells.ci = pkgs.mkShell {
           shellHook = config.x52.justRust.shellHook;
         };
 
+        devShells.ci-release = pkgs.mkShellNoCC {
+          packages = [
+            inputs'.x52.packages.x52-release-tools
+          ];
+        };
+
         devShells.default = pkgs.mkShell {
           packages = [
             config.formatter
+            inputs'.x52.packages.x52-release-tools
             pkgs.cargo-nextest
             pkgs.cargo-rdme
             pkgs.cargo-shear
