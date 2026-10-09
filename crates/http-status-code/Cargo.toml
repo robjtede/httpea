@@ -1,6 +1,6 @@
 [package]
 name = "http-status-code"
-version = "0.0.2"
+version = "0.0.3"
 description = "HTTP status code"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]

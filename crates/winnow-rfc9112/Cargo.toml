@@ -1,6 +1,6 @@
 [package]
 name = "winnow-rfc9112"
-version = "0.0.1"
+version = "0.0.2"
 description = "Winnow parsers for RFC 9112 HTTP/1.1 syntax productions"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
@@ -20,7 +20,7 @@ simd = ["winnow/simd", "winnow-rfc9110/simd"]
 
 [dependencies]
 winnow = { version = "1", default-features = false, features = ["binary"] }
-winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
+winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.2", default-features = false }
 
 [lints]
 workspace = true

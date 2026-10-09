@@ -1,6 +1,6 @@
 [package]
 name = "http-chunked"
-version = "0.0.1"
+version = "0.0.2"
 description = "HTTP/1.1 chunked transfer coding parser"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
@@ -14,8 +14,8 @@ rust-version.workspace = true
 allowed_external_types = ["winnow_rfc9110::*", "winnow_rfc9112::*"]
 
 [dependencies]
-winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.1", default-features = false }
-winnow-rfc9112 = { path = "../winnow-rfc9112", version = "0.0.1", default-features = false }
+winnow-rfc9110 = { path = "../winnow-rfc9110", version = "0.0.2", default-features = false }
+winnow-rfc9112 = { path = "../winnow-rfc9112", version = "0.0.2", default-features = false }
 
 [dev-dependencies]
 divan = { package = "codspeed-divan-compat", version = "4" }

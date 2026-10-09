@@ -1,6 +1,6 @@
 [package]
 name = "httpea"
-version = "0.0.1"
+version = "0.0.2"
 description = "HTTP experiments and parsers"
 categories = ["network-programming", "parser-implementations"]
 keywords = ["http", "http1", "http-parser", "request-line"]
@@ -38,11 +38,11 @@ http-1_1 = [
 # h3 = "0.0.1"
 # h3-quinn = "0.0.1"
 # http = "0.2.9"
-http-field = { path = "../http-field", version = "0.0.3", optional = true }
-http-method = { path = "../http-method", version = "0.0.2", optional = true }
-http-request-target = { path = "../http-request-target", version = "0.1.0", optional = true }
-http-status-code = { path = "../http-status-code", version = "0.0.2", optional = true }
-http-version = { path = "../http-version", version = "0.0.2", optional = true }
+http-field = { path = "../http-field", version = "0.0.4", optional = true }
+http-method = { path = "../http-method", version = "0.0.3", optional = true }
+http-request-target = { path = "../http-request-target", version = "0.2.0", optional = true }
+http-status-code = { path = "../http-status-code", version = "0.0.3", optional = true }
+http-version = { path = "../http-version", version = "0.0.3", optional = true }
 # mio = { version = "0.8", features = ["net", "os-poll"] }
 # quiche = { version = "0.16", features = ["qlog"] }
 # quinn = "0.8"
