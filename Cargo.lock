@@ -283,7 +283,7 @@ dependencies = [
 
 [[package]]
 name = "http-chunked"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "codspeed-divan-compat",
  "winnow",
@@ -293,7 +293,7 @@ dependencies = [
 
 [[package]]
 name = "http-core"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "http-chunked",
  "http-field",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "http-field"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "codspeed-divan-compat",
  "impl-more",
@@ -319,14 +319,14 @@ dependencies = [
 
 [[package]]
 name = "http-method"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
 ]
 
 [[package]]
 name = "http-request-target"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "codspeed-divan-compat",
  "http",
@@ -337,14 +337,14 @@ dependencies = [
 
 [[package]]
 name = "http-status-code"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
 ]
 
 [[package]]
 name = "http-version"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
 ]
@@ -357,7 +357,7 @@ checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
 
 [[package]]
 name = "httpea"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "codspeed-divan-compat",
  "http-field",
@@ -877,7 +877,7 @@ dependencies = [
 
 [[package]]
 name = "winnow-rfc3986"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "codspeed-divan-compat",
  "winnow",
@@ -885,14 +885,14 @@ dependencies = [
 
 [[package]]
 name = "winnow-rfc9110"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "winnow",
 ]
 
 [[package]]
 name = "winnow-rfc9112"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "winnow",
  "winnow-rfc9110",

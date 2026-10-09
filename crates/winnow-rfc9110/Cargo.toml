@@ -1,6 +1,6 @@
 [package]
 name = "winnow-rfc9110"
-version = "0.0.1"
+version = "0.0.2"
 description = "Winnow parsers for RFC 9110 HTTP syntax productions"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
