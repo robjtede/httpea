@@ -3,10 +3,10 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/http-field?label=latest)](https://crates.io/crates/http-field)
-[![Documentation](https://docs.rs/http-field/badge.svg?version=0.0.3)](https://docs.rs/http-field/0.0.3)
+[![Documentation](https://docs.rs/http-field/badge.svg?version=0.0.4)](https://docs.rs/http-field/0.0.4)
 ![MIT licensed](https://img.shields.io/crates/l/http-field.svg)
 <br />
-[![dependency status](https://deps.rs/crate/http-field/0.0.3/status.svg)](https://deps.rs/crate/http-field/0.0.3)
+[![dependency status](https://deps.rs/crate/http-field/0.0.4/status.svg)](https://deps.rs/crate/http-field/0.0.4)
 [![Download](https://img.shields.io/crates/d/http-field.svg)](https://crates.io/crates/http-field)
 [![CI](https://github.com/robjtede/httpea/actions/workflows/ci.yml/badge.svg)](https://github.com/robjtede/httpea/actions/workflows/ci.yml)
 
