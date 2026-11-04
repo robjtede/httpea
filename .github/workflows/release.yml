@@ -34,7 +34,7 @@ jobs:
         id: auth
 
       - name: release-plz
-        uses: MarcoIeni/release-plz-action@8b5bf233ecb5779f63508db7cd050e948ee77cc2 # v0.5.144
+        uses: MarcoIeni/release-plz-action@b2baf303c463c223526d52a8a91b0777f052cf3f # v0.5.146
         id: release-plz
         env:
           GITHUB_TOKEN: ${{ github.token }}
