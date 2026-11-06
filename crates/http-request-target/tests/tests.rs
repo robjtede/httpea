@@ -100,6 +100,40 @@ fn authority_components() {
 }
 
 #[test]
+fn origin_distinguishes_empty_and_absent_queries() {
+    for input in [b"/".as_slice(), b"/?"] {
+        let RequestTarget::Origin(target) = RequestTarget::try_from_slice(input).unwrap() else {
+            panic!("expected origin form");
+        };
+
+        let has_query = input.ends_with(b"?");
+
+        assert_eq!(target.path(), b"/");
+        assert_eq!(target.query(), has_query.then_some(b"".as_slice()));
+        assert_eq!(target.query_indices(), has_query.then_some(2..2));
+        assert_eq!(target.search(), has_query.then_some(b"?".as_slice()));
+        assert_eq!(target.search_indices(), has_query.then_some(1..2));
+    }
+}
+
+#[test]
+fn absolute_distinguishes_empty_and_absent_queries() {
+    for input in [b"http://example.com".as_slice(), b"http://example.com?"] {
+        let RequestTarget::Absolute(target) = RequestTarget::try_from_slice(input).unwrap() else {
+            panic!("expected absolute form");
+        };
+
+        let has_query = input.ends_with(b"?");
+
+        assert_eq!(target.path(), b"");
+        assert_eq!(target.query(), has_query.then_some(b"".as_slice()));
+        assert_eq!(target.query_indices(), has_query.then_some(19..19));
+        assert_eq!(target.search(), has_query.then_some(b"?".as_slice()));
+        assert_eq!(target.search_indices(), has_query.then_some(18..19));
+    }
+}
+
+#[test]
 fn absolute_components() {
     let target =
         match RequestTarget::try_from_slice(b"git+http://user:pass@example.com:1234/repo?q=1")
