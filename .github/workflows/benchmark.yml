@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -20,6 +19,8 @@ jobs:
     name: Run benchmarks
     runs-on: codspeed-macro-arm64-graviton-ubuntu-22-04
     timeout-minutes: 10
+    env:
+      ZSTD_CLEVEL: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -30,6 +31,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: nightly
+          cache-save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Install cargo-codspeed
         uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
@@ -43,8 +45,8 @@ jobs:
         uses: CodSpeedHQ/action@78102a468f96d8e0ccb92d0ec49425753fc42062 # v5.6.0
         env:
           DIVAN_SAMPLE_SIZE: "10000"
-          DIVAN_MIN_TIME: "1"
-          DIVAN_MAX_TIME: "1"
+          DIVAN_MIN_TIME: "0.1"
+          DIVAN_MAX_TIME: "0.1"
         with:
           mode: walltime,memory
           run: cargo codspeed run
