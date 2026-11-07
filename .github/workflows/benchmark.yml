@@ -37,7 +37,7 @@ jobs:
           tool: cargo-codspeed
 
       - name: Build benchmarks
-        run: cargo codspeed build --all-features --measurement-mode walltime
+        run: cargo codspeed build --all-features --measurement-mode walltime,memory
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@78102a468f96d8e0ccb92d0ec49425753fc42062 # v5.6.0
@@ -46,5 +46,5 @@ jobs:
           DIVAN_MIN_TIME: "1"
           DIVAN_MAX_TIME: "1"
         with:
-          mode: walltime
+          mode: walltime,memory
           run: cargo codspeed run
