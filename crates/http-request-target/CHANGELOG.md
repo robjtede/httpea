@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.1
+
+- No significant changes since `0.2.0`.
+
 ## 0.2.0
 
 - No significant changes since `0.1.0`.
