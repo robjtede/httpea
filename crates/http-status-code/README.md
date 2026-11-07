@@ -3,10 +3,10 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/http-status-code?label=latest)](https://crates.io/crates/http-status-code)
-[![Documentation](https://docs.rs/http-status-code/badge.svg?version=0.0.3)](https://docs.rs/http-status-code/0.0.3)
+[![Documentation](https://docs.rs/http-status-code/badge.svg?version=0.0.4)](https://docs.rs/http-status-code/0.0.4)
 ![MIT licensed](https://img.shields.io/crates/l/http-status-code.svg)
 <br />
-[![dependency status](https://deps.rs/crate/http-status-code/0.0.3/status.svg)](https://deps.rs/crate/http-status-code/0.0.3)
+[![dependency status](https://deps.rs/crate/http-status-code/0.0.4/status.svg)](https://deps.rs/crate/http-status-code/0.0.4)
 [![Download](https://img.shields.io/crates/d/http-status-code.svg)](https://crates.io/crates/http-status-code)
 [![CI](https://github.com/x52dev/httpea/actions/workflows/ci.yml/badge.svg)](https://github.com/x52dev/httpea/actions/workflows/ci.yml)
 
