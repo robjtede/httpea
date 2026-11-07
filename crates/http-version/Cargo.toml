@@ -1,6 +1,6 @@
 [package]
 name = "http-version"
-version = "0.0.3"
+version = "0.0.4"
 description = "HTTP versions"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 categories = ["parsing"]
